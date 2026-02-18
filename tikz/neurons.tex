@@ -1,0 +1,58 @@
+% tikz/neurons.tex
+% Shared neuron diagram components
+%
+% Provides TikZ styles for drawing perceptrons, network layers,
+% and synapse connections.
+
+% --- Neuron node style ---
+\tikzset{
+  neuron/.style={
+    circle,
+    draw=mnsNavy,
+    fill=mnsIntuitionBg,
+    minimum size=8mm,
+    inner sep=0pt,
+    font=\small
+  },
+  input neuron/.style={
+    neuron,
+    fill=white
+  },
+  output neuron/.style={
+    neuron,
+    fill=mnsNavy!15
+  },
+  hidden neuron/.style={
+    neuron,
+    fill=mnsTeal!15
+  }
+}
+
+% --- Synapse arrow style ---
+\tikzset{
+  synapse/.style={
+    ->,
+    >=Stealth,
+    thick,
+    mnsNavy!70
+  },
+  excitatory/.style={
+    synapse,
+    mnsNavy
+  },
+  inhibitory/.style={
+    synapse,
+    mnsRust,
+    -{Stealth[open]}
+  }
+}
+
+% --- Weight label style ---
+\tikzset{
+  weight label/.style={
+    midway,
+    fill=white,
+    inner sep=1pt,
+    font=\scriptsize
+  }
+}

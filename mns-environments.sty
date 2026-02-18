@@ -1,0 +1,187 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mns-environments}[2026/02/17 MNS custom environments]
+
+% Requires tcolorbox (loaded by mns.cls) and mns color definitions
+
+% ================================================================
+% INTUITION BOX
+% Core concept summary. Light blue-gray background, italic title.
+% Usage: \begin{intuition}{Title} ... \end{intuition}
+% ================================================================
+\newtcolorbox{intuition}[1][Key Idea]{
+  enhanced,
+  breakable,
+  colback=mnsIntuitionBg,
+  colframe=mnsNavy!40,
+  boxrule=0pt,
+  borderline west={2.5pt}{0pt}{mnsNavy!70},
+  arc=0mm,
+  left=1em,
+  right=1em,
+  top=0.8em,
+  bottom=0.8em,
+  fonttitle=\sffamily\bfseries\color{mnsNavy},
+  title={\textit{#1}},
+  attach title to upper={\par\smallskip}
+}
+
+% ================================================================
+% KEY EQUATION BOX
+% Highlighted central equation with variable legend below.
+% Usage: \begin{keyequation}{Title}
+%          equation here
+%          \tcblower
+%          variable definitions here
+%        \end{keyequation}
+% ================================================================
+\newtcolorbox{keyequation}[1][]{
+  enhanced,
+  colback=white,
+  colframe=mnsKeyEqFrame,
+  boxrule=0.5pt,
+  arc=1mm,
+  left=1em,
+  right=1em,
+  top=0.8em,
+  bottom=0.8em,
+  fonttitle=\sffamily\bfseries\small\color{mnsKeyEqFrame},
+  title={#1},
+  attach boxed title to top left={xshift=1em, yshift=-\tcboxedtitleheight/2},
+  boxed title style={
+    colback=white,
+    colframe=white,
+    boxrule=0pt,
+    left=0.3em,
+    right=0.3em
+  },
+  segmentation style={solid, mnsKeyEqFrame!40},
+  before upper={\centering}
+}
+
+% ================================================================
+% DERIVATION BOX
+% Step-by-step derivation. Gray left border, breakable.
+% Usage: \begin{derivation}{Title} ... \end{derivation}
+% ================================================================
+\newtcolorbox{derivation}[1][Derivation]{
+  enhanced,
+  breakable,
+  colback=white,
+  colframe=white,
+  boxrule=0pt,
+  borderline west={2pt}{0pt}{mnsDerivationBorder},
+  arc=0mm,
+  left=1em,
+  right=1em,
+  top=0.6em,
+  bottom=0.6em,
+  fonttitle=\sffamily\bfseries\small\color{mnsDerivationBorder!80!black},
+  title={\textit{#1}},
+  attach title to upper={\par\smallskip}
+}
+
+% ================================================================
+% EXAMPLE BOX
+% Worked numerical calculation. Cream/warm background.
+% Usage: \begin{example}{Title} ... \end{example}
+% ================================================================
+\newtcolorbox{example}[1][Example]{
+  enhanced,
+  breakable,
+  colback=mnsExampleBg,
+  colframe=mnsExampleBg!60!black,
+  boxrule=0pt,
+  borderline west={2.5pt}{0pt}{mnsRust!60},
+  arc=0mm,
+  left=1em,
+  right=1em,
+  top=0.8em,
+  bottom=0.8em,
+  fonttitle=\sffamily\bfseries\color{mnsRust!80!black},
+  title={#1},
+  attach title to upper={\par\smallskip}
+}
+
+% ================================================================
+% CONNECTION BOX
+% Cross-chapter links. Dashed border, small font.
+% Usage: \begin{connection} ... \end{connection}
+% ================================================================
+\newtcolorbox{connection}{
+  enhanced,
+  colback=white,
+  colframe=mnsConnectionBorder,
+  boxrule=0pt,
+  borderline={0.8pt}{0pt}{mnsConnectionBorder, dashed},
+  arc=1mm,
+  left=0.8em,
+  right=0.8em,
+  top=0.6em,
+  bottom=0.6em,
+  fontupper=\small,
+  before upper={\sffamily\bfseries\footnotesize\color{mnsConnectionBorder!80!black}Connection\par\smallskip\normalfont}
+}
+
+% ================================================================
+% WARNING BOX
+% Common misconceptions. Red-tinted left border.
+% Usage: \begin{warning}{Title} ... \end{warning}
+% ================================================================
+\newtcolorbox{warning}[1][Common Mistake]{
+  enhanced,
+  breakable,
+  colback=mnsWarningBorder!5,
+  colframe=white,
+  boxrule=0pt,
+  borderline west={2.5pt}{0pt}{mnsWarningBorder},
+  arc=0mm,
+  left=1em,
+  right=1em,
+  top=0.8em,
+  bottom=0.8em,
+  fonttitle=\sffamily\bfseries\color{mnsWarningBorder},
+  title={#1},
+  attach title to upper={\par\smallskip}
+}
+
+% ================================================================
+% SUMMARY TABLE environment (end of chapter)
+% A simple wrapper for consistent styling
+% ================================================================
+\newenvironment{chaptersummary}{%
+  \section*{Chapter Summary}
+  \addcontentsline{toc}{section}{Chapter Summary}
+}{%
+  \bigskip
+}
+
+% ================================================================
+% EXERCISES environment (end of chapter)
+% ================================================================
+\newenvironment{exercises}{%
+  \section*{Exercises}
+  \addcontentsline{toc}{section}{Exercises}
+  \begin{enumerate}[label=\textbf{\thechapter.\arabic*}, leftmargin=*]
+}{%
+  \end{enumerate}
+}
+
+% ================================================================
+% CONCEPTUAL QUESTIONS (end of chapter)
+% ================================================================
+\newenvironment{conceptquestions}{%
+  \section*{Conceptual Questions}
+  \addcontentsline{toc}{section}{Conceptual Questions}
+  \begin{enumerate}[label=\textbf{Q\thechapter.\arabic*}, leftmargin=*]
+}{%
+  \end{enumerate}
+}
+
+% ================================================================
+% PARTS LIST (for sub-items in exercises)
+% Labels: (a), (b), (c), ...
+% ================================================================
+\newlist{parts}{enumerate}{1}
+\setlist[parts]{label=\textbf{(\alph*)}, leftmargin=*, itemsep=0.4em, topsep=0.2em, parsep=0pt}
+
+\endinput

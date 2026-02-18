@@ -1,0 +1,54 @@
+\documentclass{mns}
+\usepackage{mns-macros}
+\usepackage{mns-environments}
+
+\usepackage[backend=biber, style=alphabetic, maxbibnames=99]{biblatex}
+\addbibresource{backmatter/references.bib}
+
+\title{Models of Neural Systems\\[0.5em]
+  \large Lecture Notes in Computational Neuroscience}
+\author{Arjun Puri}
+\date{Spring 2026}
+
+\begin{document}
+
+\frontmatter
+\input{frontmatter/titlepage}
+\tableofcontents
+\input{frontmatter/preface}
+\input{frontmatter/notation}
+
+\mainmatter
+
+% ---- Part I: Neural Computation and Learning ----
+\part{Neural Computation and Learning}
+\include{chapters/ch01-simple-units/ch01}
+\include{chapters/ch02-learning/ch02}
+\include{chapters/ch03-visual-receptive-fields/ch03}
+
+% ---- Part II: Biophysics of Single Neurons ----
+\part{Biophysics of Single Neurons}
+\include{chapters/ch04-membrane-potential/ch04}
+\include{chapters/ch05-ion-channels-lif/ch05}
+\include{chapters/ch06-hodgkin-huxley/ch06}
+\include{chapters/ch07-single-channels/ch07}
+
+% ---- Part III: Dynamical Systems and Excitability ----
+\part{Dynamical Systems and Excitability}
+\include{chapters/ch08-phase-plane-1d/ch08}
+\include{chapters/ch09-phase-plane-2d/ch09}
+\include{chapters/ch10-excitability-types/ch10}
+
+% ---- Part IV: Spatial and Network Models ----
+\part{Spatial and Network Models}
+\include{chapters/ch11-cable-theory/ch11}
+\include{chapters/ch12-cable-branching/ch12}
+\include{chapters/ch13-compartments-myelination/ch13}
+\include{chapters/ch14-network-models/ch14}
+
+\backmatter
+
+\printbibliography[heading=bibintoc]
+\printindex
+
+\end{document}

@@ -1,0 +1,84 @@
+% tikz/phase-portraits.tex
+% Shared styles for phase-plane diagrams
+%
+% Provides consistent styling for nullclines, fixed points,
+% trajectories, and vector fields.
+
+% --- Nullcline styles ---
+\tikzset{
+  Vnullcline/.style={
+    very thick,
+    mnsNavy,
+  },
+  wnullcline/.style={
+    very thick,
+    mnsRust,
+  }
+}
+
+% --- Fixed point markers ---
+\tikzset{
+  stable fp/.style={
+    circle,
+    fill=mnsNavy,
+    draw=mnsNavy,
+    inner sep=0pt,
+    minimum size=5pt
+  },
+  unstable fp/.style={
+    circle,
+    fill=white,
+    draw=mnsNavy,
+    inner sep=0pt,
+    minimum size=5pt,
+    line width=0.8pt
+  },
+  saddle fp/.style={
+    circle,
+    fill=mnsNavy!50,
+    draw=mnsNavy,
+    inner sep=0pt,
+    minimum size=5pt,
+    line width=0.8pt
+  }
+}
+
+% --- Trajectory style ---
+\tikzset{
+  trajectory/.style={
+    ->,
+    >=Stealth,
+    mnsTeal,
+    thick
+  },
+  limit cycle/.style={
+    very thick,
+    mnsTeal,
+    dashed
+  }
+}
+
+% --- Separator / threshold manifold ---
+\tikzset{
+  separatrix/.style={
+    thick,
+    mnsRust,
+    dashed
+  }
+}
+
+% --- 1D flow arrow styles ---
+\tikzset{
+  flow right/.style={
+    ->,
+    >=Stealth,
+    thick,
+    mnsTeal
+  },
+  flow left/.style={
+    <-,
+    >=Stealth,
+    thick,
+    mnsTeal
+  }
+}

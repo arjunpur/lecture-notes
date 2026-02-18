@@ -1,0 +1,56 @@
+% tikz/circuits.tex
+% Shared circuit diagram components for membrane models
+%
+% Provides TikZ styles for drawing equivalent circuit diagrams
+% of neural membranes (RC circuits, multi-ion models, HH circuits).
+
+% --- Battery style for reversal potentials ---
+\tikzset{
+  revpot/.style={
+    battery1,
+    l=#1
+  }
+}
+
+% --- Variable conductance style (for voltage-dependent channels) ---
+\tikzset{
+  varcond/.style={
+    variable american resistor,
+    l=#1
+  }
+}
+
+% --- Fixed conductance (for leak) ---
+\tikzset{
+  fixcond/.style={
+    american resistor,
+    l=#1
+  }
+}
+
+% --- Membrane capacitor style ---
+\tikzset{
+  memcap/.style={
+    capacitor,
+    l=$\Cm$
+  }
+}
+
+% --- Current source style ---
+\tikzset{
+  extsource/.style={
+    american current source,
+    l=#1
+  }
+}
+
+% --- Macro: Single-ion branch (vertical: top node to bottom node) ---
+% #1: top node name, #2: bottom node name
+% #3: conductance label, #4: reversal potential label
+% #5: x-offset from origin
+\newcommand{\ionbranch}[5]{
+  \draw (#1) ++({#5},0) coordinate (top-#5)
+    to[varcond={#3}] ++(0,-2)
+    to[revpot={#4}] ++(0,-2)
+    coordinate (bot-#5) -- (#2 -| bot-#5);
+}

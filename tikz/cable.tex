@@ -1,0 +1,64 @@
+% tikz/cable.tex
+% Shared styles for cable theory diagrams
+%
+% Provides components for drawing cable segments,
+% dendritic trees, myelin sheaths, and compartment models.
+
+% --- Cable segment (cylinder) ---
+\tikzset{
+  cable segment/.style={
+    draw=mnsNavy!60,
+    fill=mnsIntuitionBg,
+    minimum width=2cm,
+    minimum height=0.6cm,
+    rounded corners=3pt
+  }
+}
+
+% --- Myelin sheath ---
+\tikzset{
+  myelin/.style={
+    draw=mnsNavy!40,
+    fill=mnsNavy!10,
+    rounded corners=2pt
+  }
+}
+
+% --- Node of Ranvier ---
+\tikzset{
+  ranvier/.style={
+    draw=mnsRust,
+    fill=mnsRust!20,
+    minimum width=2mm,
+    minimum height=0.8cm
+  }
+}
+
+% --- Compartment box ---
+\tikzset{
+  compartment/.style={
+    draw=mnsNavy,
+    fill=white,
+    minimum width=1.2cm,
+    minimum height=1.5cm,
+    rounded corners=1pt
+  }
+}
+
+% --- Axial resistance between compartments ---
+\tikzset{
+  axial/.style={
+    american resistor,
+    mnsNavy!70
+  }
+}
+
+% --- Branch point ---
+\tikzset{
+  branchpoint/.style={
+    circle,
+    fill=mnsRust,
+    inner sep=0pt,
+    minimum size=4pt
+  }
+}

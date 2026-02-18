@@ -1,0 +1,85 @@
+\chapter*{Notation}
+\addcontentsline{toc}{chapter}{Notation}
+
+\section*{General Conventions}
+
+\begin{tabular}{@{}ll@{}}
+  \toprule
+  \textbf{Symbol} & \textbf{Meaning} \\
+  \midrule
+  $\vec{x}$, $\vec{w}$ & Column vectors (boldface lowercase) \\
+  $\mat{M}$, $\mat{W}$ & Matrices (boldface uppercase) \\
+  $\dot{x}$, $\dot{V}$ & Time derivative $\dd x / \dd t$ \\
+  $\pd{f}{x}$ & Partial derivative \\
+  $\dd x$ & Differential \\
+  $\R$ & Real numbers \\
+  $\E[\cdot]$ & Expectation \\
+  \bottomrule
+\end{tabular}
+
+\section*{Electrophysiology}
+
+\begin{tabular}{@{}lll@{}}
+  \toprule
+  \textbf{Symbol} & \textbf{Units} & \textbf{Meaning} \\
+  \midrule
+  $V$, $\Vm$ & mV & Membrane potential \\
+  $\Vrest$ & mV & Resting membrane potential \\
+  $\Vth$ & mV & Spike threshold voltage \\
+  $\Vreset$ & mV & Post-spike reset voltage \\
+  $\Erev{X}$ & mV & Reversal (Nernst) potential of ion $X$ \\
+  $\gbar{X}$ & S (or nS) & Maximal conductance of ion $X$ \\
+  $\gleak$ & S (or nS) & Leak conductance \\
+  $\Cm$ & F (or pF) & Membrane capacitance \\
+  $\taum$ & s (or ms) & Membrane time constant $\Cm / \gleak$ \\
+  $\tauref$ & ms & Refractory period \\
+  $m$, $h$, $n$ & --- & HH gating variables (activation/inactivation) \\
+  $\minf(V)$ & --- & Steady-state activation \\
+  $\taux(V)$ & ms & Voltage-dependent gating time constant \\
+  $\alpha_x(V)$, $\beta_x(V)$ & $\text{ms}^{-1}$ & Opening/closing rate functions \\
+  \bottomrule
+\end{tabular}
+
+\section*{Cable Theory}
+
+\begin{tabular}{@{}lll@{}}
+  \toprule
+  \textbf{Symbol} & \textbf{Units} & \textbf{Meaning} \\
+  \midrule
+  $a$ & cm & Fiber radius \\
+  $\ri$ & $\Omega\,\text{cm}$ & Axial (intracellular) resistivity \\
+  $\rmem$ & $\Omega\,\text{cm}$ & Specific membrane resistance \\
+  $\cmem$ & $\text{F}/\text{cm}$ & Specific membrane capacitance \\
+  $\lambdac$ & cm & Electrotonic length constant \\
+  \bottomrule
+\end{tabular}
+
+\section*{Network Models}
+
+\begin{tabular}{@{}lll@{}}
+  \toprule
+  \textbf{Symbol} & \textbf{Units} & \textbf{Meaning} \\
+  \midrule
+  $\uvec$ & --- & Input vector \\
+  $\vvec$ & --- & Network activity vector \\
+  $\Wmat$ & --- & Feedforward weight matrix \\
+  $\Mmat$ & --- & Recurrent weight matrix \\
+  $\lambda_\mu$ & --- & Eigenvalue of $\Mmat$ \\
+  $\evec_\mu$ & --- & Eigenvector of $\Mmat$ \\
+  $\taur$ & ms & Network time constant \\
+  \bottomrule
+\end{tabular}
+
+\section*{Physical Constants}
+
+\begin{tabular}{@{}lll@{}}
+  \toprule
+  \textbf{Symbol} & \textbf{Value} & \textbf{Meaning} \\
+  \midrule
+  $R$ & $8.314\;\text{J}\,\text{mol}^{-1}\text{K}^{-1}$ & Gas constant \\
+  $F$ & $96{,}485\;\text{C}\,\text{mol}^{-1}$ & Faraday constant \\
+  $k_B$ & $1.381 \times 10^{-23}\;\text{J}\,\text{K}^{-1}$ & Boltzmann constant \\
+  $T$ & $310\;\text{K}$ ($37\,^\circ\text{C}$) & Body temperature \\
+  $RT/F$ & $\approx 26.7\;\text{mV}$ (at $310\;\text{K}$) & Thermal voltage \\
+  \bottomrule
+\end{tabular}

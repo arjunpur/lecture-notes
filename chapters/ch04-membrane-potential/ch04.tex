@@ -1,0 +1,479 @@
+\chapter{The Membrane Potential}
+\label{ch:membrane}
+
+\begin{chapterabstract}
+Every neuron maintains a voltage difference across its membrane---roughly $-70\;\text{mV}$ at rest. This chapter explains \emph{why} this voltage exists, \emph{how} we can predict it from first principles, and \emph{what happens} when we inject current into a cell. The key ideas are diffusion, drift, the Nernst equation, and the membrane as an RC circuit. These form the biophysical foundation for everything that follows.
+\end{chapterabstract}
+
+\learninggoals{%
+\begin{itemize}[leftmargin=*, itemsep=2pt, parsep=0pt]
+  \item Derive the Nernst equation from diffusion and drift
+  \item Compute reversal potentials for specific ions
+  \item Understand the GHK equation as a multi-ion generalization
+  \item Model the membrane as an RC circuit
+  \item Predict voltage responses to current injection
+\end{itemize}
+}
+
+% ============================================================
+\section{The Point Neuron Approximation}
+\label{sec:point-neuron}
+% ============================================================
+
+We begin with a drastic simplification: treat the entire neuron as a single electrical compartment.\sidenote{Relaxing this assumption leads to cable theory (\cref{ch:cable}).} The membrane is an insulating lipid bilayer separating two conductive solutions. We ignore the spatial extent of dendrites and axons and ask: what determines the voltage $V$ across this membrane?
+
+\begin{intuition}[The membrane is a capacitor]
+The lipid bilayer is an insulator sandwiched between two conductors (intra- and extracellular fluid). This is precisely a capacitor. The membrane stores charge, and the voltage across it is determined by the balance of ionic currents flowing through channels and the charge stored on the capacitor.
+\end{intuition}
+
+The fundamental experimental observation is this: if you inject a small current into a neuron, the voltage deflects smoothly from rest. But above a threshold, the response is dramatically different---a sharp, stereotyped spike. This \emph{all-or-nothing response} is the action potential. Understanding why requires understanding the ionic basis of the resting potential.
+
+% ============================================================
+\section{Ions and Concentrations}
+\label{sec:ions}
+% ============================================================
+
+The relevant charge carriers are ions dissolved in the intra- and extracellular fluid. The key players are:
+
+\begin{center}
+\begin{tabular}{@{}lccc@{}}
+  \toprule
+  \textbf{Ion} & \textbf{Valence} $z$ & \textbf{Inside} (mM) & \textbf{Outside} (mM) \\
+  \midrule
+  $\Na$   & $+1$ & $5$--$15$     & $\sim 145$  \\
+  $\K$    & $+1$ & $\sim 140$    & $\sim 5$    \\
+  $\Cl$   & $-1$ & $\sim 4$      & $\sim 110$  \\
+  $\Ca$   & $+2$ & $\sim 0.1\;\mu\text{M}$ & $2.5$--$5$ \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\sidenote{These concentrations are maintained by active transport, particularly the Na$^+$/K$^+$-ATPase pump, which expends energy to move $3\,\Na$ out and $2\,\K$ in per ATP hydrolyzed.}
+
+A crucial observation: the bulk solutions on either side of the membrane are very nearly electrically neutral.\sidenote{This is called \emph{space-charge neutrality}. The total positive charge approximately equals the total negative charge in both compartments.} The membrane potential arises from a \emph{thin layer} of excess charge at the membrane surface---a tiny fraction of the total ions present.
+
+The Faraday constant $F = N_A q_e \approx 96{,}485\;\text{C}\,\text{mol}^{-1}$ converts between moles and coulombs. One mole of monovalent ions carries $F$ coulombs of charge.
+
+% ============================================================
+\section{Diffusion: Fick's Law}
+\label{sec:diffusion}
+% ============================================================
+
+Imagine dropping a blob of dye into water. The dye molecules spread out---not because any force pushes them, but because random thermal motion carries more molecules away from regions of high concentration than toward them. This is diffusion.
+
+\begin{intuition}[Diffusion as a random walk]
+Each ion undergoes a random walk due to thermal collisions. On average, there is no preferred direction. But in a region with a concentration gradient, more particles randomly step \emph{away} from the dense region than \emph{toward} it, producing a net flux from high to low concentration.
+\end{intuition}
+
+We can derive the diffusion flux from a simple random walk model. Consider a one-dimensional lattice with spacing $\Delta x$. At each time step $\Delta t$, each particle steps left or right with equal probability $1/2$. If the concentration at position $x$ is $C(x)$, the net flux across a boundary is:
+%
+\begin{equation}
+  J_{\text{diff}} = -D \pd{C}{x}
+  \label{eq:fick}
+\end{equation}
+%
+where the diffusion coefficient $D = (\Delta x)^2 / (2\Delta t)$ has units of $\text{m}^2/\text{s}$.
+
+\begin{keyequation}[Fick's Law]
+\begin{equation*}
+  J_{\text{diff}} = -D \pd{C}{x}
+\end{equation*}
+\tcblower
+$J_{\text{diff}}$: particle flux (mol$\,$m$^{-2}$s$^{-1}$), $D$: diffusion coefficient (m$^2$/s), $C$: concentration (mol/m$^3$)
+\end{keyequation}
+
+The negative sign captures the essential physics: particles flow \emph{down} the concentration gradient, from high to low concentration.
+
+% ============================================================
+\section{Drift in an Electric Field}
+\label{sec:drift}
+% ============================================================
+
+Ions carry charge, so they respond to electric fields. An electric field $E = -\dd U / \dd x$ exerts a force on each ion, producing a directed drift on top of the random thermal motion.
+
+The drift flux for ions of valence $z$ and concentration $C$ is:
+%
+\begin{equation}
+  J_{\text{drift}} = \mu z C E = -\mu z C \frac{\dd U}{\dd x}
+  \label{eq:drift}
+\end{equation}
+%
+where $\mu$ is the \emph{mobility}---how fast ions move per unit force, accounting for friction with the surrounding medium.
+
+\begin{intuition}[The Einstein relation]
+Diffusion and drift are not independent phenomena. Both arise from the same thermal fluctuations and friction. The Einstein relation connects them:
+\[
+  D = \mu \frac{k_B T}{q} = \mu \frac{RT}{zF}
+\]
+Hotter temperatures mean faster diffusion \emph{and} faster drift (for the same applied force). This relation is the key to deriving the Nernst equation.
+\end{intuition}
+
+% ============================================================
+\section{The Nernst Equation}
+\label{sec:nernst}
+% ============================================================
+
+We now ask: at what voltage does the net ionic current vanish for a single ionic species? This is the equilibrium condition where diffusion exactly balances drift.
+
+\subsection{Derivation from zero net flux}
+
+The total flux is the sum of diffusion and drift:
+%
+\begin{equation}
+  J = J_{\text{diff}} + J_{\text{drift}} = -D \pd{C}{x} - \mu z C \frac{\dd U}{\dd x}
+  \label{eq:total-flux}
+\end{equation}
+
+At equilibrium, $J = 0$. Setting the two terms equal and using the Einstein relation $D = \mu RT / (zF)$:
+
+\begin{derivation}[Nernst equation]
+Start from $J = 0$:
+\[
+  D \pd{C}{x} = -\mu z C \frac{\dd U}{\dd x}
+\]
+Substitute $D = \mu RT/(zF)$:
+\[
+  \frac{RT}{zF} \frac{1}{C}\pd{C}{x} = -\frac{\dd U}{\dd x}
+\]
+\sidenote{The left side is $\frac{RT}{zF}\frac{\dd}{\dd x}\ln C$.}%
+Integrate across the membrane from inside ($x = 0$) to outside ($x = d$):
+\[
+  \frac{RT}{zF}\ln\frac{\conc{}{out}}{\conc{}{in}} = -(U_{\text{out}} - U_{\text{in}}) = V
+\]
+where $V = U_{\text{in}} - U_{\text{out}}$ is the membrane potential (intracellular minus extracellular).
+\end{derivation}
+
+\begin{keyequation}[The Nernst Equation]
+\begin{equation}
+  \Erev{\text{ion}} = \frac{RT}{zF}\ln\frac{\conc{ion}{out}}{\conc{ion}{in}}
+  \label{eq:nernst}
+\end{equation}
+\tcblower
+$R = 8.314\;\text{J\,mol}^{-1}\text{K}^{-1}$: gas constant, $T$: temperature (K), $z$: ion valence, $F = 96{,}485\;\text{C\,mol}^{-1}$: Faraday constant. At $T = 310\;\text{K}$ (body temperature), $RT/F \approx 26.7\;\text{mV}$.
+\end{keyequation}
+
+\begin{intuition}[What the Nernst equation means]
+$\Erev{\text{ion}}$ is the voltage at which the electrical force on an ion exactly balances its tendency to diffuse down its concentration gradient. If the membrane potential equals the Nernst potential for a given ion, that ion has zero net current---even if channels for that ion are open.
+\end{intuition}
+
+\subsection{The concept of a reversal potential}
+
+The Nernst potential $\Erev{\text{ion}}$ is also called the \emph{reversal potential}\index{reversal potential} because it is the voltage where the ionic current reverses direction:
+%
+\begin{itemize}
+  \item If $V > \Erev{\text{ion}}$: the driving force $(V - \Erev{\text{ion}})$ is positive, so a cation channel conducts \emph{outward} current.
+  \item If $V < \Erev{\text{ion}}$: the driving force is negative, so a cation channel conducts \emph{inward} current.
+  \item If $V = \Erev{\text{ion}}$: no net current flows through that channel.
+\end{itemize}
+
+\begin{example}[Computing reversal potentials]
+Using $RT/F \approx 26.7\;\text{mV}$ at body temperature ($310\;\text{K}$):
+
+\textbf{Potassium:} $\conc{K}{out} = 5\;\text{mM}$, $\conc{K}{in} = 140\;\text{mM}$, $z = +1$.
+\[
+  \Erev{K} = 26.7\;\text{mV} \times \ln\frac{5}{140}
+           = 26.7 \times (-3.33)
+           \approx -89\;\text{mV}
+\]
+
+\textbf{Sodium:} $\conc{Na}{out} = 145\;\text{mM}$, $\conc{Na}{in} = 10\;\text{mM}$, $z = +1$.
+\[
+  \Erev{Na} = 26.7\;\text{mV} \times \ln\frac{145}{10}
+            = 26.7 \times 2.67
+            \approx +71\;\text{mV}
+\]
+
+The sign tells us the direction of the equilibrium force: $\K$ wants to pull the cell negative; $\Na$ wants to push it positive. At rest, the membrane is much more permeable to $\K$, so the resting potential ($\approx -70\;\text{mV}$) is close to $\Erev{K}$.
+\end{example}
+
+\begin{warning}[Nernst applies to one ion at a time]
+The Nernst equation gives the equilibrium potential for a \emph{single} ionic species, assuming no other ions are permeant. A real membrane is permeable to multiple ions simultaneously, which is why the resting potential is \emph{not} exactly equal to any single Nernst potential.
+\end{warning}
+
+% ============================================================
+\section{Multiple Ions: The Goldman--Hodgkin--Katz Equation}
+\label{sec:ghk}
+% ============================================================
+
+A real membrane has channels for several ion types simultaneously. The resting potential depends on all of them, weighted by their permeabilities. The Goldman--Hodgkin--Katz (GHK) voltage equation\index{Goldman--Hodgkin--Katz equation} gives the voltage at which the \emph{total} ionic current vanishes.
+
+\subsection{Assumptions}
+
+\begin{enumerate}
+  \item The electric field across the membrane is constant (\emph{constant-field assumption}).
+  \item Ions do not interact with each other.
+  \item The membrane is in steady state (not equilibrium---ions are still flowing, but the net current is zero).
+\end{enumerate}
+
+\begin{keyequation}[Goldman--Hodgkin--Katz Voltage Equation]
+\begin{equation}
+  V = \frac{RT}{F}\ln\frac{
+    P_K\conc{K}{out} + P_{Na}\conc{Na}{out} + P_{Cl}\conc{Cl}{in}
+  }{
+    P_K\conc{K}{in} + P_{Na}\conc{Na}{in} + P_{Cl}\conc{Cl}{out}
+  }
+  \label{eq:ghk}
+\end{equation}
+\tcblower
+$P_X$: permeability of ion $X$ (cm/s). Note that $\Cl$ concentrations are flipped (in/out) because $z_{\Cl} = -1$.
+\end{keyequation}
+
+\begin{intuition}[GHK as a weighted average]
+The GHK equation is a permeability-weighted average of the individual Nernst potentials. Whichever ion has the highest permeability dominates the resting potential. At rest, $P_K \gg P_{Na}$, so $V_{\text{rest}} \approx \Erev{K} \approx -70\;\text{mV}$.
+\end{intuition}
+
+\subsection{Why extracellular potassium depolarizes neurons}
+
+This is a classic exam question.\sidenote{Increasing $\conc{K}{out}$ is a common clinical scenario in hyperkalemia.} If we increase $\conc{K}{out}$, the Nernst potential $\Erev{K}$ becomes less negative (the log ratio $\conc{K}{out}/\conc{K}{in}$ increases). Since the resting potential is dominated by $\K$ permeability, the resting potential moves toward zero---the cell depolarizes.
+
+\begin{example}[Effect of elevated extracellular potassium]
+Normal: $\conc{K}{out} = 5\;\text{mM}$, $\Erev{K} = -89\;\text{mV}$.
+
+Elevated: $\conc{K}{out} = 15\;\text{mM}$:
+\[
+  \Erev{K} = 26.7 \times \ln\frac{15}{140} \approx 26.7 \times (-2.23) \approx -60\;\text{mV}
+\]
+The resting potential shifts from roughly $-70$ to $-60\;\text{mV}$---a significant depolarization that can make neurons hyperexcitable.
+\end{example}
+
+% ============================================================
+\section{The Membrane as an RC Circuit}
+\label{sec:rc-circuit}
+% ============================================================
+
+We now model the membrane as an electrical circuit. This is the foundation for every dynamical neuron model in this course.
+
+\subsection{Circuit components}
+
+The membrane has three electrical properties:
+\begin{enumerate}
+  \item \textbf{Capacitance} ($\Cm$): The lipid bilayer stores charge. Typical value: $\sim 1\;\mu\text{F}/\text{cm}^2$.
+  \item \textbf{Conductances} ($g_i$): Ion channels act as resistors. Each ionic species has its own conductance and reversal potential.
+  \item \textbf{External current} ($I_{\text{ext}}$): Current injected by an electrode (or, physiologically, by synapses).
+\end{enumerate}
+
+\begin{center}
+\input{tikz/circuits}
+\begin{tikzpicture}[scale=0.9, every node/.style={font=\small}]
+  % Capacitor branch (leftmost)
+  \draw (0,0) node[above] {inside}
+    to[capacitor, l=$\Cm$] (0,-3)
+    node[below] {outside};
+
+  % Leak branch
+  \draw (2,0) -- (2,0)
+    to[american resistor, l=$g_L$] (2,-1.5)
+    to[battery1, l_=$\Erev{L}$] (2,-3);
+
+  % K branch
+  \draw (4,0) -- (4,0)
+    to[variable american resistor, l=$g_K$] (4,-1.5)
+    to[battery1, l_=$\Erev{K}$] (4,-3);
+
+  % Na branch
+  \draw (6,0) -- (6,0)
+    to[variable american resistor, l=$g_{Na}$] (6,-1.5)
+    to[battery1, l_=$\Erev{Na}$] (6,-3);
+
+  % External current source
+  \draw (8,0) -- (8,0)
+    to[american current source, l=$I_{\text{ext}}$] (8,-3);
+
+  % Top and bottom rails
+  \draw (-0.5,0) -- (8.5,0);
+  \draw (-0.5,-3) -- (8.5,-3);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Kirchhoff's current law}
+
+By Kirchhoff's law, the total current into the cell must equal the sum of all currents leaving through channels plus the current charging the capacitor:\sidenote{The sign convention: positive current flows \emph{into} the cell. Ionic currents are positive when flowing \emph{outward} (depolarizing for cation channels).}
+
+\begin{keyequation}[The Membrane Equation]
+\begin{equation}
+  \Cm\frac{\dd V}{\dd t} = -\sum_i g_i(V - \Erev{i}) + I_{\text{ext}}(t)
+  \label{eq:membrane}
+\end{equation}
+\tcblower
+$\Cm$: membrane capacitance, $g_i$: conductance of channel type $i$, $\Erev{i}$: reversal potential of channel type $i$, $I_{\text{ext}}$: externally injected current.
+\end{keyequation}
+
+\begin{intuition}[Reading the membrane equation]
+Each term has a clear physical meaning:
+\begin{itemize}[itemsep=2pt]
+  \item $\Cm\,\dd V/\dd t$: rate of charge accumulation on the capacitor.
+  \item $-g_i(V - \Erev{i})$: current through channel $i$. The factor $(V - \Erev{i})$ is the \emph{driving force}---it vanishes at the reversal potential, reverses sign across it, and grows linearly away from it.
+  \item $I_{\text{ext}}$: whatever current we inject.
+\end{itemize}
+\end{intuition}
+
+\subsection{Single-conductance case: the passive membrane}
+
+The simplest case has a single leak conductance $\gleak$ with reversal potential $\Erev{L} \approx \Vrest$:
+%
+\begin{equation}
+  \Cm\frac{\dd V}{\dd t} = -\gleak(V - \Erev{L}) + I_{\text{ext}}(t)
+  \label{eq:passive-membrane}
+\end{equation}
+
+Define the membrane time constant and input resistance:
+%
+\begin{equation}
+  \taum = \frac{\Cm}{\gleak}, \qquad R_m = \frac{1}{\gleak}
+  \label{eq:tau-Rm}
+\end{equation}
+
+\begin{example}[Typical membrane parameters]
+For $\Cm = 200\;\text{pF}$ and $\gleak = 10\;\text{nS}$:
+\[
+  \taum = \frac{200\;\text{pF}}{10\;\text{nS}} = \frac{200 \times 10^{-12}}{10 \times 10^{-9}} = 20\;\text{ms}
+\]
+\[
+  R_m = \frac{1}{10\;\text{nS}} = 100\;\text{M}\Omega
+\]
+The time constant sets the temporal scale of subthreshold voltage dynamics: a 20\,ms time constant means voltage changes on the order of tens of milliseconds.
+\end{example}
+
+\subsection{Response to a constant current step}
+
+Suppose $V(0) = \Erev{L}$ and we inject a constant current $I_0$ starting at $t = 0$. Rewriting \cref{eq:passive-membrane}:
+%
+\begin{equation}
+  \taum \frac{\dd V}{\dd t} = -(V - \Erev{L}) + R_m I_0
+\end{equation}
+
+This is a first-order linear ODE. The solution is an exponential approach to a new steady state:
+%
+\begin{equation}
+  V(t) = \Erev{L} + R_m I_0 \Big(1 - e^{-t/\taum}\Big)
+  \label{eq:step-response}
+\end{equation}
+
+The voltage rises exponentially from $\Erev{L}$ toward the steady-state value $V_\infty = \Erev{L} + R_m I_0$ with time constant $\taum$.
+
+\begin{connection}
+This exponential charging is the subthreshold dynamics of the leaky integrate-and-fire neuron (\cref{ch:lif}). Adding a spike threshold and reset to \cref{eq:passive-membrane} gives the LIF model---the simplest spiking neuron. The membrane time constant $\taum$ sets how long the neuron ``remembers'' its input.
+\end{connection}
+
+% ============================================================
+\section{Multiple Conductances and the Resting Potential}
+\label{sec:multi-conductance}
+% ============================================================
+
+With multiple conductances, the steady-state membrane potential (setting $\dd V/\dd t = 0$ and $I_{\text{ext}} = 0$) is:
+%
+\begin{equation}
+  V_{\text{rest}} = \frac{\sum_i g_i \Erev{i}}{\sum_i g_i}
+  \label{eq:vrest}
+\end{equation}
+
+This is a conductance-weighted average of the reversal potentials---the electrical analog of the GHK equation.
+
+\begin{intuition}[Conductances as votes]
+Each ionic conductance ``votes'' for its reversal potential. The membrane potential is the weighted average, where the weight of each vote is the conductance. The ion with the largest conductance wins: since $g_K \gg g_{Na}$ at rest, the resting potential is close to $\Erev{K}$.
+\end{intuition}
+
+The total conductance $g_{\text{tot}} = \sum_i g_i$ determines the new effective time constant:
+\[
+  \tau_{\text{eff}} = \frac{\Cm}{g_{\text{tot}}}
+\]
+Adding more open channels \emph{decreases} the time constant---the membrane responds faster but the voltage excursions become smaller ($R_{\text{eff}} = 1/g_{\text{tot}}$ decreases). This is the basis of \emph{shunting inhibition}\index{shunting inhibition}.
+
+% ============================================================
+% CHAPTER SUMMARY
+% ============================================================
+
+\begin{chaptersummary}
+
+\begin{center}
+\begin{tabular}{@{}p{3.5cm}p{5cm}p{3.5cm}@{}}
+  \toprule
+  \textbf{Concept} & \textbf{Equation} & \textbf{Key Insight} \\
+  \midrule
+  Fick's law &
+  $J_{\text{diff}} = -D\,\partial C/\partial x$ &
+  Particles flow down concentration gradient \\[6pt]
+  %
+  Einstein relation &
+  $D = \mu RT/(zF)$ &
+  Links diffusion to drift \\[6pt]
+  %
+  Nernst equation &
+  $\Erev{\text{ion}} = \frac{RT}{zF}\ln\frac{\conc{}{out}}{\conc{}{in}}$ &
+  Zero-current voltage for one ion \\[6pt]
+  %
+  GHK equation &
+  $V = \frac{RT}{F}\ln\frac{P_K\conc{K}{out}+\cdots}{P_K\conc{K}{in}+\cdots}$ &
+  Permeability-weighted multi-ion potential \\[6pt]
+  %
+  Membrane equation &
+  $\Cm\dot{V} = -\sum g_i(V-\Erev{i}) + I_{\text{ext}}$ &
+  RC circuit with ionic batteries \\[6pt]
+  %
+  Time constant &
+  $\taum = \Cm / g_{\text{tot}}$ &
+  Timescale of voltage dynamics \\[6pt]
+  %
+  Resting potential &
+  $V_{\text{rest}} = \sum g_i \Erev{i} / \sum g_i$ &
+  Conductance-weighted average \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\end{chaptersummary}
+
+% ============================================================
+% CONCEPTUAL QUESTIONS
+% ============================================================
+
+\begin{conceptquestions}
+  \item Why does the Nernst equation have a logarithm? What physical balance does it represent?
+
+  \item The resting potential of a typical neuron ($\approx -70\;\text{mV}$) is close to $\Erev{K}$ but not exactly equal. Why not?
+
+  \item A patient has dangerously elevated blood potassium ($\conc{K}{out} = 8\;\text{mM}$ instead of $5\;\text{mM}$). Without computing exact numbers, explain qualitatively what happens to the resting potential and why this is dangerous.
+
+  \item In the membrane equation, what happens to the voltage dynamics if you double all conductances simultaneously? Does the resting potential change? Does the time constant change?
+
+  \item Why is the Nernst equation an \emph{equilibrium} result while the GHK equation describes a \emph{steady state}? What is the difference?
+\end{conceptquestions}
+
+% ============================================================
+% EXERCISES
+% ============================================================
+
+\begin{exercises}
+  \item \textbf{Reversal potentials.}
+  Compute the Nernst potential at $T = 310\;\text{K}$ for:
+  \begin{parts}
+    \item $\Cl$ with $\conc{Cl}{out} = 110\;\text{mM}$, $\conc{Cl}{in} = 4\;\text{mM}$, $z = -1$.
+    \item $\Ca$ with $\conc{Ca}{out} = 2.5\;\text{mM}$, $\conc{Ca}{in} = 0.1\;\mu\text{M}$, $z = +2$.
+  \end{parts}
+
+  \item \textbf{Step response.}
+  A neuron has $\Cm = 150\;\text{pF}$, $\gleak = 15\;\text{nS}$, and $\Erev{L} = -65\;\text{mV}$.
+  \begin{parts}
+    \item Compute $\taum$ and $R_m$.
+    \item If a constant current $I_0 = 300\;\text{pA}$ is injected, what is the steady-state voltage?
+    \item How long does it take for the voltage to reach $90\%$ of its final deflection?
+  \end{parts}
+
+  \item \textbf{Resting potential from conductances.}
+  A simplified membrane has $g_K = 36\;\text{nS}$, $g_{Na} = 0.5\;\text{nS}$, and $g_{Cl} = 3\;\text{nS}$, with $\Erev{K} = -90\;\text{mV}$, $\Erev{Na} = +70\;\text{mV}$, and $\Erev{Cl} = -80\;\text{mV}$.
+  \begin{parts}
+    \item Compute the resting potential using the conductance-weighted average formula.
+    \item If $g_{Na}$ increases tenfold (e.g., due to channel opening), what is the new resting potential?
+  \end{parts}
+
+  \item \textbf{Deriving the Nernst equation.}
+  Starting from Fick's law ($J_{\text{diff}} = -D\,\partial C/\partial x$), the drift flux ($J_{\text{drift}} = -\mu z C\,\dd U/\dd x$), and the Einstein relation ($D = \mu RT/(zF)$), derive the Nernst equation by setting the total flux to zero and integrating across the membrane.
+
+  \item \textbf{Shunting effect.}
+  A neuron at rest ($V = -70\;\text{mV}$) with $\Cm = 200\;\text{pF}$ and $\gleak = 10\;\text{nS}$ receives a constant excitatory current $I_0 = 200\;\text{pA}$.
+  \begin{parts}
+    \item Compute the steady-state voltage without any inhibition.
+    \item Now add a tonic inhibitory conductance $g_{\text{inh}} = 20\;\text{nS}$ with $\Erev{\text{inh}} = -70\;\text{mV}$. What is the new resting potential? What is the new steady-state voltage under the same $I_0$?
+    \item Explain why inhibition with $\Erev{\text{inh}} \approx \Vrest$ is called ``shunting'': it does not hyperpolarize, but it reduces the response to excitation.
+  \end{parts}
+\end{exercises}
