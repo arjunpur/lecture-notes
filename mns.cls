@@ -13,58 +13,49 @@
 
 % ---------- Typography ----------
 \RequirePackage{fontspec}
-\RequirePackage{mathtools}  % Load before unicode-math to suppress warning
+\RequirePackage{mathtools}  % Load before unicode-math
 \RequirePackage{unicode-math}
 \RequirePackage{microtype}
 
-\defaultfontfeatures{Ligatures=TeX, Scale=MatchLowercase}
-\setmainfont{Latin Modern Roman}
-\setsansfont{Latin Modern Sans}
-\setmonofont{Latin Modern Mono}
-\setmathfont{Latin Modern Math}
+\defaultfontfeatures{Ligatures=TeX}
+\setmainfont{STIX Two Text}[
+  Scale=1.0,
+  UprightFont=*-Regular,
+  BoldFont=*-Bold,
+  ItalicFont=*-Italic,
+  BoldItalicFont=*-BoldItalic
+]
+\setsansfont{Helvetica Neue}[Scale=MatchLowercase]
+\setmonofont{Latin Modern Mono}[Scale=MatchLowercase]
+\setmathfont{STIX Two Math}
 
-% ---------- Layout (Tufte-like wide margins) ----------
+% ---------- Layout ----------
 \RequirePackage{geometry}
 \geometry{
   papersize={8.5in, 11in},
   textheight=8.5in,
-  inner=1.0in,
-  outer=2.5in,
-  marginparwidth=1.8in,
-  marginparsep=0.3in,
-  top=1.0in
+  inner=0.9in,
+  outer=0.9in,
+  top=0.85in
 }
 
-\setlength{\parskip}{0.5em}
-\setlength{\parindent}{0pt}
-\linespread{1.08}
+\setlength{\parskip}{0pt}
+\setlength{\parindent}{1.5em}
+\linespread{1.15}
 
-% ---------- Colors ----------
+% ---------- Colours ----------
 \RequirePackage{xcolor}
 
-% Primary palette
-\definecolor{mnsNavy}{RGB}{31, 51, 115}
-\definecolor{mnsRust}{RGB}{191, 64, 38}
-\definecolor{mnsTeal}{RGB}{38, 128, 115}
-
-% Environment backgrounds
-\definecolor{mnsIntuitionBg}{RGB}{235, 241, 249}
-\definecolor{mnsExampleBg}{RGB}{253, 248, 237}
-\definecolor{mnsDerivationBorder}{RGB}{160, 160, 160}
-\definecolor{mnsWarningBorder}{RGB}{191, 64, 38}
-\definecolor{mnsConnectionBorder}{RGB}{130, 130, 130}
-\definecolor{mnsKeyEqFrame}{RGB}{50, 50, 50}
+% Only what we actually use
+\definecolor{mnsRule}{RGB}{0, 0, 0}        % black rules
 
 % ---------- Core packages ----------
 \RequirePackage{graphicx}
 \RequirePackage{amsmath}
-% NOTE: Do not load amssymb when using unicode-math
-% NOTE: mathtools loaded before unicode-math above
 \RequirePackage{booktabs}
 \RequirePackage{enumitem}
-\RequirePackage{marginnote}
-\RequirePackage{mparhack}      % Fix margin note placement
 \RequirePackage[most]{tcolorbox}
+\RequirePackage{tabularx}
 
 % ---------- Diagrams ----------
 \RequirePackage{tikz}
@@ -87,9 +78,9 @@
 \RequirePackage{hyperref}
 \hypersetup{
   colorlinks=true,
-  linkcolor=mnsNavy,
-  citecolor=mnsTeal,
-  urlcolor=mnsRust,
+  linkcolor=black!70,
+  citecolor=black!60,
+  urlcolor=black!60,
   pdfauthor={Arjun Puri},
   pdftitle={Models of Neural Systems: Lecture Notes}
 }
@@ -107,20 +98,35 @@
 \pagestyle{scrheadings}
 \clearpairofpagestyles
 \ofoot[\pagemark]{\pagemark}
-\ohead{\headmark}
+\ihead{\leftmark}
+\ohead{\rightmark}
 
-% Chapter mark: just chapter title, no number prefix in header
-\automark[chapter]{chapter}
+% Chapter on left page header, section on right
+\automark[section]{chapter}
 
 % ---------- Chapter heading style ----------
-\addtokomafont{chapter}{\sffamily\color{mnsNavy}}
-\addtokomafont{section}{\sffamily\color{mnsNavy}}
-\addtokomafont{subsection}{\sffamily\color{mnsNavy}}
+\addtokomafont{chapter}{\sffamily\color{black}}
+\addtokomafont{section}{\sffamily\color{black}}
+\addtokomafont{subsection}{\sffamily\color{black}}
 \addtokomafont{chapterprefix}{\sffamily\large}
 \renewcommand*{\raggedchapter}{\raggedright}
 
+% Rule under chapter title
+\renewcommand*{\chapterformat}{%
+  \mbox{\scalebox{2.2}{\thechapter\autodot\enskip}}%
+}
+\RedeclareSectionCommand[
+  afterskip=1.5em,
+  beforeskip=0pt
+]{chapter}
+\renewcommand{\chapterlineswithprefixformat}[3]{%
+  #2#3%
+  \par\nobreak\vskip 4pt%
+  {\rule{\textwidth}{0.6pt}}%
+}
+
 % ---------- Part heading style ----------
-\addtokomafont{part}{\sffamily\color{mnsNavy}}
+\addtokomafont{part}{\sffamily\color{black}}
 \addtokomafont{partprefix}{\sffamily\large}
 
 % ---------- Chapter abstract ----------
@@ -130,29 +136,7 @@
   \end{quote}\medskip
 }
 
-% ---------- Margin "What You Will Learn" box ----------
-\newcommand{\learninggoals}[1]{%
-  \marginnote{%
-    \begin{tcolorbox}[
-      enhanced,
-      colback=mnsIntuitionBg,
-      colframe=mnsNavy,
-      boxrule=0.4pt,
-      arc=1.5mm,
-      left=0.5em,
-      right=0.5em,
-      top=0.5em,
-      bottom=0.5em,
-      fonttitle=\sffamily\bfseries\footnotesize,
-      title=What You Will Learn,
-      width=\marginparwidth
-    ]
-    \footnotesize #1
-    \end{tcolorbox}
-  }%
-}
-
-% ---------- Margin note shorthand ----------
-\newcommand{\sidenote}[1]{\marginnote{\footnotesize #1}}
+% ---------- Sidenote as footnote ----------
+\newcommand{\sidenote}[1]{\footnote{#1}}
 
 \endinput
