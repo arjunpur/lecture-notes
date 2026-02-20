@@ -129,14 +129,4 @@
 \addtokomafont{part}{\sffamily\color{black}}
 \addtokomafont{partprefix}{\sffamily\large}
 
-% ---------- Chapter abstract ----------
-\newenvironment{chapterabstract}{%
-  \begin{quote}\itshape
-}{%
-  \end{quote}\medskip
-}
-
-% ---------- Sidenote as footnote ----------
-\newcommand{\sidenote}[1]{\footnote{#1}}
-
 \endinput

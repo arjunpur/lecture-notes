@@ -1,2 +1,257 @@
 \chapter{The Hodgkin--Huxley Model}
-% Content to be written
+\label{ch:hodgkin-huxley}
+
+\textit{The leaky integrate-and-fire neuron (\cref{ch:lif}) treats the spike as an abstract event. The Hodgkin--Huxley model explains \emph{how} the spike is generated: through the coordinated opening and closing of voltage-gated sodium and potassium channels. This chapter develops the gating variable formalism, assembles the full HH equations, and traces the ionic mechanism of the action potential step by step.}
+
+% ============================================================
+\section{Voltage-Dependent Conductances}
+\label{sec:voltage-conductances}
+% ============================================================
+
+The passive membrane equation (\cref{eq:membrane}) treats conductances as constants. Real neurons have channels whose conductance depends on the membrane potential. When a channel opens or closes in response to voltage, it creates feedback: voltage changes conductance, which changes current, which changes voltage. This feedback is the engine of the action potential.
+
+We write the conductance of a channel population as
+%
+\begin{equation}
+  g(V, t) = \bar{g}\, p_{\text{open}}(V, t)
+  \label{eq:conductance-gating}
+\end{equation}
+%
+where $\bar{g}$ is the maximal conductance (all channels open) and $p_{\text{open}}$ is the fraction of channels that are open at voltage $V$ and time $t$. The modeling problem reduces to specifying how $p_{\text{open}}$ depends on voltage and evolves in time.
+
+\subsection{Persistent versus transient conductances}
+
+A \emph{persistent} conductance has a single activation gate: it opens when the membrane depolarizes and stays open as long as the voltage remains high. A \emph{transient} conductance has both activation and inactivation: it opens briefly upon depolarization but then closes again even if the voltage remains elevated. The sodium conductance responsible for the action potential upstroke is transient. The delayed rectifier potassium conductance is persistent (it activates and stays on as long as the membrane is depolarized).
+
+\subsection{Passive nonlinear background}
+
+Not every nonlinear I--V curve comes from voltage-gated channel kinetics. Even a passive membrane can show nonlinear current--voltage behavior through electrodiffusion (GHK current equation) or through asymmetric internal energy barriers (Eyring rate theory), as discussed in \cref{sec:ghk}. In HH modeling, we usually separate these effects conceptually: passive nonlinearities set baseline membrane transfer properties, while gating dynamics generate the strongly regenerative feedback of spikes.
+
+% ============================================================
+\section{Gating Variables}
+\label{sec:gating-variables}
+% ============================================================
+
+Hodgkin and Huxley modeled each gate as a two-state switch: open or closed. The transition rates between states depend on voltage. For a single gate with opening rate $\alpha(V)$ and closing rate $\beta(V)$, the fraction of open gates $x$ obeys
+
+\begin{keyequation}[Gating Variable Kinetics]
+\begin{equation}
+  \frac{\dd x}{\dd t} = \alpha(V)(1 - x) - \beta(V)\,x = \frac{x_\infty(V) - x}{\tau_x(V)}
+  \label{eq:gating}
+\end{equation}
+\tcblower
+$x_\infty(V) = \displaystyle\frac{\alpha(V)}{\alpha(V) + \beta(V)}$: steady-state activation, \quad
+$\tau_x(V) = \displaystyle\frac{1}{\alpha(V) + \beta(V)}$: time constant.
+\end{keyequation}
+
+\noindent The two forms of \cref{eq:gating} are equivalent but emphasize different aspects. The $\alpha$/$\beta$ form shows the opening and closing rates explicitly. The $x_\infty$/$\tau_x$ form shows that $x$ relaxes exponentially toward its steady-state value $x_\infty(V)$ with time constant $\tau_x(V)$. Both $x_\infty$ and $\tau_x$ are functions of voltage that must be measured experimentally.
+
+The steady-state activation $x_\infty(V)$ is typically a sigmoidal function: near zero at hyperpolarized voltages (channels mostly closed) and near one at depolarized voltages (channels mostly open). The time constant $\tau_x(V)$ is peaked---fastest transitions occur at intermediate voltages where both $\alpha$ and $\beta$ are significant.
+
+\subsection{Multiple gates per channel}
+
+A single channel may have several independent gates that must all be open simultaneously for ions to flow. If a channel has $k$ identical independent gates, the open probability is $x^k$. Hodgkin and Huxley found that the squid giant axon's potassium channel behaves as if it has four independent activation gates ($n$), and the sodium channel has three activation gates ($m$) and one inactivation gate ($h$):
+%
+\begin{equation}
+  p_{\text{open}}^{\text{K}} = n^4, \qquad
+  p_{\text{open}}^{\text{Na}} = m^3 h
+  \label{eq:hh-gating-powers}
+\end{equation}
+
+\noindent The exponents are not arbitrary. The power $n^4$ produces a sigmoidal onset of potassium current after a voltage step---the current turns on with a delay because all four gates must open. The factorization $m^3 h$ separates fast activation ($m$ rises quickly) from slow inactivation ($h$ falls slowly), which produces the transient character of the sodium current.
+
+% ============================================================
+\section{The Hodgkin--Huxley Equations}
+\label{sec:hh-equations}
+% ============================================================
+
+Assembling the pieces, the Hodgkin--Huxley model\index{Hodgkin--Huxley model} consists of the membrane equation with three voltage-dependent conductances---sodium, potassium, and leak:
+
+\begin{keyequation}[Hodgkin--Huxley Voltage Equation]
+\begin{equation}
+  \Cm\frac{\dd V}{\dd t} = I_{\text{ext}} - \gbar{Na}\,m^3 h\bigl(V - \Erev{Na}\bigr) - \gbar{K}\,n^4\bigl(V - \Erev{K}\bigr) - \gleak\bigl(V - \Erev{L}\bigr)
+  \label{eq:hh}
+\end{equation}
+\tcblower
+$\gbar{Na}, \gbar{K}$: maximal conductances, \quad
+$\gleak$: leak conductance, \quad
+$m, h, n$: gating variables obeying \cref{eq:gating}.
+\end{keyequation}
+
+\noindent This is a system of four coupled ordinary differential equations: one for $V$ and one each for $m$, $h$, and $n$. The gating variables evolve according to \cref{eq:gating} with voltage-dependent rate functions $\alpha_x(V)$ and $\beta_x(V)$ that Hodgkin and Huxley fitted to their voltage clamp data from the squid giant axon.
+
+The model uses parameters measured at $6.3\,^\circ\text{C}$: $\Cm = 1\;\mu\text{F}/\text{cm}^2$, $\gbar{Na} = 120\;\text{mS}/\text{cm}^2$, $\gbar{K} = 36\;\text{mS}/\text{cm}^2$, $\gleak = 0.3\;\text{mS}/\text{cm}^2$, $\Erev{Na} = +50\;\text{mV}$, $\Erev{K} = -77\;\text{mV}$, $\Erev{L} = -54.4\;\text{mV}$.
+
+% ============================================================
+\section{The Ionic Mechanism of the Action Potential}
+\label{sec:ap-mechanism}
+% ============================================================
+
+The beauty of the HH model is that the action potential emerges from the interplay of three gating variables with different speeds. The sequence, once a suprathreshold stimulus depolarizes the membrane, is as follows.
+
+\emph{Upstroke.} The activation variable $m$ responds to depolarization on a submillisecond timescale. As $m$ rises, $m^3$ increases rapidly, opening sodium channels. The resulting inward sodium current depolarizes the membrane further, which opens more sodium channels---a positive feedback loop. The voltage shoots upward toward $\Erev{Na}$.
+
+\emph{Peak and repolarization.} Two slower processes terminate the spike. The inactivation variable $h$, which was near $1$ at rest, begins to fall. As $h$ decreases, sodium channels close even though the membrane is still depolarized. Simultaneously, the potassium activation variable $n$ rises (on a timescale comparable to $h$), opening delayed rectifier potassium channels. The outward potassium current drives the voltage back down.
+
+\emph{Undershoot and recovery.} The potassium conductance is still elevated as the voltage drops below rest, producing an afterhyperpolarization. As $n$ slowly returns to its resting value and $h$ slowly recovers from inactivation, the membrane returns to rest and is ready to fire again.
+
+The \emph{refractory period}\index{refractory period!HH} has a natural explanation: immediately after a spike, $h$ is low (sodium channels inactivated) and $n$ is high (potassium channels still open). A second stimulus during this period fails to trigger a spike because the sodium current is too weak to overcome the elevated potassium current. The absolute refractory period lasts until $h$ has recovered enough to allow any sodium current; the relative refractory period lasts until $n$ has returned to rest and the full sodium current is available.
+
+% ============================================================
+\section{Extracting Gating Kinetics from Voltage Clamp Data}
+\label{sec:extracting-kinetics}
+% ============================================================
+
+Hodgkin and Huxley determined the rate functions $\alpha(V)$ and $\beta(V)$ for each gating variable using a systematic voltage clamp protocol. The procedure, in outline, is:
+
+Step the voltage from a holding potential to a command voltage $V_{\text{cmd}}$. Measure the time course of the resulting current. Use pharmacological blockers (or timing tricks---sodium current is fast, potassium current is slow) to isolate individual ionic components. From the isolated current and the known driving force $(V_{\text{cmd}} - \Erev{i})$, extract the conductance $g_i(t) = I_i(t)/(V_{\text{cmd}} - \Erev{i})$. The time course of $g_i(t)$ at each voltage step gives $x_\infty(V_{\text{cmd}})$ (the asymptotic value) and $\tau_x(V_{\text{cmd}})$ (the time constant of approach). Repeating at many voltages maps out the full voltage dependence.
+
+For a single gate at fixed command voltage, the solution of \cref{eq:gating} is
+%
+\begin{equation}
+  x(t) = x_\infty(V_{\text{cmd}}) + \bigl(x(0)-x_\infty(V_{\text{cmd}})\bigr)e^{-t/\tau_x(V_{\text{cmd}})}.
+  \label{eq:clamp-gate-solution}
+\end{equation}
+%
+This provides a direct fitting template: the asymptote gives $x_\infty$, and the exponential time constant gives $\tau_x$.
+
+\subsection{Protocol logic: activation versus inactivation}
+
+To estimate activation curves, one uses depolarizing \emph{step-up} commands from a hyperpolarized holding potential where activation gates are mostly closed. To estimate inactivation, one uses prepulse protocols: first set a conditioning voltage to place inactivation at a controlled level, then apply a test pulse and measure available current. Step-down protocols are especially useful for recovery from inactivation.
+
+For a persistent current with open probability $x^k$, the clamped current has the form
+%
+\begin{equation}
+  I(t) = \bar g\,x(t)^k\,(V_{\text{cmd}}-E_{\text{rev}}),
+  \label{eq:clamp-persistent}
+\end{equation}
+%
+while for transient sodium channels,
+%
+\begin{equation}
+  I_{\text{Na}}(t)=\bar g_{\text{Na}}\,m(t)^3h(t)\,(V_{\text{cmd}}-\Erev{Na}),
+  \label{eq:clamp-na}
+\end{equation}
+%
+so activation and inactivation must be disentangled by protocol design rather than by a single trace alone.
+
+This program turned an abstract channel model into a quantitatively predictive theory. The HH equations, fitted to voltage clamp data, correctly predicted the shape, speed, and threshold of the action potential---a remarkable achievement, done by hand computation before the era of digital computers.
+
+Computationally, this section is the key bridge from experiment to model parameters: it is what makes the HH equations mechanistic rather than phenomenological.
+
+% ============================================================
+\section{Beyond Hodgkin--Huxley: The Channel Zoo}
+\label{sec:channel-zoo}
+% ============================================================
+
+The squid giant axon uses only two voltage-gated channel types ($\text{Na}^+$ and delayed rectifier $\text{K}^+$). Real neurons express dozens of channel types, each with different activation thresholds, kinetics, and ionic selectivities. These channels are computational knobs that shape the neuron's firing behavior.
+
+A few important examples: the \emph{A-type potassium current}\index{A-current} ($I_A$) is a transient outward current that activates near threshold. It delays the onset of firing after depolarization, producing a characteristic pause before the first spike. The \emph{M-type potassium current}\index{M-current} ($I_M$) is a slow, persistent outward current that activates during sustained firing and progressively reduces the firing rate---this is \emph{spike-frequency adaptation}\index{spike-frequency adaptation}. Transient calcium currents ($I_{\text{CaT}}$) can interact with potassium currents to produce \emph{bursting}\index{bursting}: clusters of spikes separated by silent intervals.
+
+Additional channel families are equally important. Hyperpolarization-activated mixed-cation current $I_h$\index{hyperpolarization-activated current} supports subthreshold resonance and post-inhibitory rebound. High-threshold calcium currents can create plateau depolarizations, while calcium-activated potassium currents contribute to burst termination and adaptation.
+
+A useful organizing view is a threshold--timescale map: each current has a characteristic activation voltage and a characteristic kinetic timescale. Fast near-threshold inward currents favor regenerative upstrokes; slower outward currents favor recovery, adaptation, and oscillatory subthreshold dynamics. This map explains why changing channel densities can switch a neuron between integrator-like and resonator-like behavior.
+
+Each added current changes the neuron's dynamical repertoire. Which channels a neuron expresses determines whether it behaves as an integrator or a resonator, whether it adapts or maintains a steady firing rate, and whether it fires single spikes or bursts. We will formalize these distinctions using phase-plane analysis in \cref{ch:phase-plane-1d,ch:phase-plane-2d,ch:excitability}.
+
+% ============================================================
+\section{Energy Cost of Spikes}
+\label{sec:energy-cost}
+% ============================================================
+
+Generating an action potential is metabolically expensive. During each spike, sodium ions flow in and potassium ions flow out. The Na$^+$/K$^+$-ATPase pump must restore these concentration gradients, consuming ATP in the process.
+
+The energy cost depends on the \emph{overlap} between sodium and potassium currents during the spike. If the sodium current were completely finished before the potassium current began, the charge transfer would be minimal. In reality, there is substantial temporal overlap: sodium is still flowing in while potassium starts flowing out, and this simultaneous flow wastes energy---ions cross the membrane only to be pumped back.
+
+Some neurons are more energy-efficient than others. Neurons with faster sodium inactivation and more precisely timed potassium activation have less current overlap and lower cost per spike. This is not just a curiosity---the brain consumes roughly 20\% of the body's energy budget, and a significant fraction goes to ionic pumping. The HH framework lets us quantify this cost by integrating the ionic currents over the course of a spike.
+
+In a conductance-based model, a practical estimate is obtained from the sodium charge transfer:
+%
+\begin{equation}
+  Q_{\text{Na}} = \int_{\text{spike}} I_{\text{Na}}^{\text{in}}(t)\,\dd t,
+  \qquad
+  N_{\text{ATP}} \approx \frac{Q_{\text{Na}}}{3e},
+  \label{eq:spike-atp}
+\end{equation}
+%
+because one Na/K pump cycle uses one ATP to extrude three sodium ions. Multiplying by the free-energy cost per ATP gives an energy-per-spike estimate.
+
+Empirically, this framework has been used to refine metabolic budgets from early global estimates (Atwell--Laughlin, 2001) to channel-overlap-based efficiency analyses in identified neurons (e.g., Alle--Roth--Geiger, 2009; Carter--Bean, 2009; Sengupta and colleagues, 2010--2013). The main message is consistent: minimizing Na/K current overlap can substantially reduce energy cost without sacrificing fast signaling.
+
+Computationally, energy is not a side constraint; it shapes which dynamical regimes are viable in biological circuits. Channel expression is therefore constrained jointly by coding demands and metabolic cost.
+
+
+\begin{chaptersummary}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabularx}{\textwidth}{@{}l X X@{}}
+  \toprule
+  \textbf{Concept} & \textbf{Equation} & \textbf{Key Insight} \\
+  \midrule
+  Gating kinetics &
+  $\displaystyle \dot{x} = \frac{x_\infty(V) - x}{\tau_x(V)}$ &
+  First-order relaxation, voltage-dependent \\
+  %
+  HH open probability &
+  $n^4$, \; $m^3 h$ &
+  Multiple independent gates per channel \\
+  %
+  HH voltage equation &
+  $\Cm\dot{V} = I - \gbar{Na}m^3h(V\!-\!\Erev{Na}) - \cdots$ &
+  Four coupled ODEs generate the spike \\
+  %
+  AP mechanism &
+  $m$ fast $\to$ $h$ slow, $n$ slow &
+  Positive then negative feedback \\
+  %
+  Refractory period &
+  Low $h$, high $n$ after spike &
+  Sodium inactivated, potassium still open \\
+  %
+  Clamp extraction &
+  $x(t)=x_\infty+(x_0-x_\infty)e^{-t/\tau_x}$ &
+  Step protocols recover kinetics from data \\
+  %
+  Metabolic cost &
+  $N_{\text{ATP}} \approx Q_{\text{Na}}/(3e)$ &
+  Current overlap sets spike energy efficiency \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\end{chaptersummary}
+
+\begin{conceptquestions}
+  \item Explain in your own words why the sodium current is ``transient'' while the potassium current is ``persistent.'' Which gating variables are responsible for each behavior?
+
+  \item The power $n^4$ means the potassium conductance turns on with a sigmoid-like delay after a voltage step. Why does raising $n$ to a power produce a delay, and what would the current look like if the power were $n^1$ instead?
+
+  \item The gating equation can be written in two equivalent forms: the $\alpha/\beta$ form and the $x_\infty/\tau_x$ form. What does each form emphasize? Under what circumstances would you prefer one over the other?
+
+  \item Sketch $x_\infty(V)$ and $\tau_x(V)$ for a typical activation gate. Why is $x_\infty$ sigmoidal? Why is $\tau_x$ peaked at intermediate voltages?
+
+  \item During the action potential, the membrane voltage briefly exceeds $0\;\text{mV}$ but never reaches $\Erev{Na} \approx +50\;\text{mV}$. Why not?
+
+  \item Walk through the action potential mechanism step by step. For each phase (upstroke, peak, repolarization, undershoot, recovery), state which gating variables are changing, in which direction, and how their changes affect the voltage.
+
+  \item Explain the refractory period in terms of the gating variables $h$ and $n$. Why is the relative refractory period longer than the absolute refractory period?
+
+  \item The HH model is a system of four coupled ODEs. Why does the voltage clamp technique reduce this to three independent first-order equations? How does this simplification make it possible to extract the rate functions $\alpha(V)$ and $\beta(V)$?
+
+  \item Hodgkin and Huxley fitted their model to voltage clamp data at $6.3\,^\circ\text{C}$, then used it to predict the shape and speed of the action potential. Why was this considered such a strong validation of the model?
+
+  \item The sodium current turns on faster than the potassium current. What would happen to the action potential if potassium activated as fast as sodium? What if sodium activated as slowly as potassium?
+
+  \item Adding an A-type potassium current to the HH model delays the first spike after stimulation. Qualitatively, why does a transient outward current near threshold produce this delay?
+
+  \item The M-current produces spike-frequency adaptation. Explain why a slow, persistent outward current causes the interspike interval to lengthen during sustained firing.
+
+  \item The energy cost of a spike depends on the temporal overlap between sodium and potassium currents. Why does greater overlap mean more energy wasted? What would a maximally efficient spike look like in terms of the timing of $m$, $h$, and $n$?
+
+  \item The HH model uses the factorization $m^3 h$ for sodium channels, assuming activation and inactivation are independent. What experimental evidence supports this assumption? What would change in the model's predictions if $m$ and $h$ were coupled?
+
+  \item Why do prepulse voltage-clamp protocols isolate inactivation better than a single step from rest? What parameter is being controlled by the prepulse?
+
+  \item Two neurons have similar spike waveforms, but one has much lower Na/K current overlap during spikes. Which neuron is metabolically cheaper per spike, and why?
+\end{conceptquestions}

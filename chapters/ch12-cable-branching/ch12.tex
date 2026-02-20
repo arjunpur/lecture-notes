@@ -1,2 +1,210 @@
 \chapter{Cable Theory: Solutions and Branching}
-% Content to be written
+\label{ch:cable-branching}
+
+\textit{The passive cable equation has analytical solutions that reveal how signals are shaped by dendritic geometry. This chapter develops the time-dependent solution, analyzes branching structures, and introduces Rall's equivalent cylinder---a remarkable simplification that collapses an entire dendritic tree into a single cable.}
+
+% ============================================================
+\section{Time-Dependent Solution}
+\label{sec:time-dependent}
+% ============================================================
+
+The steady-state solution from \cref{sec:steady-state} tells us the final voltage distribution, but synaptic inputs are brief events. We need the full time-dependent response.
+
+For an infinite passive cable with a brief current pulse (a delta function in both space and time) injected at $x = 0$ and $t = 0$, the voltage response is
+%
+\begin{equation}
+  v(x, t) = \frac{r_m}{2\lambda}\,\frac{1}{\sqrt{\pi t/\taum}}\,
+    \exp\!\biggl(-\frac{t}{\taum} - \frac{x^2}{4\lambda^2 t/\taum}\biggr)
+  \label{eq:cable-greens}
+\end{equation}
+%
+This is the Green's function of the passive cable. It has two factors: a \emph{spatial Gaussian} whose width grows as $\sqrt{t/\taum}$, and an \emph{exponential temporal decay} with time constant $\taum$. The signal spreads out in space (diffusion) while simultaneously decaying in time (membrane leakage).
+
+At the injection site ($x = 0$), the voltage rises instantaneously and then decays. At a distant point, the voltage rises after a delay, reaches a smaller peak, and then decays. The further from the injection site, the more delayed, attenuated, and broadened the response. This is the temporal filtering property of the cable: it acts as a low-pass filter, smoothing out fast transients.
+
+\subsection{Signal velocity in a passive cable}
+
+Signals in a passive cable do not propagate at a fixed velocity---they spread by diffusion. However, for practical purposes, one can define an effective propagation speed as the rate at which the peak of the voltage pulse advances. For large times, this is approximately
+%
+\begin{equation}
+  v_{\text{signal}} \approx \frac{2\lambda}{\taum}
+  \label{eq:signal-velocity}
+\end{equation}
+%
+For typical dendritic parameters ($\lambda \sim 0.5\;\text{mm}$, $\taum \sim 20\;\text{ms}$), this gives $v_{\text{signal}} \sim 0.05\;\text{m/s}$---very slow compared to action potential propagation. This is why passive spread is adequate for short dendrites but not for long-range axonal signaling.
+
+% ============================================================
+\section{Asymmetric Attenuation}
+\label{sec:asymmetric}
+% ============================================================
+
+An important and initially counterintuitive feature of dendritic trees is that attenuation is \emph{direction-dependent}\index{asymmetric attenuation}. A signal traveling from a thin distal dendrite to the thick soma is attenuated much more than a signal traveling in the opposite direction.
+
+The reason is impedance mismatch. The soma has a low input impedance (large membrane area, many attached dendrites). When current from a thin dendrite reaches the soma, it encounters a large conductance load that ``sinks'' the current, causing a large voltage drop. Conversely, the soma acts as a strong voltage source when driving current into a thin dendrite, and the high input impedance of the thin branch means even a small current produces a substantial voltage.
+
+This asymmetry has functional consequences. Distal synaptic inputs are strongly filtered before reaching the soma, while back-propagating action potentials from the soma reach distal dendrites with relatively less attenuation. The neuron is not a symmetric filter---it treats inward and outward signals very differently.
+
+% ============================================================
+\section{Branching}
+\label{sec:branching}
+% ============================================================
+
+Real dendritic trees branch extensively. At each branch point, two boundary conditions must hold: voltage is continuous across the junction, and current is conserved (Kirchhoff's law):
+%
+\begin{equation}
+  V_{\text{parent}} = V_{\text{daughter}_1} = V_{\text{daughter}_2}, \qquad
+  I_{\text{parent}} = I_{\text{daughter}_1} + I_{\text{daughter}_2}
+  \label{eq:branch-bc}
+\end{equation}
+%
+The axial current in each branch depends on its cross-sectional area: $I_a \propto a^2\,\partial V/\partial x$. The input impedance of a semi-infinite cable scales as $a^{-3/2}$, so the voltage distribution at a branch point depends on the relative radii of parent and daughter branches.
+
+When current is injected into a thin daughter branch, it arrives at the branch point and encounters a low-impedance parent trunk (plus the other daughter). Most of the current is ``absorbed'' by the parent, and the voltage at the junction is small. The thin branch is effectively shunted by the thicker trunk.
+
+The relative weight of each branch at a junction is proportional to $a_i^{3/2}$:
+%
+\begin{equation}
+  p_i = \frac{a_i^{3/2}}{\sum_j a_j^{3/2}}
+  \label{eq:branch-weights}
+\end{equation}
+
+\subsection{Explicit three-branch solutions at an isolated junction}
+
+For a steady current $I_e$ injected at position $y$ along branch 2, the branch voltages can be written in closed form:
+%
+\begin{align}
+  v_1(x_1) &= p_1 I_e R_{\lambda,1}\,
+  \exp\!\Bigl(-\frac{x_1}{\lambda_1}\Bigr)
+  \exp\!\Bigl(-\frac{y}{\lambda_2}\Bigr), \label{eq:v1-branch} \\[4pt]
+  v_3(x_3) &= p_3 I_e R_{\lambda,3}\,
+  \exp\!\Bigl(-\frac{x_3}{\lambda_3}\Bigr)
+  \exp\!\Bigl(-\frac{y}{\lambda_2}\Bigr), \label{eq:v3-branch} \\[4pt]
+  v_2(x_2) &= \frac{I_e R_{\lambda,2}}{2}
+  \left[
+    \exp\!\Bigl(-\frac{|x_2-y|}{\lambda_2}\Bigr)
+    + (2p_2-1)\exp\!\Bigl(-\frac{x_2+y}{\lambda_2}\Bigr)
+  \right]. \label{eq:v2-branch}
+\end{align}
+%
+The first term in \cref{eq:v2-branch} is the infinite-cable contribution; the second term is the branch-point correction from impedance mismatch.
+
+The coefficients $p_i$ are fixed by continuity of voltage and conservation of axial current at the node:
+%
+\begin{equation}
+  \sum_i a_i^2 \left.\frac{\partial v_i}{\partial x_i}\right|_{x_i=0}=0.
+  \label{eq:branch-current-bc}
+\end{equation}
+%
+Using $R_{\lambda,i} \propto a_i^{-3/2}$, one obtains $p_i \propto 1/R_{\lambda,i}$ as expected from current partition into parallel impedances.
+
+\subsection{Impedance matching and differentiable continuation}
+
+A particularly important case is
+%
+\begin{equation}
+  p_1=\frac{1}{2}, \qquad p_2=p_3=\frac{1}{4},
+  \label{eq:branch-special-p}
+\end{equation}
+%
+which is equivalent to
+%
+\begin{equation}
+  2R_{\lambda,1}=R_{\lambda,2}=R_{\lambda,3}.
+  \label{eq:branch-impedance-match}
+\end{equation}
+%
+In this regime, the branch-point correction terms simplify and the transition through the node becomes differentiable in electrotonic coordinates. Geometrically, the branched cable behaves like a smooth continuation of a single effective cable---the local version of Rall's equivalent-cylinder idea.
+
+Computationally, these explicit forms explain directional attenuation in quantitative terms: injecting current into a thin daughter branch produces stronger attenuation toward the node than injecting into the thick parent trunk.
+
+% ============================================================
+\section{Rall's Equivalent Cylinder}
+\label{sec:rall}
+% ============================================================
+
+Wilfrid Rall\index{Rall's equivalent cylinder} showed that, under certain geometric constraints, an entire branching dendritic tree can be reduced to a single equivalent unbranched cylinder. This is a powerful simplification: it means the full passive behavior of a complex tree can be captured by a one-dimensional cable equation with appropriate parameters.
+
+The key condition is the \emph{$3/2$ power law}\index{$3/2$ power law}: at every branch point, the sum of the daughter radii raised to the $3/2$ power must equal the parent radius raised to the $3/2$ power:
+
+\begin{keyequation}[Rall's $3/2$ Power Law]
+\begin{equation}
+  d_{\text{parent}}^{3/2} = \sum_k d_{\text{daughter}_k}^{3/2}
+  \label{eq:rall-32}
+\end{equation}
+\tcblower
+$d$: diameter of each branch. When this holds at every branch point, impedance is matched and no signal reflection occurs.
+\end{keyequation}
+
+\noindent When the $3/2$ law holds, the branching tree has the same input impedance as a single cylinder whose diameter matches the trunk and whose length is the electrotonic length of the tree. There is no reflection of signals at branch points---current flows smoothly through the tree as if it were unbranched.
+
+The equivalent cylinder has the same total membrane area as the dendritic tree, and its electrotonic length $L/\lambda$ is the sum of the electrotonic lengths of the segments from trunk to tip. The ends of the cylinder correspond to the sealed tips of the dendrites.
+
+Real dendritic trees do not perfectly satisfy the $3/2$ law, but many come close enough that the equivalent cylinder provides a useful approximation. Deviations from the law cause partial reflections at branch points, which can be analyzed as perturbations around the Rall solution.
+
+
+\begin{chaptersummary}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabularx}{\textwidth}{@{}l X X@{}}
+  \toprule
+  \textbf{Concept} & \textbf{Equation} & \textbf{Key Insight} \\
+  \midrule
+  Green's function &
+  Gaussian $\times$ exponential decay &
+  Signals spread (diffuse) and decay \\
+  %
+  Signal velocity &
+  $v \approx 2\lambda/\taum$ &
+  Passive spread is slow \\
+  %
+  Asymmetric attenuation &
+  Dendrite $\to$ soma: strong loss &
+  Impedance mismatch is direction-dependent \\
+  %
+  Branch conditions &
+  $V$ continuous, $I$ conserved &
+  Kirchhoff's law at every junction \\
+  %
+  Three-branch solution &
+  $v_i(x_i)$ from \cref{eq:v1-branch,eq:v2-branch,eq:v3-branch} &
+  Separates infinite-cable term and branch correction \\
+  %
+  Impedance matching &
+  $2R_{\lambda,1}=R_{\lambda,2}=R_{\lambda,3}$ &
+  Node behaves like smooth cable continuation \\
+  %
+  Rall's $3/2$ law &
+  $d_{\text{parent}}^{3/2} = \sum d_k^{3/2}$ &
+  Impedance matching $\to$ equivalent cylinder \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\end{chaptersummary}
+
+\begin{conceptquestions}
+  \item The Green's function of the passive cable (\cref{eq:cable-greens}) has both a Gaussian spatial factor and an exponential temporal decay. Explain the physical origin of each. What happens to the voltage pulse at a point far from the injection site?
+
+  \item A synaptic potential at a distal dendrite arrives at the soma with reduced amplitude and a delay. Using the Green's function, explain why the signal is not only smaller but also broader in time.
+
+  \item The passive cable acts as a low-pass filter: fast transients are smoothed more than slow ones. Explain why, using the relationship between the spatial spread of the Gaussian and the timescale of the signal.
+
+  \item Attenuation from dendrite to soma is stronger than from soma to dendrite. Why? Use the concept of impedance mismatch in your answer.
+
+  \item A back-propagating action potential from the soma reaches distal dendrites with relatively little attenuation compared to the reverse direction. What functional role might this asymmetry play in synaptic plasticity?
+
+  \item At a branch point, voltage is continuous and current is conserved. Why do these two conditions fully determine the voltage distribution? What would happen if current were not conserved---what physical situation would that represent?
+
+  \item The weight of each branch at a junction is proportional to $a_i^{3/2}$. Why $3/2$ specifically, and not $a^2$ (the cross-sectional area)? What role does the input impedance play?
+
+  \item Rall's $3/2$ power law says $d_{\text{parent}}^{3/2} = \sum d_k^{3/2}$ at every branch point. What goes wrong if this condition is violated? What happens to a signal arriving at a branch point that does not satisfy impedance matching?
+
+  \item The equivalent cylinder model collapses a complex tree into a single cable. What information about the original tree is preserved, and what is lost? Can two different dendritic trees have the same equivalent cylinder?
+
+  \item A neuron has a long, thin dendrite that branches into two equally thin daughters. Does signal attenuation increase or decrease at the branch point compared to an unbranched continuation? Why?
+
+  \item The signal velocity in a passive cable is $v_{\text{signal}} \approx 2\lambda/\taum$. For typical dendritic parameters, this is about $0.05\;\text{m/s}$. Why is this far too slow for long-range axonal communication, and how does this motivate the need for active (action potential) propagation?
+
+  \item Compare the passive cable equation with the one-dimensional diffusion equation. What is the analogy between voltage spread in a cable and heat diffusion in a rod? Where does the analogy break down?
+\end{conceptquestions}

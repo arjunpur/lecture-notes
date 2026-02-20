@@ -1,3 +1,262 @@
 \chapter{Ion Channels, Synapses, and the Integrate-and-Fire Neuron}
 \label{ch:lif}
-% Content to be written
+
+\textit{The membrane equation from \cref{ch:membrane} describes how voltage evolves, but it says nothing about what makes conductances change or what happens when voltage reaches threshold. This chapter introduces ion channels as the molecular basis of conductance, develops the leaky integrate-and-fire model as the simplest spiking neuron, and describes how synaptic inputs drive the membrane.}
+
+% ============================================================
+\section{Ion Channels}
+\label{sec:ion-channels}
+% ============================================================
+
+Ion channels\index{ion channel} are protein pores in the cell membrane that allow specific ions to cross. Each channel has two essential properties: \emph{selectivity} (which ions can pass through) and \emph{gating} (what controls whether the channel is open or closed). The current through a population of channels of type $i$ is
+%
+\begin{equation}
+  I_i = g_i(V, t)\bigl(V - \Erev{i}\bigr)
+  \label{eq:channel-current}
+\end{equation}
+%
+where $g_i(V, t)$ is the conductance---the total number of open channels times the conductance per channel---and $\Erev{i}$ is the reversal potential for that ion species. The factor $(V - \Erev{i})$ is the driving force: current flows inward when $V < \Erev{i}$ and outward when $V > \Erev{i}$.
+
+Different channels are gated by different stimuli. \emph{Voltage-gated channels}\index{voltage-gated channel} open and close in response to changes in membrane potential. These are the channels responsible for the action potential, and we will analyze their gating kinetics in detail in \cref{ch:hodgkin-huxley}. Other channels are gated by ligands (neurotransmitters), by mechanical force, or by temperature.
+
+The key point for now is that when channels are voltage-gated, the conductance $g_i$ depends on $V$, which in turn depends on $g_i$ through the membrane equation. This creates \emph{feedback}. Depolarization can open channels that allow inward current, which further depolarizes the membrane---a positive feedback loop that underlies the explosive upstroke of the action potential.
+
+% ============================================================
+\section{Voltage Clamp}
+\label{sec:voltage-clamp}
+% ============================================================
+
+The voltage clamp\index{voltage clamp} is the experimental technique that made quantitative channel biophysics possible. The idea is to hold the membrane voltage at a fixed value $V_{\text{cmd}}$ using an electronic feedback circuit, and measure the current $I(t)$ required to maintain that voltage. Since $V$ is constant, $\Cm\,\dd V/\dd t = 0$, and the measured current equals the total ionic current:
+%
+\begin{equation}
+  I_{\text{clamp}}(t) = \sum_i g_i(V_{\text{cmd}}, t)\bigl(V_{\text{cmd}} - \Erev{i}\bigr)
+  \label{eq:voltage-clamp}
+\end{equation}
+
+\noindent By stepping $V_{\text{cmd}}$ to different values and using pharmacological blockers to isolate individual channel types, experimenters can extract the voltage dependence and kinetics of each conductance. This is how Hodgkin and Huxley determined the gating variables of the squid giant axon (\cref{ch:hodgkin-huxley}).
+
+Without voltage clamp, the feedback between voltage and conductance makes the system nearly impossible to analyze: changing the voltage changes the conductance, which changes the current, which changes the voltage. Clamping the voltage breaks this loop and lets you study conductance in isolation.
+
+% ============================================================
+\section{The Leaky Integrate-and-Fire Model}
+\label{sec:lif}
+% ============================================================
+
+The action potential is a complex, nonlinear event involving the coordinated opening and closing of multiple channel types. If we are not interested in the biophysical details of the spike itself---only in \emph{when} the neuron fires---we can replace the spike mechanism with a simple rule: when $V$ reaches a threshold $\Vth$, the neuron ``fires'' (we record a spike) and $V$ is reset to $\Vreset$. Between spikes, the voltage obeys the passive membrane equation.
+
+This is the \emph{leaky integrate-and-fire}\index{leaky integrate-and-fire} (LIF) model:
+
+\begin{keyequation}[Leaky Integrate-and-Fire Neuron]
+\begin{equation}
+  \taum \frac{\dd V}{\dd t} = -\bigl(V - \Erev{L}\bigr) + R_m I(t)
+  \label{eq:lif}
+\end{equation}
+\tcblower
+$\taum = \Cm/\gleak$: membrane time constant, \quad
+$R_m = 1/\gleak$: input resistance, \quad
+$\Erev{L}$: leak reversal potential. \\[4pt]
+If $V \geq \Vth$: record spike, set $V \leftarrow \Vreset$, wait $\tauref$.
+\end{keyequation}
+
+\noindent The ``leaky'' part is the term $-(V - \Erev{L})$, which pulls the voltage back toward rest. Without it, the model would be a perfect integrator: every input would accumulate forever, and the neuron would eventually fire no matter how weak the stimulus. The leak sets a time window for integration---inputs must arrive within roughly $\taum$ of each other to sum effectively.
+
+After each spike, the neuron enters a \emph{refractory period}\index{refractory period} of duration $\tauref$ during which it cannot fire again. This sets a maximum firing rate of $1/\tauref$.
+
+\subsection{Firing rate under constant current}
+
+For a constant injected current $I_0$, we can compute the LIF firing rate exactly. Between spikes, the voltage rises exponentially from $\Vreset$ toward the steady state $V_\infty = \Erev{L} + R_m I_0$. If $V_\infty > \Vth$, the voltage reaches threshold after a time
+%
+\[
+  T_{\text{ISI}} = \tauref + \taum \ln\!\biggl(\frac{R_m I_0 - (\Vreset - \Erev{L})}{R_m I_0 - (\Vth - \Erev{L})}\biggr)
+\]
+%
+where $T_{\text{ISI}}$ is the interspike interval. The firing rate is $r = 1/T_{\text{ISI}}$:
+
+\begin{keyequation}[LIF Firing Rate]
+\begin{equation}
+  r = \biggl[\tauref + \taum \ln\!\biggl(\frac{I_0 - \gleak(\Vreset - \Erev{L})}{I_0 - \gleak(\Vth - \Erev{L})}\biggr)\biggr]^{-1}
+  \label{eq:lif-rate}
+\end{equation}
+\tcblower
+$r = 0$ if $I_0 \leq \gleak(\Vth - \Erev{L})$ (subthreshold).
+\end{keyequation}
+
+\begin{derivation}[LIF firing rate]
+Between spikes, the voltage satisfies \cref{eq:lif} with $I(t) = I_0$ constant. The solution starting from $V(0) = \Vreset$ is
+\[
+  V(t) = \Erev{L} + R_m I_0 - \bigl(\Erev{L} + R_m I_0 - \Vreset\bigr)e^{-t/\taum}
+\]
+Setting $V(T) = \Vth$ and solving for $T$:
+\begin{align*}
+  \Vth &= \Erev{L} + R_m I_0 - \bigl(\Erev{L} + R_m I_0 - \Vreset\bigr)e^{-T/\taum} \\[4pt]
+  e^{-T/\taum} &= \frac{\Erev{L} + R_m I_0 - \Vth}{\Erev{L} + R_m I_0 - \Vreset} \\[4pt]
+  T &= \taum \ln\!\biggl(\frac{R_m I_0 - (\Vreset - \Erev{L})}{R_m I_0 - (\Vth - \Erev{L})}\biggr)
+\end{align*}
+Adding the refractory period and inverting gives \cref{eq:lif-rate}. The argument of the logarithm is positive only when $I_0 > \gleak(\Vth - \Erev{L})$---below this current, the steady-state voltage never reaches threshold.
+\end{derivation}
+
+\noindent The $f$--$I$ curve (firing rate versus current) starts at zero for subthreshold currents, rises steeply at threshold, and saturates at $1/\tauref$ for large currents. The LIF model produces a continuous onset of firing---the rate can be made arbitrarily small by bringing the current just above threshold. This is a hallmark of Type~I excitability, which we will formalize in terms of bifurcations in \cref{ch:excitability}.
+
+% ============================================================
+\section{Synaptic Input}
+\label{sec:synapses}
+% ============================================================
+
+Neurons receive input not from experimenters' electrodes but from other neurons, via synapses. There are two types. \emph{Electrical synapses}\index{electrical synapse} (gap junctions) are direct ionic connections between cells---fast, bidirectional, and relatively simple. \emph{Chemical synapses}\index{chemical synapse} are the dominant form in the brain: a presynaptic spike triggers neurotransmitter release, which opens receptor channels on the postsynaptic membrane.
+
+Chemical synapses come in two flavors. \emph{Ionotropic}\index{ionotropic receptor} receptors are ligand-gated channels that open directly when the transmitter binds---they are fast (millisecond timescale). \emph{Metabotropic}\index{metabotropic receptor} receptors trigger intracellular signaling cascades---they are slower but can modulate the neuron's behavior in more complex ways.
+
+\subsection{Conductance-based synapse model}
+
+The current through a synapse follows the same conductance-based form as any ion channel:
+%
+\begin{equation}
+  I_{\text{syn}}(t) = g_{\text{syn}}(t)\bigl(V - \Erev{\text{syn}}\bigr)
+  \label{eq:synapse-current}
+\end{equation}
+%
+where $g_{\text{syn}}(t) = \bar{g}\,s(t)$ is the synaptic conductance and $s(t)$ is a gating variable driven by presynaptic spikes. Common choices for $s(t)$ include an instantaneous jump followed by exponential decay (the ``exponential synapse''), a difference of two exponentials (fast rise, slower decay), or the alpha function $s(t) = (t/\tau_s)\,e^{-t/\tau_s}$.
+
+The reversal potential $\Erev{\text{syn}}$ determines whether the synapse is excitatory or inhibitory. Excitatory synapses (glutamatergic, with $\Erev{\text{syn}} \approx 0\;\text{mV}$) drive the membrane toward depolarization. Inhibitory synapses (GABAergic, with $\Erev{\text{syn}} \approx -70$ to $-80\;\text{mV}$) hold the membrane near or below rest.
+
+\subsection{Shunting inhibition}
+\label{sec:shunting}
+
+An interesting case arises when $\Erev{\text{inh}}$ is close to the resting potential. Opening inhibitory channels does not hyperpolarize the cell much---the driving force $(V - \Erev{\text{inh}})$ is small near rest. But it does increase the total membrane conductance $g_{\text{tot}}$, which has two consequences.
+
+First, the input resistance $R_{\text{eff}} = 1/g_{\text{tot}}$ decreases, so the same excitatory current produces a smaller voltage deflection. The inhibition acts \emph{divisively}\index{shunting inhibition}---it scales down the response to all inputs rather than subtracting a fixed amount. Second, the membrane time constant $\tau_{\text{eff}} = \Cm/g_{\text{tot}}$ decreases, so the neuron ``forgets'' its inputs faster. Both effects reduce excitability without changing the resting potential.
+
+This is \emph{shunting inhibition}\index{shunting inhibition}, and it is fundamentally different from hyperpolarizing inhibition (where the reversal potential is well below rest). Shunting inhibition is a gain control mechanism: it divides the neuron's response by a factor that depends on the strength of inhibition.
+
+\subsection{Synaptic unreliability and quantal release}
+
+Chemical transmission is probabilistic: a presynaptic spike does not always trigger vesicle release. A minimal model treats each spike as a Bernoulli trial:
+%
+\begin{equation}
+  b_k \sim \mathrm{Bernoulli}(p_k), \qquad
+  g_{\text{syn}}(t)=\bar g\sum_k b_k\,\alpha(t-t_k),
+  \label{eq:bernoulli-release}
+\end{equation}
+%
+where $p_k$ is release probability at spike $k$ and $\\alpha$ is the postsynaptic conductance kernel. Even with identical presynaptic spike trains, the postsynaptic response varies from trial to trial because $b_k$ is random.
+
+This quantal stochasticity is not a small correction: at many central synapses, release probabilities can be well below one. The resulting variability contributes substantially to membrane-potential fluctuations and to response variability in cortical neurons.
+
+\subsection{Short-term facilitation and depression}
+
+Release probability and available vesicle resources change on fast timescales. A standard minimal model uses a utilization variable $u$ (facilitation) and a resource variable $R$ (depression):
+%
+\begin{align}
+  \dot u &= \frac{U-u}{\tau_f} + U(1-u)\sum_k \delta(t-t_k), \label{eq:stp-u} \\
+  \dot R &= \frac{1-R}{\tau_d} - uR\sum_k \delta(t-t_k), \label{eq:stp-r}
+\end{align}
+%
+with effective release amplitude proportional to $uR$ at each spike. Rapid presynaptic spiking can increase $u$ (facilitation) or deplete $R$ (depression), depending on parameters.
+
+Functionally, facilitation can transiently amplify weak inputs in bursts, while depression can normalize sustained high-rate input. These are dynamical filters implemented at the synapse itself, before postsynaptic integration.
+
+An important edge case is that synaptic input need not always increase total conductance. Depending on receptor pathways and channel targets, synaptic activation can indirectly \emph{decrease} a membrane conductance (for example by closing tonic channels), shifting both gain and effective time constant in the opposite direction.
+
+\subsection{Massive synaptic input and the high-conductance state}
+
+In vivo, neurons receive thousands of excitatory and inhibitory spike trains simultaneously. Averaging over many synapses yields large mean conductances plus residual fluctuations:
+%
+\begin{equation}
+  \Cm\dot V = -g_L(V-\Erev{L})-\bar g_E(V-\Erev{E})-\bar g_I(V-\Erev{I})+\sigma_I\eta(t).
+  \label{eq:high-conductance}
+\end{equation}
+%
+The effective time constant becomes
+%
+\begin{equation}
+  \tau_{\text{eff}}=\frac{\Cm}{g_L+\bar g_E+\bar g_I},
+  \label{eq:tau-eff}
+\end{equation}
+%
+which is typically much smaller than in vitro values. The membrane is therefore in a fast, fluctuation-driven regime close to threshold, where spiking can be governed by variance as much as by mean input.
+
+Computationally, the high-conductance state explains why cortical neurons can respond quickly, show irregular firing, and remain sensitive to coincident inputs despite large ongoing synaptic bombardment.
+
+
+\begin{chaptersummary}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabularx}{\textwidth}{@{}l X X@{}}
+  \toprule
+  \textbf{Concept} & \textbf{Equation} & \textbf{Key Insight} \\
+  \midrule
+  Ion channel current &
+  $I_i = g_i(V,t)(V - \Erev{i})$ &
+  Conductance $\times$ driving force \\
+  %
+  Voltage clamp &
+  $I_{\text{clamp}} = \sum g_i(V - \Erev{i})$ &
+  Fix $V$, measure $I$ to isolate channels \\
+  %
+  LIF model &
+  $\displaystyle \taum \dot{V} = -(V - \Erev{L}) + R_m I$ &
+  Passive membrane + threshold/reset \\
+  %
+  LIF firing rate &
+  $\displaystyle r = \Bigl[\tauref + \taum\ln\frac{\cdots}{\cdots}\Bigr]^{-1}$ &
+  Continuous onset, saturates at $1/\tauref$ \\
+  %
+  Synaptic current &
+  $I_{\text{syn}} = g_{\text{syn}}(V - \Erev{\text{syn}})$ &
+  Conductance-based, reversal sets sign \\
+  %
+  Shunting inhibition &
+  $R_{\text{eff}} = 1/g_{\text{tot}}$ &
+  Divisive gain control near rest \\
+  %
+  Quantal release &
+  $b_k \sim \mathrm{Bernoulli}(p_k)$ &
+  Synaptic transmission is intrinsically stochastic \\
+  %
+  Short-term plasticity &
+  $\dot u,\dot R$ with spike-triggered jumps &
+  Synapse acts as a dynamic temporal filter \\
+  %
+  High-conductance state &
+  $\tau_{\text{eff}}=\Cm/(g_L+\bar g_E+\bar g_I)$ &
+  Fast, fluctuation-driven membrane dynamics \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\end{chaptersummary}
+
+\begin{conceptquestions}
+  \item Ion channels have two key properties: selectivity and gating. Explain what each means and why both are needed for the membrane to generate an action potential.
+
+  \item The current through a channel is $I = g(V,t)(V - \Erev{})$. When voltage-gated channels are present, $g$ depends on $V$, which depends on $g$. Explain how this creates positive feedback and why it is essential for the action potential.
+
+  \item Why does the voltage clamp break the feedback loop between voltage and conductance? What would happen if you tried to study voltage-gated channels without clamping?
+
+  \item In the LIF model, what does the ``leaky'' part refer to? What would the model predict if the leak were removed (a perfect integrator)? Why is this unrealistic?
+
+  \item The LIF model has no mechanism for generating the spike itself---the spike is an instantaneous event imposed by a rule. What aspects of real neural behavior does this miss, and when might it matter?
+
+  \item Explain why the LIF neuron cannot fire if $I_0 < \gleak(\Vth - \Erev{L})$. What is the physical meaning of this threshold current?
+
+  \item Sketch the $f$--$I$ curve of the LIF model. Why does the firing rate start from zero at threshold? Why does it saturate at $1/\tauref$ for large currents?
+
+  \item Derive the LIF interspike interval in words: starting from $\Vreset$, the voltage rises exponentially toward a steady state. Under what condition does it reach $\Vth$? What determines how long this takes?
+
+  \item Compare electrical and chemical synapses. What are the advantages of each for neural computation?
+
+  \item Explain the difference between ionotropic and metabotropic receptors in terms of timescale and mechanism.
+
+  \item A conductance-based synapse has current $I_{\text{syn}} = g_{\text{syn}}(V - \Erev{\text{syn}})$. Why does the reversal potential $\Erev{\text{syn}}$ determine whether the synapse is excitatory or inhibitory? What happens to the synaptic current as $V$ approaches $\Erev{\text{syn}}$?
+
+  \item Shunting inhibition with $\Erev{\text{inh}} \approx \Vrest$ does not change the resting potential. Why, then, does it reduce the neuron's response to excitatory input? Explain using both the input resistance and the time constant.
+
+  \item Compare shunting inhibition (divisive) with hyperpolarizing inhibition (subtractive). How does each affect the neuron's $f$--$I$ curve?
+
+  \item Why does probabilistic vesicle release produce trial-to-trial variability even when the presynaptic spike train is repeated identically?
+
+  \item In the short-term plasticity model, what parameter regime yields facilitation-dominated behavior? What regime yields depression-dominated behavior?
+
+  \item In vivo neurons often have smaller effective membrane time constants than in vitro. Explain this using the high-conductance-state equation.
+\end{conceptquestions}

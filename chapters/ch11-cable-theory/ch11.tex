@@ -1,3 +1,157 @@
 \chapter{Cable Theory: Derivation}
 \label{ch:cable}
-% Content to be written
+
+\textit{So far we have treated neurons as single electrical compartments---point neurons with a uniform voltage. Real neurons are spatially extended: a synaptic input at a distal dendrite must travel hundreds of micrometers to reach the soma, losing amplitude and gaining delay along the way. Cable theory provides the mathematical framework for understanding how voltage varies in both space and time along a neurite.}
+
+% ============================================================
+\section{Why Cable Theory?}
+\label{sec:why-cable}
+% ============================================================
+
+The point-neuron model assumes that every part of the cell is at the same voltage. For a compact soma, this is reasonable. But dendrites can extend over a millimeter, and their thin geometry means significant axial resistance. A synaptic potential generated at a distal dendritic spine is attenuated and delayed by the time it reaches the soma. The same physics governs action potential propagation along axons.
+
+Cable theory answers two fundamental questions. First, how does a synaptic potential spread passively from its origin to the soma? Second, how does an action potential propagate along an axon? Both are problems of voltage varying in space and time, and both require treating the neurite as a distributed electrical structure.
+
+% ============================================================
+\section{The Cable as a Distributed Circuit}
+\label{sec:cable-circuit}
+% ============================================================
+
+We model a neurite (dendrite or axon) as a cylinder of radius $a$ and length much greater than $a$. The cytoplasm inside has resistivity $r_L$ (typically $\sim 1\;\Omega\,\text{m}$). The membrane has a specific capacitance $c_m$ and a specific resistance $r_m$. We treat the extracellular space as having negligible resistance (a good approximation for most situations).
+
+Consider a short segment of length $\Delta x$. Four currents act on it: the \emph{axial current} $I_a(x)$ flowing in from the left, the axial current $I_a(x + \Delta x)$ flowing out to the right, the \emph{membrane current} $I_m$ leaking through the membrane, and any \emph{injected current} $I_e$ from an electrode.
+
+The axial current obeys Ohm's law. The resistance of a cylinder of length $\Delta x$ and cross-section $\pi a^2$ is $r_L\,\Delta x / (\pi a^2)$, so
+%
+\begin{equation}
+  I_a(x) = -\frac{\pi a^2}{r_L}\frac{\partial V}{\partial x}
+  \label{eq:axial-current}
+\end{equation}
+
+\noindent The capacitive current charging the membrane of the segment is $c_m \cdot 2\pi a\,\Delta x \cdot \partial V/\partial t$. The membrane current through ion channels is $i_m \cdot 2\pi a\,\Delta x$, where $i_m$ is the membrane current density.
+
+Applying Kirchhoff's current law---current in must equal current out plus current stored---and taking the limit $\Delta x \to 0$:
+
+\begin{keyequation}[The Cable Equation]
+\begin{equation}
+  c_m\frac{\partial V}{\partial t} = \frac{a}{2r_L}\frac{\partial^2 V}{\partial x^2} - i_m + i_e
+  \label{eq:cable}
+\end{equation}
+\tcblower
+$c_m$: specific membrane capacitance (F/cm$^2$), \quad
+$r_L$: axial resistivity ($\Omega\,$cm), \quad
+$a$: fiber radius, \quad
+$i_m$: membrane current density, \quad
+$i_e$: injected current density.
+\end{keyequation}
+
+\noindent The new ingredient compared to the point-neuron membrane equation is the spatial diffusion term $\frac{a}{2r_L}\frac{\partial^2 V}{\partial x^2}$. This term describes axial current flow: voltage differences between neighboring segments drive current along the cylinder. The cable equation is a partial differential equation in space and time---fundamentally harder than the ordinary differential equations of point-neuron models.
+
+% ============================================================
+\section{The Passive Cable: Length and Time Constants}
+\label{sec:passive-cable}
+% ============================================================
+
+For a passive (linear) membrane, the membrane current is simply $i_m = (V - V_{\text{rest}})/r_m$. Writing $v = V - V_{\text{rest}}$ for the deviation from rest, the cable equation becomes
+
+\begin{keyequation}[Passive Cable Equation]
+\begin{equation}
+  \taum\frac{\partial v}{\partial t} = \lambda^2\frac{\partial^2 v}{\partial x^2} - v + r_m\,i_e
+  \label{eq:passive-cable}
+\end{equation}
+\tcblower
+$\displaystyle\taum = r_m c_m$: membrane time constant, \qquad
+$\displaystyle\lambda = \sqrt{\frac{r_m\, a}{2\,r_L}}$: length constant (space constant).
+\end{keyequation}
+
+\noindent Two constants govern the behavior. The \emph{membrane time constant}\index{membrane time constant} $\taum = r_m c_m$ sets the temporal scale---how quickly voltage changes at any point. The \emph{length constant}\index{length constant} $\lambda$ sets the spatial scale---how far voltage spreads before decaying significantly.
+
+The length constant has a clear physical interpretation: it is the distance at which steady-state voltage decays to $1/e \approx 37\%$ of its value at the injection site. Typical values are $\lambda \sim 0.1$--$1\;\text{mm}$. The length constant increases with fiber radius (larger cross-section means lower axial resistance) and with membrane resistance (less leakage means voltage spreads further). This is why thick axons conduct better than thin ones.
+
+% ============================================================
+\section{Steady-State Solution: Infinite Cable}
+\label{sec:steady-state}
+% ============================================================
+
+For a constant current injected at $x = 0$ into an infinitely long cable, the steady-state ($\partial v/\partial t = 0$) solution is
+%
+\begin{equation}
+  v(x) = \frac{I_e R_\lambda}{2}\,e^{-|x|/\lambda}
+  \label{eq:infinite-cable-ss}
+\end{equation}
+%
+where $R_\lambda$ is the input resistance of a semi-infinite cable. The voltage decays exponentially in both directions from the injection site with space constant $\lambda$. The factor of 2 in the denominator reflects that current flows in both directions.
+
+This exponential decay is the hallmark of passive cable conduction. A synapse one length constant away from the soma delivers only $37\%$ of its voltage to the soma. A synapse two length constants away delivers only $14\%$. This is why synaptic location matters: proximal synapses have much stronger influence on the soma than distal ones, all else being equal.
+
+% ============================================================
+\section{Finite Cable with Sealed End}
+\label{sec:sealed-end}
+% ============================================================
+
+Real dendrites are not infinite---they terminate. A common boundary condition is the \emph{sealed end}\index{sealed end}: no current flows out of the tip ($\partial v/\partial x = 0$ at $x = L$). For a finite cable of length $L$ with current injected at $x = 0$ and a sealed end at $x = L$, the steady-state solution involves hyperbolic functions:
+%
+\begin{equation}
+  v(x) = v(0)\,\frac{\cosh\bigl((L - x)/\lambda\bigr)}{\cosh(L/\lambda)}
+  \label{eq:sealed-end}
+\end{equation}
+
+\noindent When $L \gg \lambda$, this approaches the infinite-cable exponential. When $L \lesssim \lambda$, the sealed end reflects current back, and the voltage at the tip is nearly as large as at the injection site---the entire cable is ``electrically compact.'' The ratio $L/\lambda$ is the \emph{electrotonic length}\index{electrotonic length}: the cable's physical length measured in units of the space constant. A dendrite with $L/\lambda < 0.5$ behaves nearly like a point neuron; one with $L/\lambda > 2$ shows significant spatial filtering.
+
+
+\begin{chaptersummary}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabularx}{\textwidth}{@{}l X X@{}}
+  \toprule
+  \textbf{Concept} & \textbf{Equation} & \textbf{Key Insight} \\
+  \midrule
+  Cable equation &
+  $\displaystyle c_m\pd{V}{t} = \frac{a}{2r_L}\pdd{V}{x} - i_m + i_e$ &
+  Voltage varies in space and time \\
+  %
+  Length constant &
+  $\displaystyle \lambda = \sqrt{\frac{r_m a}{2r_L}}$ &
+  Spatial decay scale; $\propto \sqrt{a}$ \\
+  %
+  Time constant &
+  $\taum = r_m c_m$ &
+  Temporal decay scale \\
+  %
+  Infinite cable &
+  $v(x) \propto e^{-|x|/\lambda}$ &
+  Exponential spatial attenuation \\
+  %
+  Sealed end &
+  $v(x) \propto \cosh((L\!-\!x)/\lambda)$ &
+  Reflection increases distal voltage \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\end{chaptersummary}
+
+\begin{conceptquestions}
+  \item The cable equation has three terms: capacitive current, axial diffusion, and membrane current. Explain the physical origin of each. Which term is absent in a point-neuron model?
+
+  \item Derive the cable equation by writing Kirchhoff's current law for a small segment $\Delta x$ and taking the limit. What physical quantity does each term represent?
+
+  \item The length constant $\lambda = \sqrt{r_m a / (2r_L)}$ depends on the square root of the radius. What does this imply about the relative signal-carrying ability of thick versus thin dendrites? How much thicker must one dendrite be to have twice the length constant?
+
+  \item The membrane time constant $\taum = r_m c_m$ does not depend on the cable's geometry. Why not? What does this tell you about the relationship between spatial and temporal filtering in the cable?
+
+  \item For a steady-state infinite cable, the voltage decays as $e^{-|x|/\lambda}$. A synapse is located one length constant from the soma. What fraction of the synaptic voltage reaches the soma? What if the synapse is at $2\lambda$? At $3\lambda$?
+
+  \item A dendrite has $L/\lambda = 3$. Without computing exact numbers, describe qualitatively how a synaptic potential at the tip would appear at the soma compared to a synapse at the base.
+
+  \item Why does a sealed end increase the voltage at the tip compared to an infinite cable? What is the physical reason for this ``reflection'' of current?
+
+  \item The electrotonic length $L/\lambda$ determines whether a cable behaves like a point neuron ($L/\lambda \ll 1$) or shows significant spatial filtering ($L/\lambda \gg 1$). What are the two ways a neuron could reduce its electrotonic length without changing its physical length?
+
+  \item Compare the cable equation for a passive membrane with the point-neuron membrane equation from \cref{ch:membrane}. Under what conditions does the cable equation reduce to the point-neuron equation?
+
+  \item If the axial resistivity $r_L$ is increased (for example, by reducing the concentration of mobile ions inside the cell), how does each cable parameter ($\lambda$, $\taum$) change? What are the consequences for signal propagation?
+
+  \item A neuron has two dendrites: one thin ($a = 0.5\;\mu\text{m}$) and one thick ($a = 2\;\mu\text{m}$). Both receive identical synaptic inputs at the same physical distance from the soma. Which synapse has more influence on the somatic voltage? Why?
+\end{conceptquestions}

@@ -1,2 +1,159 @@
 \chapter{Single Channels and Stochastic Gating}
-% Content to be written
+\label{ch:single-channels}
+
+\textit{The Hodgkin--Huxley model treats gating variables as continuous fractions: $n$ is the probability that a gate is open, averaged over a large population of channels. But individual channels are discrete---they are either open or closed, and they switch randomly between states. This chapter develops the stochastic description of single-channel gating, shows how the deterministic HH equations emerge as an average over many channels, and introduces conductance-based models that extend HH with additional currents.}
+
+% ============================================================
+\section{From Deterministic to Stochastic}
+\label{sec:deterministic-to-stochastic}
+% ============================================================
+
+A voltage clamp experiment on a patch of membrane containing thousands of channels produces smooth, reproducible current traces. But a patch containing a single channel tells a different story: the current jumps abruptly between zero (channel closed) and a fixed value (channel open), at seemingly random times. The channel is a stochastic switch.
+
+The deterministic gating variable $x(t)$ from \cref{eq:gating} is a population average. It describes the fraction of open gates across many identical channels, not the state of any single channel. When the number of channels is large, the law of large numbers guarantees that the average behaves smoothly. When the number is small---as in a thin dendrite or at a single synapse---the discrete, random switching of individual channels produces significant voltage fluctuations that the deterministic model ignores.
+
+% ============================================================
+\section{Stochastic Simulation of a Single Gate}
+\label{sec:stochastic-gate}
+% ============================================================
+
+Consider a single gate that can be open (state~1) or closed (state~0). The transition probabilities in a small time step $\Delta t$ are
+%
+\begin{equation}
+  \Pr(0 \to 1) = \alpha(V)\,\Delta t, \qquad
+  \Pr(1 \to 0) = \beta(V)\,\Delta t
+  \label{eq:gate-transitions}
+\end{equation}
+%
+where $\alpha(V)$ and $\beta(V)$ are the same voltage-dependent rates from the HH model. To simulate the gate, we draw a uniform random number $\eta \in [0, 1]$ at each time step: if the gate is closed and $\eta < \alpha\,\Delta t$, it opens; if the gate is open and $\eta < \beta\,\Delta t$, it closes; otherwise, the state is unchanged.
+
+This is a discrete-time approximation to a continuous-time Markov process\index{Markov process}. The gate spends random intervals in each state, with mean open time $1/\beta$ and mean closed time $1/\alpha$. The fraction of time spent open, over a long run, converges to $\alpha/(\alpha + \beta) = x_\infty$---exactly the deterministic steady state.
+
+% ============================================================
+\section{Many Channels: Recovering the Deterministic Limit}
+\label{sec:many-channels}
+% ============================================================
+
+Now suppose the membrane patch contains $N$ identical, independent channels, each with the same gate. At any moment, some number $k$ of the $N$ gates are open, and the macroscopic open fraction is $k/N$. Each gate switches independently according to \cref{eq:gate-transitions}.
+
+As $N$ increases, the fluctuations in $k/N$ shrink---roughly as $1/\sqrt{N}$, by the central limit theorem. For $N \sim 10$, the current trace is noisy. For $N \sim 100$, the ensemble average begins to look smooth. For $N \sim 10{,}000$ (a typical patch), the stochastic fluctuations are negligible and the behavior matches the deterministic HH equations.
+
+This is the connection between microscopic and macroscopic descriptions: the HH gating variable $n(t)$ is the expected value of the open fraction, valid when the channel count is large. When the count is small, you must simulate individual channels.
+
+% ============================================================
+\section{The Potassium Channel: From 16 States to 5}
+\label{sec:k-channel-markov}
+% ============================================================
+
+The HH potassium channel has four independent gates ($n^4$). Each gate can be open or closed, giving $2^4 = 16$ possible configurations. But because the gates are identical and independent, only the \emph{number} of open gates matters, not which specific gates are open. We can lump the 16 microstates into 5 macrostates labeled $k = 0, 1, 2, 3, 4$, where $k$ is the number of open gates. The channel conducts only when $k = 4$.
+
+The transition rates between macrostates follow from combinatorics:
+%
+\begin{equation}
+  k \to k+1: \quad (4 - k)\,\alpha_n, \qquad
+  k \to k-1: \quad k\,\beta_n
+  \label{eq:k-channel-rates}
+\end{equation}
+%
+The factor $(4 - k)$ counts the closed gates available to open; the factor $k$ counts the open gates available to close. This 5-state Markov chain is the stochastic counterpart of the deterministic equation $\dot{n} = \alpha_n(1 - n) - \beta_n n$.
+
+% ============================================================
+\section{The Sodium Channel: Activation and Inactivation}
+\label{sec:na-channel-markov}
+% ============================================================
+
+The sodium channel introduces inactivation. In the HH formulation, the open probability is $m^3 h$, where $m$ (activation) and $h$ (inactivation) are assumed independent. This gives $2^3 \times 2 = 16$ microstates, which can again be lumped based on the number of open activation gates and the state of the inactivation gate.
+
+The independence assumption simplifies the Markov model considerably. In reality, inactivation may depend on the activation state (``state-dependent inactivation''), leading to more complex Markov schemes with additional pathways. Distinguishing between these scenarios requires careful single-channel experiments, often involving analysis of open-time distributions and conditional transition probabilities.
+
+At the macroscopic level, both schemes produce similar current traces---the differences show up primarily in single-channel statistics. For our purposes, the independent $m^3 h$ model captures the essential phenomenology: fast activation followed by slower inactivation produces a transient inward current.
+
+% ============================================================
+\section{Conductance-Based Models as a Design Toolkit}
+\label{sec:conductance-toolkit}
+% ============================================================
+
+The HH framework is not limited to two channel types. By adding currents with different kinetics, we can reproduce a wide range of neural firing patterns. The general form is
+%
+\begin{equation}
+  \Cm\frac{\dd V}{\dd t} = I_{\text{ext}} - \sum_i \bar{g}_i\, p_i(V, t)\bigl(V - E_i\bigr)
+  \label{eq:general-conductance}
+\end{equation}
+%
+where each current $i$ has its own maximal conductance $\bar{g}_i$, gating function $p_i$, and reversal potential $E_i$. Choosing which currents to include---and with what kinetics---determines the neuron's behavior.
+
+\subsection{The A-current and delayed firing}
+
+The \emph{Connor--Stevens model}\index{Connor--Stevens model} adds a transient potassium current ($I_A$) to the standard HH channels. The A-current has a low activation threshold and fast activation, but it also inactivates. When the membrane is depolarized from rest, $I_A$ activates quickly and opposes further depolarization. As the A-current inactivates (over tens of milliseconds), its opposition fades and the neuron can finally fire. The result is a characteristic delay to first spike.
+
+The A-current also shapes the neuron's excitability type. With $I_A$, the onset of repetitive firing can occur at arbitrarily low frequencies---a hallmark of Type~I excitability that we will connect to saddle-node bifurcations in \cref{ch:excitability}.
+
+\subsection{Calcium currents and bursting}
+
+Adding a transient calcium current ($I_{\text{CaT}}$) introduces a slow inward current that can sustain a plateau depolarization. When this calcium current interacts with a calcium-activated potassium current, the result is \emph{bursting}\index{bursting}: the calcium current drives a cluster of rapid spikes, the accumulating potassium current eventually terminates the burst, calcium channels de-inactivate during the silent phase, and the cycle repeats.
+
+\subsection{The M-current and adaptation}
+
+The M-type potassium current ($I_M$) activates slowly during sustained firing. As it builds up, the increasing outward current reduces the membrane's excitability, progressively lengthening interspike intervals. This is spike-frequency adaptation\index{spike-frequency adaptation}---the firing rate decreases over time even when the input is constant.
+
+Each of these currents acts as a computational knob. The same basic membrane equation, with different channel inventories, can produce integrators, resonators, bursters, or adapting neurons. The dynamical systems analysis of these behaviors is the subject of \cref{ch:phase-plane-1d,ch:phase-plane-2d,ch:excitability}.
+
+
+\begin{chaptersummary}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabularx}{\textwidth}{@{}l X X@{}}
+  \toprule
+  \textbf{Concept} & \textbf{Equation} & \textbf{Key Insight} \\
+  \midrule
+  Stochastic gate &
+  $\Pr(0\!\to\!1) = \alpha\,\Delta t$ &
+  Individual channels switch randomly \\
+  %
+  Many-channel limit &
+  Fluctuations $\sim 1/\sqrt{N}$ &
+  HH is the $N \to \infty$ average \\
+  %
+  K channel states &
+  $k \to k\!+\!1$: $(4\!-\!k)\alpha_n$ &
+  16 microstates lumped to 5 \\
+  %
+  General conductance model &
+  $\Cm\dot{V} = I - \sum \bar{g}_i p_i(V\!-\!E_i)$ &
+  Channel inventory $\to$ firing pattern \\
+  %
+  A-current &
+  Transient $\text{K}^+$, low threshold &
+  Delayed first spike, Type I excitability \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\end{chaptersummary}
+
+\begin{conceptquestions}
+  \item Why does a single-channel recording show discrete jumps between current levels, while a whole-cell recording shows smooth currents? How many channels are needed before the deterministic HH model becomes a good approximation?
+
+  \item The potassium channel has four independent gates, but the Markov model uses only 5 states instead of 16. What assumption allows this simplification, and when might it break down?
+
+  \item Starting from the transition probabilities in \cref{eq:gate-transitions}, explain why the long-run fraction of time a gate spends open is $\alpha/(\alpha + \beta)$.
+
+  \item The transition rate from state $k$ to state $k+1$ in the potassium channel Markov model is $(4-k)\alpha_n$. Explain the factor $(4-k)$ in physical terms. Why does the opening rate decrease as more gates are already open?
+
+  \item Fluctuations in the open fraction scale as $1/\sqrt{N}$ for $N$ independent channels. A thin dendrite might have only $\sim 10$ sodium channels. What consequences would channel noise have for spike initiation in this compartment?
+
+  \item A single-channel recording under voltage clamp shows random open and closed intervals. What information can you extract from the distribution of open times? What about the distribution of closed times?
+
+  \item The HH model assumes that the activation gates ($m$) and inactivation gate ($h$) of the sodium channel are independent. In a single-channel Markov model, what would ``state-dependent inactivation'' look like, and how would it differ from the independent $m^3 h$ model?
+
+  \item The general conductance-based model $\Cm\dot{V} = I_{\text{ext}} - \sum_i \bar{g}_i\, p_i(V - E_i)$ treats each current as a separate term. What determines how many currents to include in a model? What are the tradeoffs between a minimal model (few currents) and a detailed model (many currents)?
+
+  \item A neuron expressing an A-current shows a long delay before its first spike. Explain qualitatively how a transient outward current near threshold produces this delay, and why the delay disappears for strong stimuli.
+
+  \item How does adding a calcium-activated potassium current produce bursting? Describe the sequence of events during one burst cycle, including the roles of $I_{\text{CaT}}$ and $I_{\text{K(Ca)}}$.
+
+  \item Why is the distinction between ``macroscopic'' (HH-style) and ``microscopic'' (Markov) descriptions important for modeling synaptic transmission, where the number of channels at a single synapse may be very small?
+
+  \item If you voltage-clamp a membrane patch and average the current over many repeated trials, you recover the deterministic HH prediction. Explain why this ensemble average converges to the deterministic model, and what information is lost in the averaging.
+\end{conceptquestions}

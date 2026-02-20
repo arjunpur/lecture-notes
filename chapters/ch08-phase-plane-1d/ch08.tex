@@ -1,2 +1,148 @@
 \chapter{Phase-Space Analysis: One Dimension}
-% Content to be written
+\label{ch:phase-plane-1d}
+
+\textit{The Hodgkin--Huxley model has four state variables, making it hard to visualize. Phase-space methods let us understand the qualitative behavior of dynamical systems---stability, threshold, oscillations---from geometry rather than exact solutions. We begin with one-dimensional systems, where the analysis is particularly clean: fixed points, their stability, and how they appear and disappear as parameters change.}
+
+% ============================================================
+\section{One-Dimensional Flows}
+\label{sec:1d-flows}
+% ============================================================
+
+A one-dimensional dynamical system has a single state variable $x$ evolving according to
+%
+\begin{equation}
+  \dot{x} = F(x;\, a)
+  \label{eq:1d-flow}
+\end{equation}
+%
+where $a$ is a parameter we can control (often the injected current $I_{\text{ext}}$). We cannot always solve this equation in closed form, but we can understand its qualitative behavior by plotting $F(x)$ and reading off the dynamics geometrically.
+
+The key idea is simple: when $F(x) > 0$, $x$ is increasing; when $F(x) < 0$, $x$ is decreasing. We can draw arrows on the $x$-axis showing the direction of motion. This is the \emph{phase portrait}\index{phase portrait} of the system.
+
+% ============================================================
+\section{Fixed Points and Stability}
+\label{sec:fixed-points-1d}
+% ============================================================
+
+A \emph{fixed point}\index{fixed point} $x^*$ is a value where $F(x^*) = 0$---the system is in equilibrium. What happens if we perturb slightly away from $x^*$? We linearize: set $x = x^* + \delta x$ and expand to first order:
+%
+\begin{equation}
+  \dot{\delta x} \approx F'(x^*)\,\delta x
+  \label{eq:1d-linearization}
+\end{equation}
+%
+The perturbation grows or decays exponentially with rate $F'(x^*)$. If $F'(x^*) < 0$, perturbations decay and the fixed point is \emph{stable}\index{stable fixed point}. If $F'(x^*) > 0$, perturbations grow and the fixed point is \emph{unstable}\index{unstable fixed point}.
+
+Graphically, this has a clean interpretation. At a stable fixed point, $F$ crosses zero from above to below (the curve goes from positive to negative as $x$ increases). At an unstable fixed point, $F$ crosses from below to above. You can read off stability directly from the plot of $F(x)$ without computing any derivatives.
+
+\subsection{The potential picture}
+
+When $F(x) = -\dd U/\dd x$ for some function $U(x)$, the dynamics become $\dot{x} = -U'(x)$---the system rolls downhill on the ``energy landscape'' $U(x)$. Stable fixed points are minima of $U$; unstable fixed points are maxima. A ball placed on a hilltop (unstable) rolls down to the nearest valley (stable).
+
+Not every system admits a potential, but the picture is a powerful intuition even when it does not literally apply. In one dimension, the qualitative behavior is always potential-like: trajectories flow toward stable fixed points and away from unstable ones, and no oscillations are possible.
+
+% ============================================================
+\section{Threshold as an Unstable Fixed Point}
+\label{sec:threshold-1d}
+% ============================================================
+
+We can now give ``threshold'' a precise meaning. Consider a simplified neuron model with a single voltage variable:
+%
+\begin{equation}
+  \Cm\dot{V} = -\gleak(V - \Erev{L}) - \gbar{Na}\,\minf(V)\,(V - \Erev{Na}) + I_{\text{ext}}
+  \label{eq:persistent-na}
+\end{equation}
+%
+This is a persistent sodium model\index{persistent sodium model}: the sodium activation $m$ is so fast that we replace it by its steady-state value $\minf(V)$, while the slower variables ($h$, $n$) are frozen at their resting values. The result is a single ODE in $V$.
+
+The function $F(V)$ on the right-hand side is the net current. The leak current is stabilizing (roughly linear, pulling $V$ toward $\Erev{L}$). The persistent sodium current is regenerative: as $V$ increases, $\minf(V)$ increases, which further increases the inward current---a positive feedback loop.
+
+For appropriate parameters, $F(V) = 0$ has three solutions: a stable resting state, an unstable equilibrium, and a regime where the voltage runs away toward $\Erev{Na}$. The unstable equilibrium is the \emph{threshold}\index{threshold}: perturbations below it decay back to rest; perturbations above it trigger a spike. Threshold is not a magic number---it is the voltage at which the sodium positive feedback overwhelms the leak.
+
+% ============================================================
+\section{Saddle-Node Bifurcation}
+\label{sec:saddle-node-1d}
+% ============================================================
+
+As the parameter $a$ (say, the injected current) changes, fixed points can move, appear, or disappear. A \emph{saddle-node bifurcation}\index{saddle-node bifurcation} occurs when a stable and an unstable fixed point collide and annihilate each other.
+
+\begin{keyequation}[Saddle-Node Bifurcation Conditions]
+At a saddle-node bifurcation $(x_f, a_{\text{SN}})$:
+\begin{equation}
+  F(x_f) = 0, \qquad
+  \frac{\partial F}{\partial x}\bigg|_{x_f} = 0, \qquad
+  \frac{\partial^2 F}{\partial x^2}\bigg|_{x_f} \neq 0, \qquad
+  \frac{\partial F}{\partial a}\bigg|_{a_{\text{SN}}} \neq 0
+  \label{eq:sn-conditions}
+\end{equation}
+\tcblower
+The first two conditions say the fixed point is non-hyperbolic (the linearization has a zero eigenvalue). The last two are non-degeneracy conditions ensuring a genuine bifurcation.
+\end{keyequation}
+
+\noindent Just below the bifurcation (say, for $a < a_{\text{SN}}$), two fixed points exist: rest and threshold. At $a = a_{\text{SN}}$, they merge into a single half-stable point. For $a > a_{\text{SN}}$, both fixed points are gone, and there is no stable rest---the system must do something else (typically, fire repetitively).
+
+\subsection{The ghost of the fixed point}
+
+Just above the bifurcation, the fixed points no longer exist, but the function $F(x)$ is still close to zero in the region where they used to be. Trajectories pass through this region very slowly---they linger near the ``ghost'' of the annihilated fixed point. This produces a long latency before the first spike: the neuron sits near the former resting state for hundreds of milliseconds before finally escaping. The closer the current is to the bifurcation value, the longer the latency. This ghost effect is a distinctive signature of saddle-node bifurcations in neurons.
+
+
+\begin{chaptersummary}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabularx}{\textwidth}{@{}l X X@{}}
+  \toprule
+  \textbf{Concept} & \textbf{Equation} & \textbf{Key Insight} \\
+  \midrule
+  1D flow &
+  $\dot{x} = F(x;\, a)$ &
+  Direction of motion from sign of $F$ \\
+  %
+  Stability &
+  $F'(x^*) < 0$: stable &
+  Slope at zero crossing determines stability \\
+  %
+  Potential picture &
+  $\dot{x} = -U'(x)$ &
+  Stable = valley, unstable = hilltop \\
+  %
+  Threshold &
+  Unstable fixed point &
+  Separates basins of rest and spike \\
+  %
+  Saddle-node &
+  $F = 0$, $F' = 0$ &
+  Stable and unstable FPs collide and vanish \\
+  %
+  Ghost effect &
+  Slow passage near former FP &
+  Long latency near bifurcation \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\end{chaptersummary}
+
+\begin{conceptquestions}
+  \item In a one-dimensional system, can you have oscillations? Why or why not? What is the minimum dimension needed for sustained oscillations?
+
+  \item Given a plot of $F(x)$ versus $x$, how can you determine the location and stability of all fixed points by inspection? What graphical feature tells you whether a fixed point is stable or unstable?
+
+  \item The linearization near a fixed point gives $\dot{\delta x} \approx F'(x^*)\,\delta x$. What does it mean for $F'(x^*) = 0$? Why is this case ``non-hyperbolic,'' and why can't linearization tell you the stability?
+
+  \item Explain in your own words why threshold in the persistent sodium model is an unstable fixed point. What two competing forces determine where this point sits?
+
+  \item In the persistent sodium model, sketch $F(V)$ and identify the three fixed points. What happens to the shape of $F(V)$ as you increase $I_{\text{ext}}$? At what current do two of the fixed points disappear?
+
+  \item The potential picture interprets stable fixed points as valleys and unstable ones as hilltops. In this picture, what does a saddle-node bifurcation look like? Sketch the energy landscape $U(x)$ for three values of the parameter: below, at, and above the bifurcation.
+
+  \item Near a saddle-node bifurcation, the neuron shows a long latency before the first spike. Where does this delay come from, and how does it change as the injected current moves further above the bifurcation value?
+
+  \item A saddle-node bifurcation requires four conditions (\cref{eq:sn-conditions}). Explain in physical terms what each condition means. Why are the non-degeneracy conditions ($F'' \neq 0$, $\partial F/\partial a \neq 0$) necessary?
+
+  \item Compare the threshold concept in the LIF model (a fixed voltage $\Vth$) with the threshold concept in the persistent sodium model (an unstable fixed point). Which is more realistic, and why?
+
+  \item Not every one-dimensional system has a potential function $U(x)$. Why not? Give an example of a one-dimensional system $\dot{x} = F(x)$ where a potential always exists, and explain why this makes oscillations impossible.
+
+  \item A neuron model has a single stable fixed point at rest and no other fixed points. Can it produce a spike in response to a brief stimulus? Why or why not?
+\end{conceptquestions}

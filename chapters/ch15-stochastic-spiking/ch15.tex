@@ -1,0 +1,183 @@
+\chapter{Stochastic Spiking and Neural Noise}
+\label{ch:stochastic-spiking}
+
+\textit{Deterministic membrane equations predict a unique trajectory for each input, but real neurons fire variably even under repeated stimulation. This chapter introduces the statistical language needed to analyze stochastic spike trains: interspike-interval distributions, count variability, spectral measures, and signal-transmission metrics such as coherence and information rate. The goal is to connect single-neuron noise statistics to computational function.}
+
+% ============================================================
+\section{Why a Stochastic Description?}
+\label{sec:why-stochastic}
+% ============================================================
+
+In \cref{ch:lif,ch:hodgkin-huxley,ch:excitability}, spikes emerged from deterministic dynamics. If we repeat the same current pulse in those models, we get the same spike train each trial. Real neurons are different: repeated trials show jitter in spike timing, variable spike counts, and spontaneous firing without explicit stimulus.
+
+The sources of variability are multiple: channel noise from stochastic gating (\cref{ch:single-channels}), synaptic release noise, fluctuating network input, and hidden state variables not included in reduced models. A deterministic equation remains useful for the mean trajectory, but statistical descriptors are needed for variability around that mean.
+
+Computationally, this shift matters because information is carried not only by mean firing rates but also by timing precision and trial-to-trial variability. Two neurons with identical mean rates can have very different coding performance if their spike statistics differ.
+
+% ============================================================
+\section{Spike Trains as Point Processes}
+\label{sec:point-process}
+% ============================================================
+
+A spike train is represented as a sum of Dirac impulses at spike times $\{t_k\}$:
+%
+\begin{equation}
+  x(t) = \sum_k \delta(t - t_k)
+  \label{eq:spike-train-delta}
+\end{equation}
+%
+This turns event times into a signal suitable for averaging, spectrum analysis, and linear-response theory.
+
+Define the interspike intervals (ISIs) $T_k = t_{k+1}-t_k$. Their distribution $p_{\text{ISI}}(T)$ is the first statistical object. The mean firing rate is
+%
+\begin{equation}
+  r = \frac{1}{\langle T \rangle}.
+  \label{eq:rate-isi}
+\end{equation}
+%
+
+The coefficient of variation of ISIs is
+%
+\begin{equation}
+  \mathrm{CV} = \frac{\sqrt{\Var[T]}}{\langle T \rangle}.
+  \label{eq:cv}
+\end{equation}
+%
+For near-periodic firing, $\mathrm{CV}\ll 1$; for irregular firing, $\mathrm{CV}\sim 1$; for bursty or heavy-tailed statistics, $\mathrm{CV}>1$.
+
+Computationally, ISI statistics separate distinct coding regimes: reliable temporal coding requires low-jitter ISIs, while high-variability regimes can support probabilistic sampling or exploration.
+
+% ============================================================
+\section{Count Variability and the Fano Factor}
+\label{sec:fano}
+% ============================================================
+
+Let $N_T$ be the number of spikes in a counting window of duration $T$. The Fano factor is
+%
+\begin{keyequation}[Fano Factor]
+\begin{equation}
+  F(T) = \frac{\Var[N_T]}{\mathbb{E}[N_T]}.
+  \label{eq:fano}
+\end{equation}
+\tcblower
+$F=1$: Poisson-like variability, \quad
+$F<1$: more regular than Poisson, \quad
+$F>1$: overdispersed (e.g., bursts, slow-rate fluctuations).
+\end{keyequation}
+
+For renewal processes, short and long windows can yield different behavior; slow gain fluctuations typically inflate $F(T)$ at large $T$. This scale dependence is important experimentally: a neuron may look near-Poisson at 20~ms and strongly overdispersed at 1~s.
+
+Computationally, the Fano factor measures reliability of rate codes. Lower $F$ improves detectability of weak stimulus-driven rate changes in finite observation windows.
+
+% ============================================================
+\section{Spectra, Coherence, and Signal Transmission}
+\label{sec:spectra-coherence}
+% ============================================================
+
+When spikes encode time-varying signals, second-order frequency-domain statistics become central. Let $s(t)$ be a stimulus and $x(t)$ the spike train. Define auto- and cross-spectra $S_{xx}(f)$, $S_{ss}(f)$, and $S_{xs}(f)$.
+
+The coherence between stimulus and spike train is
+%
+\begin{equation}
+  C_{xs}(f) = \frac{|S_{xs}(f)|^2}{S_{xx}(f)S_{ss}(f)},
+  \qquad 0 \le C_{xs}(f) \le 1.
+  \label{eq:coherence}
+\end{equation}
+%
+
+$C_{xs}(f)$ quantifies how well spike fluctuations at frequency $f$ are locked to stimulus fluctuations at the same frequency. The phase of $S_{xs}(f)$ gives the frequency-dependent lag.
+
+A commonly used lower bound on mutual-information rate for Gaussian channels is
+%
+\begin{equation}
+  I \ge -\int_0^{\infty} \log_2\!\bigl(1-C_{xs}(f)\bigr)\,\dd f.
+  \label{eq:info-coherence}
+\end{equation}
+%
+
+Computationally, this framework makes temporal coding measurable: resonator neurons often show coherence peaks near preferred frequencies, while integrator-like neurons transmit more broadband low-frequency content.
+
+% ============================================================
+\section{Noise-Driven Spiking in Reduced Models}
+\label{sec:noise-driven-lif}
+% ============================================================
+
+A minimal stochastic extension of the LIF model adds a fluctuating input term:
+%
+\begin{equation}
+  \taum \frac{\dd V}{\dd t} = -(V-\Erev{L}) + R_m\bigl[I_0 + \sigma\,\xi(t)\bigr],
+  \label{eq:stoch-lif}
+\end{equation}
+%
+with threshold/reset as usual and white noise $\xi(t)$ satisfying
+$\langle \xi(t) \rangle=0$ and
+$\langle \xi(t)\xi(t') \rangle=\delta(t-t')$.
+
+Even when $I_0$ is subthreshold, noise can trigger spikes (escape over an effective barrier). The result is a nonzero spontaneous firing rate with broad ISI statistics. As $\sigma$ increases, CV and Fano factor typically increase, and timing precision relative to fast signals decreases.
+
+Computationally, this connects dynamical excitability to variability statistics: bifurcation type sets deterministic backbone, while noise sets operating-point reliability around that backbone.
+
+% ============================================================
+\section{Spontaneous vs Evoked Activity}
+\label{sec:spont-vs-evoked}
+% ============================================================
+
+In spontaneous activity, statistics are characterized without controlled input: baseline rate, ISI density, CV, Fano factor, and spike-train spectrum. In evoked activity, we additionally measure transfer properties: gain, phase lag, coherence, and information rate.
+
+A practical workflow is:
+(1) estimate baseline renewal statistics,
+(2) apply weak sinusoidal or stochastic stimuli,
+(3) compute linear response and coherence,
+(4) compare observed coding limits to predictions from the baseline noise model.
+
+This workflow links what looks like ``noise'' to what is actually an important determinant of neural computation. Noise sets detection thresholds, response latency distributions, and the precision with which time-varying stimuli can be represented.
+
+
+\begin{chaptersummary}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabularx}{\textwidth}{@{}l X X@{}}
+  \toprule
+  \textbf{Concept} & \textbf{Equation} & \textbf{Key Insight} \\
+  \midrule
+  Spike train representation &
+  $x(t)=\sum_k \delta(t-t_k)$ &
+  Event times as analyzable signal \\
+  %
+  Rate from ISIs &
+  $r = 1/\langle T\rangle$ &
+  Mean interval sets mean firing rate \\
+  %
+  ISI irregularity &
+  $\mathrm{CV}=\sqrt{\Var[T]}/\langle T\rangle$ &
+  Dimensionless timing variability \\
+  %
+  Count variability &
+  $F(T)=\Var[N_T]/\mathbb{E}[N_T]$ &
+  Reliability of rate code in finite windows \\
+  %
+  Coherence &
+  $C_{xs}(f)=|S_{xs}|^2/(S_{xx}S_{ss})$ &
+  Frequency-specific stimulus locking \\
+  %
+  Stochastic LIF &
+  $\taum\dot V=-(V-\Erev{L})+R_m(I_0+\sigma\xi)$ &
+  Noise converts deterministic threshold to probabilistic spiking \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\end{chaptersummary}
+
+\begin{conceptquestions}
+  \item Two neurons have the same mean firing rate but different CV values ($0.2$ vs $1.1$). What distinct coding regimes do these values suggest?
+
+  \item Why can the Fano factor depend strongly on counting-window duration $T$? What mechanism produces large-$T$ overdispersion?
+
+  \item Coherence $C_{xs}(f)$ is high near 10~Hz and low elsewhere. What does this say about the neuron's temporal selectivity and likely excitability class?
+
+  \item In the stochastic LIF model, how can a neuron fire when $I_0$ is subthreshold? How does increasing $\sigma$ qualitatively affect ISI statistics?
+
+  \item Why is it useful to analyze both spontaneous and evoked activity rather than only one of them?
+\end{conceptquestions}
