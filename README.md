@@ -36,5 +36,5 @@ The repo-backed preview site is generated under `site/` and is intentionally not
 
 ## Notes
 
-- The GitHub repository name is still `models-of-neural-systems-notes`, even though the contents now cover multiple courses.
+- The canonical GitHub repository is `arjunpur/lecture-notes`.
 - Bodhi's lecture-notes workflow is configured to read, build, and publish directly from this repo.
