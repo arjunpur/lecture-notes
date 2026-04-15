@@ -1,31 +1,25 @@
-# Build output
-build/
-.tex-cache/
+# LaTeX intermediates
+**/*.aux
+**/*.fdb_latexmk
+**/*.fls
+**/*.log
+**/*.out
+**/*.run.xml
+**/*.toc
+**/*.synctex.gz
+**/*.bbl
+**/*.bcf
+**/*.blg
+**/*.lof
+**/*.lot
+**/*.xdv
 
-# LaTeX auxiliary files
-*.aux
-*.bbl
-*.bcf
-*.blg
-*.fdb_latexmk
-*.fls
-*.idx
-*.ilg
-*.ind
-*.lof
-*.log
-*.lot
-*.out
-*.run.xml
-*.synctex.gz
-*.toc
+# Build caches
+**/.tex-cache/
+**/build/
 
-# OS files
+# OS/editor noise
 .DS_Store
-Thumbs.db
 
-# Editor files
-*.swp
-*.swo
-*~
-.vscode/
+# Repo-backed preview site
+site/

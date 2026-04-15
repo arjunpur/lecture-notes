@@ -18,16 +18,10 @@
 \RequirePackage{microtype}
 
 \defaultfontfeatures{Ligatures=TeX}
-\setmainfont{STIX Two Text}[
-  Scale=1.0,
-  UprightFont=*-Regular,
-  BoldFont=*-Bold,
-  ItalicFont=*-Italic,
-  BoldItalicFont=*-BoldItalic
-]
-\setsansfont{Helvetica Neue}[Scale=MatchLowercase]
+\setmainfont{TeX Gyre Pagella}
+\setsansfont{TeX Gyre Heros}[Scale=MatchLowercase]
 \setmonofont{Latin Modern Mono}[Scale=MatchLowercase]
-\setmathfont{STIX Two Math}
+\setmathfont{TeX Gyre Pagella Math}
 
 % ---------- Layout ----------
 \RequirePackage{geometry}

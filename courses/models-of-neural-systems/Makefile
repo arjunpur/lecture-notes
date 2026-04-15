@@ -18,6 +18,8 @@ CHAPTERS := ch01-simple-units ch02-learning ch03-visual-receptive-fields \
 all:
 	@mkdir -p $(LATEX_CACHE) build $(addprefix build/chapters/,$(CHAPTERS))
 	$(ENV) $(LATEXMK) $(LATEXMK_FLAGS) $(DOC).tex
+	cp build/$(DOC).pdf $(DOC).pdf
+	cp build/$(DOC).pdf models-of-neural-systems-lecture-notes.pdf
 
 watch:
 	@mkdir -p $(LATEX_CACHE) build
