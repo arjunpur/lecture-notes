@@ -6,6 +6,7 @@ This repository holds Bodhi-managed LaTeX lecture notes for multiple courses.
 
 - `courses/models-of-neural-systems/`
 - `courses/machine-intelligence-i/`
+- `courses/acquisition-and-analysis-of-neural-data-summer/`
 
 Each course directory is self-contained and should be buildable from inside that directory.
 
@@ -31,6 +32,7 @@ Each course keeps its current canonical export in the course directory:
 
 - `courses/models-of-neural-systems/models-of-neural-systems-lecture-notes.pdf`
 - `courses/machine-intelligence-i/machine-intelligence-i-lecture-notes.pdf`
+- `courses/acquisition-and-analysis-of-neural-data-summer/acquisition-and-analysis-of-neural-data-summer-lecture-notes.pdf`
 
 The repo-backed preview site is generated under `site/` and is intentionally not committed.
 
