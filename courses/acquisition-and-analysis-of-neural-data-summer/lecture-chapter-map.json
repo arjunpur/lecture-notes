@@ -1,0 +1,17 @@
+{
+  "lectures": [
+    {
+      "lecture_slug": "spikes-part-1-lecture-1",
+      "title": "Spikes (Part 1) - Lecture 1",
+      "slide_filename": "Spikes (Part 1) - Lecture 1 - Slides.pdf",
+      "chapter_paths": [
+        "main.tex"
+      ],
+      "aliases": [
+        "Lecture 1: Slides",
+        "Spikes (Part 1)",
+        "Spikes"
+      ]
+    }
+  ]
+}
