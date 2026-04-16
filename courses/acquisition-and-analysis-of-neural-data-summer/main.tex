@@ -71,10 +71,10 @@ The lecture briefly contrasted the main recording modalities relevant to spike a
 Recording from the soma or axon directly reveals the full membrane potential trajectory, including subthreshold fluctuations and the full spike waveform. This provides rich mechanistic information, but such recordings are technically demanding and often limited to few neurons at a time.
 
 \paragraph{Extracellular recordings.}
-When an electrode is placed outside the neuron, the measured voltage deflection is much smaller than the intracellular signal, but spikes can still be detected as transient events. Extracellular recording is therefore the standard route to collecting spike trains from many neurons in vivo. In the lecture, tetrodes were highlighted as an important example: by recording from several nearby contacts simultaneously, one can improve \emph{spike sorting}, i.e. the separation of spikes emitted by different neurons.
+When an electrode is placed outside the neuron, the measured voltage deflection is much smaller than the intracellular signal, but spikes can still be detected as transient events. Extracellular recording is therefore the standard route to collecting spike trains from many neurons in vivo. In the lecture, tetrodes were highlighted as an important example: by recording from several nearby contacts simultaneously, one can improve \emph{spike sorting}, i.e. the separation of spikes emitted by different neurons. The lecture also emphasized the strong spatial attenuation of extracellular signals: as a rough rule of thumb, individual spikes are most detectable only within distances on the order of $100\,\mu\mathrm{m}$ from the recording site. This is why electrode spacing matters. To isolate single neurons reliably, contacts typically need to be separated on the order of $150\,\mu\mathrm{m}$ so that nearby cells produce distinguishable signatures across channels; beyond that range, attributing a waveform to one neuron becomes much harder.
 
 \paragraph{Population-level signals.}
-The lecture also alluded to larger-scale signals such as EEG, local field potentials (LFP), and multiunit activity (MUA). These are related to neural activity, but they are not equivalent to isolated single-neuron spike trains. Their relationship to spiking becomes especially important once one studies coordinated population activity.
+The lecture also alluded to larger-scale signals such as EEG, local field potentials (LFP), and multiunit activity (MUA). These are related to neural activity, but they are not equivalent to isolated single-neuron spike trains. Their relationship to spiking becomes especially important once one studies coordinated population activity. EEG in particular reflects the aggregate activity of many neurons recorded from the brain surface, so one should usually not expect to isolate a single neuron from it. Only in special circumstances---for example very long recordings with unusually favorable geometry and electrode placement---can one hope to infer more spatially specific structure from such signals.
 
 \section{Spike trains as mathematical objects}
 
@@ -194,7 +194,7 @@ z, & z\ge 0,\\
 0, & z<0.
 \end{cases}
 \]
-Unlike the rectangular and Gaussian kernels, this filter vanishes for negative times and therefore depends only on present and past spikes. It is closer to causal synaptic filtering, but it is biased toward positive times because each spike contributes only after it occurs.
+Unlike the rectangular and Gaussian kernels, this filter vanishes for negative times and therefore depends only on present and past spikes. It is closer to causal synaptic filtering, but it is biased toward positive times because each spike contributes only after it occurs. In practical use, the lecture suggested choosing the characteristic timescale $\alpha^{-1}$ on the order of $10$--$15\,\mathrm{ms}$ as a reasonable causal smoothing window, while still relating the final choice to the mean interspike interval of the neuron under study.
 
 \subsection{Bias-variance trade-off in rate estimation}
 
@@ -247,7 +247,7 @@ If $\rho_k(t)$ denotes the response on trial $k$ and there are $N$ trials, the t
 \[
 \langle \rho(t) \rangle := \frac{1}{N}\sum_{k=1}^{N} \rho_k(t).
 \]
-This quantity is mathematically well defined, but by itself it is still a sum of delta functions and therefore does not become a smooth ordinary function. For that reason, the lecture emphasized that $\langle \rho(t) \rangle$ alone is usually not the final object of interest.
+This quantity is mathematically well defined, but by itself it is still a sum of delta functions and therefore does not become a smooth ordinary function. Summing spike trains across trials and dividing by $N$ still leaves an aggregate point process rather than a directly interpretable rate curve. For that reason, the lecture emphasized that $\langle \rho(t) \rangle$ alone is usually not the final object of interest.
 
 \subsection{Trial average combined with temporal averaging}
 
@@ -256,7 +256,7 @@ A practically useful quantity is obtained by averaging across trials and then sm
 \langle r(t) \rangle := \frac{1}{\Delta t}
 \int_t^{t+\Delta t} \langle \rho(\tau) \rangle\,d\tau.
 \]
-This is the trial-averaged, time-dependent firing rate.
+This is the trial-averaged, time-dependent firing rate. Operationally, one can think of this as sliding a small rectangular window across the aggregated response function and counting how much spike mass falls into each window. With sufficiently small bins, this produces a granular but much more interpretable description of how firing rate evolves over time.
 
 Because averaging has already reduced variability across trials, one can often choose much smaller temporal windows than for a single-trial estimate. This is one reason why peristimulus time histograms and related averages are so informative in sensory neuroscience.
 
@@ -292,7 +292,9 @@ This local probabilistic interpretation explains why firing rates are so useful 
 
 The lecture illustrated that the same time-dependent mean rate can arise from qualitatively different single-trial statistics. For example, spikes might appear nearly independent across trials, or they might be clustered or otherwise interdependent within a trial. In both cases the averaged curve $\langle r(t) \rangle$ could look very similar.
 
-So a firing rate captures the first-order tendency to spike, but not the full structure of variability. Later analyses therefore need tools beyond rate curves alone, such as interval statistics, count variability, correlations, and explicit stochastic spike-train models.
+A useful classroom example is a raster in which each trial contains a single spike and those spikes are spread rather evenly across the observation window. By eye, one may be tempted to say that the neuron has a constant firing tendency and that nothing suggests temporal clustering. But this kind of visual impression is not, by itself, evidence for independence. The lecture explicitly raised the question of how one would justify such a claim quantitatively rather than rhetorically.
+
+So a firing rate captures the first-order tendency to spike, but not the full structure of variability. Later analyses therefore need tools beyond rate curves alone, such as interval statistics, count variability, correlations, and explicit stochastic spike-train models. In particular, one wants statistics that compare variability across trials to what would be expected under an independent-spiking model. Spike-count variance, Fano factors, interspike-interval structure, or cross-trial correlation analyses are examples of the kinds of measures needed to move from visual inspection to defensible inference.
 
 \section{Averaging across neurons}
 
