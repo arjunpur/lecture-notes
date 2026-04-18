@@ -1,0 +1,42 @@
+\chapter{Course Overview and Data Analysis Workflow}
+
+Acquiring neural data is only the first step. Once an experiment has produced spike trains, local field potentials, calcium traces, or behavior-aligned recordings, the real work begins: organizing the data, defining the response variables, choosing sensible summary statistics, and building analyses that survive contact with noise and biological variability.
+
+This repository is structured to support that full workflow. The LaTeX side is optimized for durable notes, derivations, and literature synthesis. The Python side is optimized for reusable analysis code, figure generation, and quick experiments that can later graduate into polished notebooks or scripts.
+
+\section{Repository philosophy}
+
+The guiding principle is that prose and computation should reinforce each other. When you derive a point-process estimator in the notes, the corresponding Python module should be able to simulate or visualize it. When you explore a new preprocessing pipeline in code, the main conceptual takeaways should migrate back into the notes.
+
+\begin{aside}[Core workflow]
+Start from raw measurements, define the neural response representation, build summary statistics, and only then fit heavier models. Clean abstractions early make later inference much easier.
+\end{aside}
+
+\section{Minimal analysis loop}
+
+A useful first-pass workflow for many neural datasets is:
+\begin{enumerate}
+  \item load and validate raw data,
+  \item align signals to task-relevant events,
+  \item compute simple descriptive statistics,
+  \item visualize structure before fitting models,
+  \item and keep the full pipeline reproducible.
+\end{enumerate}
+
+This sequence sounds obvious, but it guards against many common mistakes. It is often more informative to examine rasters, marginal distributions, and trial averages before building a large decoding model. Classic computational-neuroscience texts repeatedly emphasize that representation choices shape every downstream conclusion \parencite{dayan2001theoretical,gerstner2014neuronal,paninski2007statistical}.
+
+\begin{keyequation}[Canonical rate estimate]
+\[
+r(t) = \sum_{i=1}^{n} w(t-t_i)
+\]
+\tcblower
+Here $w$ is a smoothing kernel and $t_i$ are spike times. This simple construction turns a point process into a continuous signal that can be visualized, compared across conditions, and passed into downstream models.
+\end{keyequation}
+
+\section{Code organization}
+
+The Python package in \texttt{src/} is intentionally small at the outset. It exposes a few path helpers and a demo analysis function so that the repository is immediately runnable. From here, the natural expansion points are dataset-specific loaders, feature extraction utilities, plotting helpers, and reproducible studies in \texttt{notebooks/}.
+
+\section{Next steps}
+
+As the repository grows, add one chapter per lecture block, keep citations in \texttt{backmatter/references.bib}, and let code mature from quick scripts into tested utilities. That way the repository remains both a notes archive and a computational lab notebook.

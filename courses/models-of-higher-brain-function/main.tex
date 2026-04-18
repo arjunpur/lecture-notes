@@ -1,0 +1,30 @@
+\documentclass{coursenotes}
+\usepackage{coursenotes-macros}
+\usepackage{coursenotes-environments}
+
+\usepackage[backend=biber, style=alphabetic, maxbibnames=99]{biblatex}
+\addbibresource{backmatter/references.bib}
+
+\title{Models of Higher Brain Function\\[0.5em]
+  \large Lecture Notes}
+\author{Arjun Puri}
+\date{Summer 2026}
+
+\begin{document}
+
+\frontmatter
+\input{frontmatter/titlepage}
+\tableofcontents
+\input{frontmatter/preface}
+\input{frontmatter/notation}
+
+\mainmatter
+
+\part{Foundations}
+\include{chapters/ch01-course-overview/ch01}
+
+\backmatter
+
+\printbibliography[heading=bibintoc]
+
+\end{document}

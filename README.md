@@ -4,9 +4,11 @@ This repository holds Bodhi-managed LaTeX lecture notes for multiple courses.
 
 ## Courses
 
+- `courses/acquisition-and-analysis-of-neural-data/`
 - `courses/models-of-neural-systems/`
 - `courses/machine-intelligence-i/`
 - `courses/acquisition-and-analysis-of-neural-data-summer/`
+- `courses/models-of-higher-brain-function/`
 
 Each course directory is self-contained and should be buildable from inside that directory.
 
