@@ -15,7 +15,7 @@ PYTHONPATH_EXPORT := PYTHONPATH=$(CURDIR)/src
 all: pdf
 
 pdf:
-	@mkdir -p $(LATEX_CACHE) build build/chapters/ch01-course-overview
+	@mkdir -p $(LATEX_CACHE) build build/chapters/ch01-course-overview build/chapters/ch02-visual-perception-deep-learning
 	$(ENV) $(LATEXMK) $(LATEXMK_FLAGS) $(DOC).tex
 	cp build/$(DOC).pdf $(DOC).pdf
 	cp build/$(DOC).pdf $(COURSE_SLUG)-lecture-notes.pdf
