@@ -3,7 +3,7 @@
   "lectures": [
     {
       "lecture_slug": "visual-perception-and-deep-learning",
-      "title": "Visual Perception and Deep Learning",
+      "title": "Lecture 1: Visual Perception and Deep Learning",
       "slide_filename": "Vision 1 - Deep Learning.pdf",
       "chapter_paths": [
         "chapters/ch02-visual-perception-deep-learning/ch02.tex"
@@ -12,7 +12,8 @@
         "Vision 1 - Deep Learning",
         "Deep Learning for Vision",
         "Lecture 01",
-        "Visual Perception"
+        "Visual Perception",
+        "Visual Perception and Deep Learning"
       ]
     }
   ]
