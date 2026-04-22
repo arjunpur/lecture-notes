@@ -12,8 +12,9 @@
 \usepackage{pgfplots}
 \usetikzlibrary{arrows.meta,positioning,calc}
 \pgfplotsset{compat=1.18}
+\setcounter{tocdepth}{3}
 
-\title{Acquisition and Analysis of Neural Data\\Spikes (Part 1) Lecture Notes}
+\title{Acquisition and Analysis of Neural Data\\Lecture Notes}
 \author{Bodhi for Arjun Puri}
 \date{}
 
@@ -21,13 +22,15 @@
 \maketitle
 \tableofcontents
 
-\section{Neural coding: encoding and decoding}
+\section{Lecture 1: Spikes (Part 1)}
+
+\subsection{Neural coding: encoding and decoding}
 
 These notes cover the opening lecture of the spike-train block of \emph{Acquisition and Analysis of Neural Data}. The lecture follows the beginning of Chapter 1 of Dayan and Abbott's \emph{Theoretical Neuroscience} and introduces the central problem of the course: how to relate spike trains to stimuli, actions, and internal neural computations.
 
 The broad theme is \emph{neural coding}. A nervous system receives inputs from the world, transforms them through neural circuitry, and produces outputs such as motor commands or decisions. The experimentally accessible signals are often sequences of action potentials, or \emph{spikes}. Understanding which aspects of those spike trains carry information is the starting point for both neural data analysis and theoretical neuroscience.
 
-\subsection{Why spikes matter}
+\subsubsection{Why spikes matter}
 
 Neurons come in a wide range of morphologies and biophysical specializations, but across cell types the action potential is the basic long-range signaling event. In contrast to graded membrane fluctuations, spikes have a remarkably stereotyped waveform once initiated. The lecture emphasized several key properties:
 \begin{itemize}
@@ -41,7 +44,7 @@ Neurons come in a wide range of morphologies and biophysical specializations, bu
 
 This stereotypy is both a blessing and a limitation. It is a blessing because spike times can be identified robustly and compared across trials. It is a limitation because, once we reduce neural activity to spike times, much of the subthreshold membrane dynamics is discarded. The coding question therefore becomes: \emph{which statistical features of the spike train should be treated as the neural response?}
 
-\subsection{From stimulus to response, and back again}
+\subsubsection{From stimulus to response, and back again}
 
 The lecture framed neural coding through two complementary tasks:
 \begin{itemize}
@@ -64,7 +67,7 @@ Here the word ``stimulus'' should be interpreted broadly. In sensory systems it 
 
 This distinction is foundational for the rest of the course. Lectures 1--2 focus mainly on encoding, Lecture 3 turns to decoding, and later lectures add information-theoretic viewpoints.
 
-\subsection{Recording neural signals}
+\subsubsection{Recording neural signals}
 
 The lecture briefly contrasted the main recording modalities relevant to spike analysis.
 
@@ -77,11 +80,11 @@ When an electrode is placed outside the neuron, the measured voltage deflection 
 \paragraph{Population-level signals.}
 The lecture also alluded to larger-scale signals such as EEG, local field potentials (LFP), and multiunit activity (MUA). These are related to neural activity, but they are not equivalent to isolated single-neuron spike trains. Their relationship to spiking becomes especially important once one studies coordinated population activity. EEG in particular reflects the aggregate activity of many neurons recorded from the brain surface, so one should usually not expect to isolate a single neuron from it. Only in special circumstances---for example very long recordings with unusually favorable geometry and electrode placement---can one hope to infer more spatially specific structure from such signals.
 
-\section{Spike trains as mathematical objects}
+\subsection{Spike trains as mathematical objects}
 
 To analyze spikes quantitatively, we need a representation that is precise enough for mathematics but still close to the data. The lecture introduced the standard point-process description.
 
-\subsection{Spike times and the neural response function}
+\subsubsection{Spike times and the neural response function}
 
 Suppose a neuron emits spikes at times
 \[
@@ -95,7 +98,7 @@ where $\delta$ denotes the Dirac delta.
 
 This notation is extremely useful. It packages an entire spike train into a single object while preserving exact spike timing. The response function $\rho(t)$ is not an ordinary function in the classical sense; rather, it is a generalized function or distribution. Informally, it is zero everywhere except at spike times, yet its integral over a region counts spikes in that region.
 
-\subsection{The role of the Dirac delta}
+\subsubsection{The role of the Dirac delta}
 
 The lecture used a heuristic representation of the delta function as a limit of narrower and taller rectangles. Formally, the object is best characterized by its defining properties:
 \begin{align*}
@@ -115,7 +118,7 @@ For spike trains this gives an immediate interpretation:
 \]
 So $\rho$ is the mathematically clean object from which various notions of firing rate can be derived.
 
-\section{Why introduce a firing rate?}
+\subsection{Why introduce a firing rate?}
 
 A single spike train is a set of discrete events in time, whereas many stimuli of interest are continuous and time-varying. This mismatch motivates the introduction of a smoother response descriptor. The lecture's answer is the \emph{firing rate}: a rate-like quantity obtained by averaging the spike train in time, across trials, across neurons, or by combinations of these operations.
 
@@ -123,9 +126,9 @@ Raster plots make the need for averaging visually obvious. Repeated presentation
 
 At the same time, the lecture stressed an important conceptual warning: there is \emph{no unique firing rate hidden inside a finite dataset}. Different averaging procedures produce different rate estimates, each with different biases and interpretations.
 
-\section{Temporal averaging of a single spike train}
+\subsection{Temporal averaging of a single spike train}
 
-\subsection{Binning}
+\subsubsection{Binning}
 
 The simplest construction divides time into bins of width $\Delta t$. If $n_k$ is the number of spikes in bin $k$, then the binned firing rate is
 \[
@@ -147,7 +150,7 @@ Binning is simple and intuitive, but it has two limitations already emphasized i
 \end{itemize}
 A spike that falls just to the left or right of a bin edge can change the binned curve substantially.
 
-\subsection{Linear filtering}
+\subsubsection{Linear filtering}
 
 A more flexible alternative is to smooth the spike train with a normalized kernel $w$:
 \[
@@ -163,7 +166,7 @@ Thus, linear filtering turns the spike train into a sum of shifted kernel shapes
 
 This is one of the most useful formulas in the lecture. It says that a firing-rate estimate is not something mysterious; it is simply what results when each spike is replaced by a small template and all templates are added together.
 
-\subsection{Common kernel choices}
+\subsubsection{Common kernel choices}
 
 \paragraph{Rectangular kernel.}
 A sliding-window or running-average estimate uses
@@ -197,7 +200,7 @@ z, & z\ge 0,\\
 \]
 Unlike the rectangular and Gaussian kernels, this filter vanishes for negative times and therefore depends only on present and past spikes. It is closer to causal synaptic filtering, but it is biased toward positive times because each spike contributes only after it occurs. In practical use, the lecture suggested choosing the characteristic timescale $\alpha^{-1}$ on the order of $10$--$15\,\mathrm{ms}$ as a reasonable causal smoothing window, while still relating the final choice to the mean interspike interval of the neuron under study.
 
-\subsection{Bias-variance trade-off in rate estimation}
+\subsubsection{Bias-variance trade-off in rate estimation}
 
 The lecture summarized the main trade-off succinctly:
 \begin{itemize}
@@ -236,11 +239,11 @@ If one smooths on a much shorter timescale than the typical spacing between spik
 \caption{Schematic view of temporal averaging. The spike train $\rho(t)$ is converted into a rate estimate $r(t)$ by replacing each spike with a kernel and summing the resulting contributions.}
 \end{figure}
 
-\subsection{What temporal averaging changes}
+\subsubsection{What temporal averaging changes}
 
 Temporal smoothing is not an innocent visualization step. It changes the statistics of the data. In particular, smoothing introduces artificial temporal correlations: nearby values of $r(t)$ are similar partly because the same spikes contribute to both. This is why one must interpret smoothed rates with care, especially when making claims about temporal precision or causality.
 
-\section{Trial averaging}
+\subsection{Trial averaging}
 
 Temporal smoothing is not the only way to average. When the same stimulus is presented repeatedly, one can average across trials.
 
@@ -250,7 +253,7 @@ If $\rho_k(t)$ denotes the response on trial $k$ and there are $N$ trials, the t
 \]
 This quantity is mathematically well defined, but by itself it is still a sum of delta functions and therefore does not become a smooth ordinary function. Summing spike trains across trials and dividing by $N$ still leaves an aggregate point process rather than a directly interpretable rate curve. For that reason, the lecture emphasized that $\langle \rho(t) \rangle$ alone is usually not the final object of interest.
 
-\subsection{Trial average combined with temporal averaging}
+\subsubsection{Trial average combined with temporal averaging}
 
 A practically useful quantity is obtained by averaging across trials and then smoothing in time. Using a rectangular window of width $\Delta t$ gives
 \[
@@ -268,7 +271,7 @@ A further special case is the average firing rate over the whole trial:
 \]
 This scalar summarizes how strongly the neuron responds on average under a fixed stimulus condition.
 
-\subsection{Interpreting $\langle r(t) \rangle$}
+\subsubsection{Interpreting $\langle r(t) \rangle$}
 
 The lecture gave two especially important interpretations.
 
@@ -289,7 +292,7 @@ can be interpreted as the probability of observing a spike in that window on a g
 
 This local probabilistic interpretation explains why firing rates are so useful in encoding models: a time-dependent rate can be viewed as the intensity of an inhomogeneous point process.
 
-\subsection{What a firing rate does not tell you}
+\subsubsection{What a firing rate does not tell you}
 
 The lecture illustrated that the same time-dependent mean rate can arise from qualitatively different single-trial statistics. For example, spikes might appear nearly independent across trials, or they might be clustered or otherwise interdependent within a trial. In both cases the averaged curve $\langle r(t) \rangle$ could look very similar.
 
@@ -297,7 +300,7 @@ A useful classroom example is a raster in which each trial contains a single spi
 
 So a firing rate captures the first-order tendency to spike, but not the full structure of variability. Later analyses therefore need tools beyond rate curves alone, such as interval statistics, count variability, correlations, and explicit stochastic spike-train models. In particular, one wants statistics that compare variability across trials to what would be expected under an independent-spiking model. Spike-count variance, Fano factors, interspike-interval structure, or cross-trial correlation analyses are examples of the kinds of measures needed to move from visual inspection to defensible inference.
 
-\section{Averaging across neurons}
+\subsection{Averaging across neurons}
 
 The lecture also introduced a third kind of averaging: averaging over neurons rather than over time or repeated presentations.
 
@@ -313,13 +316,13 @@ Applying temporal smoothing then gives a neuron-averaged, time-dependent firing 
 \]
 As with trial averaging, averaging over many neurons can justify using relatively small temporal windows because stochastic variability is reduced by pooling.
 
-\subsection{The independence caveat}
+\subsubsection{The independence caveat}
 
 The lecture's auditory-cortex example made the central caution explicit: neurons are generally \emph{not} independent. If neurons are recorded in different trials and then averaged together, the result does not automatically reconstruct what a simultaneously active population would have done in a single trial.
 
 This matters because correlated population activity can reflect common input, shared network state, oscillations, or stimulus-locked structure. The lecture connected this to the relation between spiking, local field potentials, and multiunit activity. Population codes therefore require more than simply averaging isolated single-neuron recordings gathered under superficially similar conditions.
 
-\section{Summary of rate concepts introduced in the lecture}
+\subsection{Summary of rate concepts introduced in the lecture}
 
 The lecture used the term ``firing rate'' in several related but non-identical senses. It is useful to keep them distinct:
 
@@ -344,7 +347,7 @@ Two conceptual conclusions from the lecture are worth making explicit:
     \item Any particular rate estimate reflects the averaging operation used to define it. The estimate is therefore useful only when its construction matches the scientific question.
 \end{enumerate}
 
-\section{Tuning curves as the simplest encoding model}
+\subsection{Tuning curves as the simplest encoding model}
 
 After introducing firing rates, the lecture moved to the simplest kind of encoding relationship: the dependence of average firing rate on a constant stimulus parameter.
 
@@ -356,7 +359,7 @@ called a \emph{tuning curve}. Here $s$ is one-dimensional, such as orientation, 
 
 Tuning curves are deliberately low-dimensional summaries. They ignore trial-to-trial fluctuations and much of the temporal structure of spike trains, but they are often the right starting point for characterizing what variable a neuron is sensitive to.
 
-\subsection{Gaussian tuning curves}
+\subsubsection{Gaussian tuning curves}
 
 In visual cortex, some neurons respond preferentially to a particular stimulus value and decrease their firing as the stimulus moves away from that preferred value. A common idealized form is the Gaussian tuning curve,
 \[
@@ -366,7 +369,7 @@ where $r_0$ is a baseline rate, $A$ is the response amplitude, $s_0$ is the pref
 
 The shape expresses a simple encoding principle: the neuron is most active near its preferred feature value and less active for dissimilar inputs.
 
-\subsection{Cosine tuning curves}
+\subsubsection{Cosine tuning curves}
 
 In motor cortex, directional responses are often approximated by a cosine,
 \[
@@ -421,7 +424,7 @@ Cosine tuning is especially convenient because it connects naturally to vector r
 \caption{Two canonical tuning-curve shapes emphasized in the lecture: Gaussian tuning, often used for sensory selectivity, and cosine tuning, often used for directional motor responses.}
 \end{figure}
 
-\section{Conceptual takeaways from Lecture 1}
+\subsection{Conceptual takeaways from Lecture 1}
 
 The first lecture established the language used throughout the rest of the spike-train unit.
 
@@ -436,12 +439,16 @@ The first lecture established the language used throughout the rest of the spike
 
 These ideas will support the next steps in the course: understanding spike-train variability more explicitly, constructing richer encoding models, and ultimately asking how stimuli or movements can be decoded from neural activity.
 
-\section*{Sources mentioned in the lecture}
+\subsection*{Sources mentioned in Lecture 1}
 
 \begin{itemize}
     \item P. Dayan and L. F. Abbott (2001), \emph{Theoretical Neuroscience: Computational and Mathematical Modeling of Neural Systems}. MIT Press.
     \item A. Luczak, P. B. Barto, and K. D. Harris (2013), experimental examples on population activity in auditory cortex discussed in the lecture slides.
     \item G. Buzs\'aki (2004), extracellular recording and tetrode context discussed in the lecture slides.
 \end{itemize}
+
+\section{Lecture 2}
+
+\emph{Lecture 2 notes will be added here once the slide deck is available.}
 
 \end{document}
