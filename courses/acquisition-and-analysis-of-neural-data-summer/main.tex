@@ -448,14 +448,314 @@ These ideas will support the next steps in the course: understanding spike-train
 \end{itemize}
 
 \clearpage
-\section{Lecture 2}
+\section{Lecture 2: Time-dependent encoding and spike-train statistics}
 
-\subsection{Reserved lecture section}
+Lecture 1 introduced the simplest encoding picture: a constant stimulus parameter mapped to an average firing rate through a tuning curve. Lecture 2 generalizes that picture to \emph{time-dependent stimuli} and \emph{time-dependent firing rates}. The central question becomes: if a neuron emits a spike at time $t_i$, what was the stimulus doing shortly before that spike, and what statistical structure of the spike train is needed to answer that question rigorously?
 
-This section is reserved for the second lecture in the \emph{Acquisition and Analysis of Neural Data} notes. It is intentionally present now so the notes grow lecture-by-lecture, rather than treating the first lecture as if it were a full chapter block.
+The lecture pursued this question in two linked steps. First, it introduced the \emph{spike-triggered average} (STA), which summarizes the typical stimulus pattern preceding spikes and thereby connects encoding to reverse-correlation methods. Second, it shifted from rate descriptions alone to explicit \emph{spike-train statistics}, using the homogeneous Poisson process as the simplest tractable probabilistic model.
 
-\subsection{Planned expansion}
+\subsection{From static tuning curves to time-dependent encoding}
 
-Once the Lecture 2 slide deck is available, this section will be expanded into full notes with its own nested subsections, figures, and references, following the same lecture-level structure now used for Lecture 1.
+The conceptual move from Lecture 1 to Lecture 2 is easy to state but important to internalize:
+\begin{itemize}
+    \item for static or slowly varying conditions, one often writes an encoding relation of the form
+    \[
+    s \mapsto \langle r \rangle,
+    \]
+    where a fixed stimulus value is associated with an average firing rate;
+    \item for genuinely time-varying stimuli, the natural object is instead
+    \[
+    s(t) \mapsto \langle r(t) \rangle.
+    \]
+\end{itemize}
+
+This is a much richer problem. The neuron is no longer characterized only by which stimulus value it prefers; one also wants to know \emph{which temporal patterns} of the stimulus tend to precede spiking. In other words, one is now asking about a neuron's temporal receptive field rather than only about a static tuning curve.
+
+\subsection{The spike-triggered average}
+
+\subsubsection{Definition and intuition}
+
+Suppose a spike train contains spike times $t_1,\dots,t_n$ during an observation window, and suppose a time-dependent stimulus $s(t)$ is presented during that same window. The spike-triggered average is defined by averaging the stimulus trace at a fixed temporal lag before each spike:
+\[
+C(\tau) := \left\langle \frac{1}{n}\sum_{i=1}^{n} s(t_i-\tau)\right\rangle .
+\]
+Here $\langle \cdot \rangle$ denotes an average over repeated trials or repetitions of the same stimulus condition.
+
+The sign convention matters. The argument $t_i-\tau$ means that positive $\tau$ corresponds to looking \emph{backward in time} from the spike. Thus, $C(\tau)$ answers the question:
+\begin{quote}
+What did the stimulus typically look like $\tau$ milliseconds before a spike occurred?
+\end{quote}
+
+Operationally, the computation is simple:
+\begin{enumerate}
+    \item take each spike time as an alignment point,
+    \item cut out a short window of stimulus values preceding that spike,
+    \item align these stimulus snippets at the spike,
+    \item and average them.
+\end{enumerate}
+
+The result is a typical pre-spike stimulus waveform. If the neuron is systematically driven by some particular stimulus pattern, that structure should appear in the STA.
+
+\subsubsection{What the STA is trying to reveal}
+
+The STA is useful because it compresses a potentially complicated stimulus-response relationship into an interpretable time course. Instead of asking for the full joint distribution of stimulus histories and spike trains, one asks for the average stimulus history conditioned on spiking. The method is therefore especially attractive as a first pass at identifying which stimulus features matter for firing.
+
+The lecture emphasized that the STA is an \emph{encoding} tool. It does not tell us what information the neuron ultimately transmits to a downstream observer. Rather, it characterizes what kinds of stimulus fluctuations tend to drive the neuron strongly enough to produce spikes.
+
+\subsubsection{Expected qualitative features}
+
+Several qualitative properties of $C(\tau)$ were highlighted:
+\begin{itemize}
+    \item for large positive lags, $C(\tau)$ should often decay back toward baseline, reflecting the neuron's finite memory;
+    \item for sufficiently negative lags, one expects no causal influence of the future stimulus on a past spike;
+    \item if spikes are statistically unrelated to the stimulus, the STA should be close to zero at all lags.
+\end{itemize}
+
+The second point deserves care. In ideal causal systems, future stimulus values should not predict past spikes. But the lecture noted that one can still observe nonzero STA values at small negative lags. This does \emph{not} imply that the neuron anticipates the future. Instead, it often reflects \emph{stimulus autocorrelation}: if nearby stimulus samples are correlated with one another, a response to the recent past can spill into apparently post-spike stimulus averages.
+
+\subsubsection{Examples from sensory and population recordings}
+
+The slide deck showed several examples illustrating that STA is not tied to a single modality:
+\begin{itemize}
+    \item electrosensory neurons in weakly electric fish,
+    \item the blowfly H1 neuron responding to visual motion,
+    \item and even spike-triggered EEG analyses in contemporary systems neuroscience.
+\end{itemize}
+
+These examples are pedagogically useful because they show both the strength and the limitation of the STA. The strength is that one often obtains a clear, biologically meaningful stimulus template from seemingly noisy data. The limitation is that the result depends strongly on the stimulus ensemble and on what kind of spike event is used as a trigger.
+
+\subsection{STA as a reverse-correlation method}
+
+\subsubsection{From spike sums to stimulus-response correlations}
+
+The lecture derived an important approximation that connects the STA to standard correlation functions. Starting from the definition above, one can rewrite the spike sum using the response function
+\[
+\rho(t)=\sum_{i=1}^{n}\delta(t-t_i),
+\]
+which gives
+\[
+\sum_{i=1}^{n} s(t_i-\tau) = \int_0^T \rho(t)\,s(t-\tau)\,dt.
+\]
+After averaging across trials and replacing $n$ by its trial-averaged value $\langle n \rangle$ for sufficiently large spike counts, one obtains
+\[
+C(\tau) \approx \frac{1}{\langle n \rangle}\int_0^T \langle \rho(t)\rangle s(t-\tau)\,dt.
+\]
+
+Using the same small-bin argument from Dayan and Abbott that appeared in the slides, $\langle \rho(t)\rangle$ inside the integral can be interpreted as the time- and trial-averaged firing rate $\langle r(t)\rangle$. Hence
+\[
+C(\tau) \approx \frac{1}{\langle n \rangle}\int_0^T \langle r(t)\rangle s(t-\tau)\,dt.
+\]
+
+\subsubsection{Cross-correlation and the meaning of the minus sign}
+
+The lecture then introduced the cross-correlation of two signals $x$ and $y$:
+\[
+Q_{xy}(\tau) := \frac{1}{T}\int_0^T x(t)\,y(t+\tau)\,dt.
+\]
+Applied to the firing rate and the stimulus, this becomes
+\[
+Q_{rs}(\tau) := \frac{1}{T}\int_0^T \langle r(t)\rangle s(t+\tau)\,dt.
+\]
+
+Comparing this definition with the STA formula yields
+\[
+C(\tau) = \frac{T}{\langle n \rangle} Q_{rs}(-\tau)
+       = \frac{Q_{rs}(-\tau)}{\langle r \rangle},
+\]
+because $\langle r \rangle = \langle n \rangle / T$.
+
+This identity is conceptually important. The STA is not just an ad hoc average; it is a \emph{reverse correlation}. The minus sign in the argument, $Q_{rs}(-\tau)$, reflects that one aligns the stimulus \emph{before} the spike rather than after it. That is why the method is often described as reverse-correlation analysis in sensory neuroscience.
+
+\subsubsection{Autocorrelation and why the stimulus ensemble matters}
+
+The lecture also reviewed the autocorrelation of a signal:
+\[
+Q_{xx}(\tau) := \frac{1}{T}\int_0^T x(t)\,x(t+\tau)\,dt.
+\]
+For the stimulus itself this gives
+\[
+Q_{ss}(\tau) := \frac{1}{T}\int_0^T s(t)\,s(t+\tau)\,dt.
+\]
+
+This matters because the STA does \emph{not} depend only on the neuron. It also depends on the stimulus statistics. If the stimulus contains strong temporal correlations, then the STA can be broadened or distorted by those correlations. That is the deeper reason why one must choose the stimulus ensemble carefully when estimating receptive fields.
+
+\subsection{Why white noise is so useful}
+
+\subsubsection{Desiderata for stimulus design}
+
+The lecture made an explicit methodological point: the quality of an STA estimate depends heavily on how the stimulus $s(t)$ is chosen. Good stimulus ensembles should ideally
+\begin{itemize}
+    \item produce enough spikes to support estimation,
+    \item sample the space of possible stimuli broadly rather than exploring only a narrow corner,
+    \item cover frequency space as uniformly as possible,
+    \item and remain reasonably close to the kinds of signals the nervous system encounters naturally.
+\end{itemize}
+
+No single choice satisfies all goals perfectly, but \emph{white noise} is often an excellent compromise because it is simple, highly variable, and analytically tractable.
+
+\subsubsection{White-noise autocorrelation}
+
+An ideal white-noise stimulus satisfies
+\[
+Q_{ss}(\tau) = \sigma_s^2 \delta(\tau),
+\]
+where $\sigma_s$ controls the stimulus variability and $\delta$ is the Dirac delta. This says that the stimulus is uncorrelated with itself at different times: only the zero-lag term survives.
+
+The slide deck briefly emphasized the units because they clarify what this equation really means. Since $\delta(\tau)$ has units of inverse time, the coefficient $\sigma_s^2$ in this convention carries units of ``stimulus squared times time'' so that the autocorrelation retains the correct stimulus-squared units overall.
+
+\subsubsection{Discrete approximation of white noise}
+
+In practice one never presents ideal continuous-time white noise. Instead, one samples the stimulus at discrete times
+\[
+t_m = m\Delta t, \qquad m=1,\dots,M,
+\]
+with $M\Delta t = T$, and uses independent random values
+\[
+s_m := s(t_m).
+\]
+
+To approximate the desired white-noise autocorrelation, the variance of these discrete samples cannot be chosen arbitrarily. The lecture derived the scaling
+\[
+\langle s_m^2 \rangle \approx \frac{\sigma_s^2}{\Delta t}.
+\]
+This is an easy formula to misread. The key point is that if one samples more finely in time, the variance of each individual sample must increase correspondingly so that the \emph{integrated power} of the noise remains consistent with the white-noise limit.
+
+\subsection{Dependence of the STA on trigger definition}
+
+The lecture also stressed that one must specify what counts as the triggering event. A trigger need not be a single isolated spike. In principle one could condition on
+\begin{itemize}
+    \item a single spike,
+    \item a spike pair with a specific interspike interval,
+    \item a burst,
+    \item or more elaborate spike patterns.
+\end{itemize}
+
+This observation is conceptually important because it reveals a central ambiguity of spike-train analysis: there are many possible neuronal events one might regard as meaningful. The STA computed from isolated spikes need not match the average stimulus preceding bursts or multi-spike patterns. The blowfly examples in the slides illustrated this point by comparing single- and multiple-spike-triggered averages.
+
+The lecture deliberately did not claim that one can solve this problem in full generality. On the contrary, it treated the identification of the ``right'' spike patterns as an open-ended scientific modeling choice.
+
+\subsection{Why spike-train statistics become necessary}
+
+Lecture 1 already made clear that firing rates alone do not capture all spike-train structure. Lecture 2 sharpened that point by asking for the probability of observing a full spike sequence
+\[
+t_1, t_2, \dots, t_n.
+\]
+In principle one would like to know the probability density
+\[
+p(t_1,t_2,\dots,t_n),
+\]
+or, with finite time resolution $\Delta t$, the corresponding probability
+\[
+P(t_1,t_2,\dots,t_n) = p(t_1,t_2,\dots,t_n)(\Delta t)^n.
+\]
+
+The combinatorial explosion is immediate. If one discretizes a $100\,\mathrm{ms}$ window into $1\,\mathrm{ms}$ bins, there are $2^{100}$ possible binary spike patterns. That is already astronomically large, far beyond direct empirical enumeration. So the lecture posed the central modeling question:
+\begin{quote}
+Which approximations simplify spike trains enough to make statistical analysis feasible without discarding everything important?
+\end{quote}
+
+\subsection{The homogeneous Poisson process}
+
+\subsubsection{Independence as a drastic simplifying assumption}
+
+The strongest simplifying assumption introduced in the lecture is statistical independence of spikes:
+\[
+p(t_1,t_2,\dots,t_n)=p(t_1)p(t_2)\cdots p(t_n).
+\]
+If this factorization held exactly, then the full spike-train statistics would be determined by the one-time spike probability alone. In that case, estimating the time-dependent firing rate would be sufficient to reconstruct the probability of spike sequences. This is the logic behind Poisson models of neural spiking.
+
+The lecture presented this not as an unquestionable truth, but as a very strong approximation that can nevertheless be analytically useful.
+
+\subsubsection{Constant-rate Poisson spiking}
+
+The simplest case is the \emph{homogeneous Poisson process}, in which the firing rate is constant:
+\[
+\langle r(t)\rangle = r.
+\]
+For a sufficiently small interval $\Delta t$ satisfying $r\Delta t \ll 1$, the defining assumptions are
+\[
+P[\text{one spike in } [t,t+\Delta t]] = r\Delta t,
+\]
+\[
+P[\text{no spike in } [t,t+\Delta t]] = 1-r\Delta t.
+\]
+
+From these assumptions one obtains the Poisson count distribution
+\[
+P_T[n] = \frac{(rT)^n}{n!}e^{-rT},
+\]
+which gives the probability of observing $n$ spikes in an interval of duration $T$.
+
+The quantity $rT$ is the expected number of spikes in the interval. For large $rT$, the Poisson distribution becomes increasingly similar to a Gaussian, which is why the slides compared the two in the case $rT=10$.
+
+\subsubsection{Probability of a specific spike train}
+
+The lecture then used the count distribution to write the probability of an \emph{ordered} spike train $\{t_1,\dots,t_n\}$ with temporal resolution $\Delta t$:
+\[
+P(t_1,\dots,t_n) = P_T[n]\; n!\left(\frac{\Delta t}{T}\right)^n.
+\]
+Substituting the Poisson count distribution gives
+\[
+P(t_1,\dots,t_n)= r^n e^{-rT}(\Delta t)^n,
+\]
+and therefore the corresponding probability density is
+\[
+p(t_1,\dots,t_n)=r^n e^{-rT}.
+\]
+
+This formula is striking because it is independent of the individual spike times once the spike count $n$ is fixed. In a homogeneous Poisson process, only the total number of spikes matters, not their detailed arrangement inside the interval. That is precisely what makes the model simple, and also what makes it inadequate whenever temporal structure matters.
+
+\subsection{Useful summary statistics for spike trains}
+
+Because the full spike-train distribution is difficult to estimate, the lecture introduced lower-dimensional summary statistics that are widely used in practice.
+
+\subsubsection{Spike-count statistics}
+
+Let $p_n(n)$ denote the spike-count distribution. From it one can compute
+\begin{itemize}
+    \item the mean spike count,
+    \item the spike-count variance,
+    \item and the \emph{Fano factor},
+    \[
+    F := \frac{\sigma_n^2}{\langle n \rangle}.
+    \]
+\end{itemize}
+
+For an ideal Poisson process, the variance equals the mean, so $F=1$. Deviations from $1$ are therefore a useful first diagnostic of whether spike counts are more regular or more variable than a Poisson model predicts.
+
+\subsubsection{Interspike-interval statistics}
+
+If one instead looks at successive spike times, one can define the interspike interval
+\[
+\tau_i := t_{i+1}-t_i,
+\]
+and the corresponding interval density $p_{\mathrm{ISI}}(\tau)$. From this one obtains the mean interval, its variance, and the \emph{coefficient of variation}
+\[
+\mathrm{CV} := \frac{\sigma_\tau}{\langle \tau \rangle}.
+\]
+
+The CV provides a scale-free measure of spike-time irregularity. In textbook Poisson spiking, interspike intervals are exponentially distributed and the CV equals $1$. Again, deviations from this value signal temporal structure beyond the independent-spike approximation.
+
+\subsection{Conceptual takeaways from Lecture 2}
+
+Lecture 2 added two major ideas to the spike-train toolbox:
+\begin{itemize}
+    \item The spike-triggered average converts time-dependent encoding into a reverse-correlation problem and gives a compact description of the stimulus features that tend to precede spikes.
+    \item The meaning of an STA depends on the stimulus ensemble, especially on stimulus autocorrelation, which is why white-noise stimuli are so useful experimentally and theoretically.
+    \item The choice of what counts as a trigger matters: single spikes, bursts, and other spike patterns can yield different stimulus averages.
+    \item Full spike-train probabilities are generally too high-dimensional to estimate directly, so useful analysis begins with simplifying assumptions and summary statistics.
+    \item The homogeneous Poisson process is the simplest probabilistic spike-train model: it assumes independent spikes and yields closed-form predictions for count statistics and spike-sequence probabilities.
+    \item Fano factors and interspike-interval statistics provide practical ways to detect departures from Poisson-like variability.
+\end{itemize}
+
+Taken together, these ideas connect encoding and statistics. The STA asks which stimulus features tend to drive spikes, while Poisson and related models ask how variable the resulting spike trains are once one fixes a firing-rate description. Later parts of the course can then build on both viewpoints: richer encoding models on the one hand, and richer stochastic descriptions of spike trains on the other.
+
+\subsection*{Sources mentioned in Lecture 2}
+
+\begin{itemize}
+    \item P. Dayan and L. F. Abbott (2001), \emph{Theoretical Neuroscience: Computational and Mathematical Modeling of Neural Systems}. MIT Press. Lecture 2 draws especially on Chapter 1.3 and Chapter 1.4.
+    \item R. Krahe, electrosensory examples discussed in the lecture slides.
+    \item Kuokkanen et al. (2025), spike-triggered EEG example discussed in the lecture slides.
+\end{itemize}
 
 \end{document}
