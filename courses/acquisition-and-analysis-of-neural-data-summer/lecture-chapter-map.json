@@ -12,6 +12,18 @@
         "Spikes (Part 1)",
         "Spikes"
       ]
+    },
+    {
+      "lecture_slug": "lecture-2",
+      "title": "Lecture 2",
+      "slide_filename": "Lecture 2 - Slides.pdf",
+      "chapter_paths": [
+        "main.tex"
+      ],
+      "aliases": [
+        "Lecture 2",
+        "Lecture 2: Slides"
+      ]
     }
   ]
 }
