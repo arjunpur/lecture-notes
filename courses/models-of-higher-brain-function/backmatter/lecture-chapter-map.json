@@ -1,10 +1,20 @@
 {
   "course": "Models of Higher Brain Function",
-  "chapters": [
+  "lectures": [
     {
-      "slug": "ch01-course-overview",
-      "number": 1,
-      "title": "Course Overview and Modeling Strategy"
+      "lecture_slug": "visual-perception-and-deep-learning",
+      "title": "Lecture 1: Visual Perception and Deep Learning",
+      "slide_filename": "Vision 1 - Deep Learning.pdf",
+      "chapter_paths": [
+        "chapters/ch02-visual-perception-deep-learning/ch02.tex"
+      ],
+      "aliases": [
+        "Vision 1 - Deep Learning",
+        "Deep Learning for Vision",
+        "Lecture 01",
+        "Visual Perception",
+        "Visual Perception and Deep Learning"
+      ]
     }
   ]
 }

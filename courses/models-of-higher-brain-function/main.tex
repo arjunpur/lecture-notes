@@ -1,30 +1,31 @@
-\documentclass{coursenotes}
-\usepackage{coursenotes-macros}
-\usepackage{coursenotes-environments}
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+\usepackage{parskip}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\pgfplotsset{compat=1.18}
+\setcounter{tocdepth}{3}
 
-\usepackage[backend=biber, style=alphabetic, maxbibnames=99]{biblatex}
-\addbibresource{backmatter/references.bib}
-
-\title{Models of Higher Brain Function\\[0.5em]
-  \large Lecture Notes}
-\author{Arjun Puri}
-\date{Summer 2026}
+\title{Models of Higher Brain Function\\Lecture Notes}
+\author{Bodhi for Arjun Puri}
+\date{}
 
 \begin{document}
-
-\frontmatter
-\input{frontmatter/titlepage}
+\maketitle
 \tableofcontents
-\input{frontmatter/preface}
-\input{frontmatter/notation}
 
-\mainmatter
+\input{chapters/ch02-visual-perception-deep-learning/ch02}
 
-\part{Foundations}
-\include{chapters/ch01-course-overview/ch01}
+\section{Lecture 2}
 
-\backmatter
-
-\printbibliography[heading=bibintoc]
+\emph{Lecture 2 notes will be added here once the slide deck is available.}
 
 \end{document}

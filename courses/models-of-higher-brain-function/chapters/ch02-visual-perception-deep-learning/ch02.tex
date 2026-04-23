@@ -1,0 +1,409 @@
+\section{Lecture 1: Visual Perception and Deep Learning}
+
+These notes cover the opening perception lecture of \emph{Models of Higher Brain Function}. The lecture uses vision as the first concrete example of a higher-brain computation: the sensory input is high-dimensional, noisy, and ambiguous, but behavior requires a stable internal description of objects and scenes. Deep neural networks enter the lecture not as a fashionable add-on, but as a way to make the representation problem explicit. They give us a concrete family of models that can solve large-scale object recognition tasks and can then be compared with the ventral visual stream.
+
+\subsection{Why vision belongs in a course on higher brain function}
+
+The lecture opens with a basic question: what does a visual system need to know about the world? At the level of behavior, the answers are simple enough:
+\begin{itemize}
+    \item what is out there,
+    \item where it is,
+    \item and what it is likely to do next.
+\end{itemize}
+
+Those questions already show why vision is not just a matter of registering light intensity. A retinal image is only a pattern of local measurements. Perception requires the system to organize that pattern into useful latent variables such as object identity, position, motion, and behavioral relevance.
+
+\subsubsection{Why this problem is harder than it feels}
+
+One theme from the lecture is Moravec's paradox: tasks that feel effortless to humans often turn out to be extremely demanding computationally. Recognizing a cup after it has moved, rotated, changed scale, or appeared under different illumination feels trivial in everyday life, but it is difficult because the raw sensory input changes enormously while the object identity stays the same.
+
+This is why visual perception is treated here as a problem of inference rather than mere detection. The brain must move from a changing image to a useful internal representation of the world.
+
+\subsection{Invariant object recognition}
+
+The core challenge identified in the lecture is \emph{invariant object recognition}. A useful visual system should keep track of what an object is even when many superficial aspects of the image change.
+
+\subsubsection{Why pixels are a bad format for recognition}
+
+The lecture follows the argument from DiCarlo and Cox that the raw image is a poor coordinate system for object recognition. Pixel values are highly sensitive to:
+\begin{itemize}
+    \item translation across the retina,
+    \item viewing angle,
+    \item distance and scale,
+    \item illumination,
+    \item occlusion,
+    \item and background clutter.
+\end{itemize}
+
+So two pictures of the same object can be very far apart in pixel space, while pictures of different objects may overlap heavily in their low-level image statistics. The slides describe this by saying that object manifolds are ``hopelessly tangled up'' in the original sensory coordinates.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[>=Latex, thick]
+    \draw[rounded corners] (0,0) rectangle (4.5,3.2);
+    \draw[rounded corners] (7.0,0) rectangle (11.5,3.2);
+    \node[font=\bfseries] at (2.25,3.6) {Pixel-like space};
+    \node[font=\bfseries] at (9.25,3.6) {Learned feature space};
+
+    \draw[black!70] (1.6,1.8) ellipse (1.2 and 0.8);
+    \draw[black!70] (2.9,1.3) ellipse (1.2 and 0.8);
+    \node at (1.1,2.7) {object A};
+    \node at (3.6,0.7) {object B};
+
+    \draw[black!70] (8.4,2.1) ellipse (0.9 and 0.6);
+    \draw[black!70] (10.2,1.0) ellipse (0.9 and 0.6);
+    \node at (8.4,2.8) {object A};
+    \node at (10.2,1.8) {object B};
+
+    \draw[->] (5.0,1.6) -- (6.5,1.6);
+    \node[align=center] at (5.75,2.3) {hierarchical\\feature learning};
+\end{tikzpicture}
+\caption{The geometric picture emphasized in the lecture. In raw image coordinates, object manifolds are tangled together. A good representation transforms them into a space where object identity is easier to separate.}
+\end{figure}
+
+\subsubsection{What makes a representation useful}
+
+The lecture's answer is that a ``good'' neural representation should vary gradually with nuisance variables such as position, illumination, or angle, while making object identity easier to read out. In other words, recognition becomes easier when the representation performs a kind of \emph{disentangling}: factors that should be treated as irrelevant for identification have a smaller effect on the code than they do in the original image.
+
+This idea is important because it shifts the focus away from raw accuracy and toward representational geometry. The real question is not only whether the system labels an image correctly, but whether it transforms sensory input into coordinates that make the task easy for later stages.
+
+\subsection{The ImageNet turning point}
+
+The lecture then turns from the abstract recognition problem to the modern deep-learning solution. The key historical moment is the ImageNet era. ImageNet supplied a large-scale benchmark with roughly fifteen million labeled images spanning one thousand categories. This mattered because it forced models to solve recognition at a realistic visual scale rather than on small toy datasets.
+
+\subsubsection{Why AlexNet changed the conversation}
+
+AlexNet's 2012 ImageNet result is presented as the turning point. Its top-5 error was \(16.4\%\), while the next-best system remained at \(26.2\%\). The significance of that result was not just the leaderboard gap. It showed that a deep, trainable convolutional network could learn useful visual features directly from data instead of depending mainly on hand-engineered descriptors.
+
+The lecture also describes the ``magic sauce'' behind this success. Several ingredients had to come together at once:
+\begin{itemize}
+    \item large labeled datasets,
+    \item data augmentation,
+    \item substantial computing power,
+    \item convolution and weight sharing,
+    \item rectified linear units,
+    \item pooling and downsampling,
+    \item and architectures deep enough to build hierarchical features.
+\end{itemize}
+
+So deep learning did not succeed because of one isolated trick. It succeeded because data, optimization, hardware, and architecture started to reinforce one another.
+
+\subsubsection{From AlexNet to ResNet}
+
+The lecture places AlexNet in a broader architectural sequence. VGG-style networks increased depth and regularized the use of small convolutions. ResNets then made very deep models trainable by adding skip connections. Instead of asking each block to learn an entirely new transformation, a residual block can learn a correction to the identity map. This helps with vanishing gradients and with the degradation in performance that appears when very deep plain networks become hard to optimize.
+
+The slides make this concrete with the ImageNet benchmark again: ResNets reached depths above one hundred layers and pushed error rates below typical human performance on that dataset. The lecture's point is not that ImageNet is a perfect model of human vision, but that these models had become competent enough that their internal representations became scientifically interesting.
+
+\subsection{What deep networks compute}
+
+At the mathematical level, the lecture describes a deep network as a concatenation of linear-nonlinear transformations. A single layer takes an input vector \(\vec{x}\), applies an affine transformation, and then a nonlinearity:
+\[
+\vec{y} = \phi\!\left(W\vec{x} + \vec{b}\right).
+\]
+Here \(W\) is the weight matrix, \(\vec{b}\) is a bias term, and \(\phi\) is a nonlinear activation function.
+
+\subsubsection{Why nonlinearity matters}
+
+If every layer were purely linear, then stacking many layers would still amount to one overall linear transformation. Depth would not buy us much representational power. Nonlinearity is what lets the network bend and reshape the input space so that later layers can express more abstract and more separable features.
+
+The lecture's qualitative story is straightforward:
+\begin{itemize}
+    \item early layers detect simple local patterns such as oriented edges or contrast changes,
+    \item intermediate layers combine those into textures or parts,
+    \item later layers become more useful for category-level distinctions.
+\end{itemize}
+
+This staged abstraction is exactly why deep networks became plausible models of a hierarchical sensory pathway.
+
+\subsubsection{Why convolution is useful for images}
+
+Convolutional layers add two inductive biases that fit images well.
+
+\paragraph{Local receptive fields.}
+Each filter only sees a small image patch at a time. This reflects the fact that nearby pixels are strongly related and that many informative visual structures are local.
+
+\paragraph{Weight sharing.}
+The same filter is applied at many spatial positions. This makes it possible to detect the same local pattern wherever it appears and reduces the total number of parameters that must be learned.
+
+Pooling and striding then expand the effective receptive field and make the representation less sensitive to small translations. This does not create perfect invariance, but it pushes the representation in the right direction for object recognition.
+
+\subsubsection{Backpropagation and the credit-assignment problem}
+
+Training is described in the lecture through backpropagation and stochastic gradient descent. A loss function measures the discrepancy between the network output and the target label, and gradients are propagated backward through the chain of nonlinear functions. A typical parameter update has the form
+\[
+w \leftarrow w - \eta \frac{\partial \mathcal{L}}{\partial w},
+\]
+where \(\mathcal{L}\) is the loss and \(\eta\) is the learning rate.
+
+This solves the engineering problem of \emph{credit assignment}: it tells the system how each parameter contributed to the final error. The lecture is careful, however, not to overinterpret this as a biological mechanism. Exact backpropagation, large labeled datasets, and perfectly shared convolutional filters are all biologically questionable. So deep networks are useful models of visual computation without being literal copies of cortical learning.
+
+\subsection{Deep networks as models of ventral visual cortex}
+
+Once deep networks became good at object recognition, the next question was whether their internal representations looked at all like those found in ventral visual cortex. The lecture emphasizes that the comparison should not be made unit by unit. A hidden unit in a trained network is not expected to correspond neatly to one biological neuron, and different random initializations of the same architecture need not preserve any unique one-to-one matching.
+
+\subsubsection{Why compare representational geometry}
+
+The more useful comparison is at the level of \emph{representational similarity}. For a collection of stimuli, one can compute a response pattern for each stimulus and then ask how dissimilar those patterns are from one another. This yields a representational dissimilarity matrix:
+\[
+\mathrm{RDM}_{ij} = 1 - \mathrm{corr}(r_i, r_j).
+\]
+Here \(r_i\) and \(r_j\) denote the response vectors evoked by stimuli \(i\) and \(j\).
+
+The important point is that two systems can have similar representational geometry even if their individual units are not aligned. This is why representational similarity analysis became so useful in comparing human IT, monkey IT, and deep-network hidden layers.
+
+\subsubsection{The RSA construction}
+
+Suppose the experiment presents \(n\) stimuli. For one system, such as a cortical area or a neural-network layer, collect the responses into a matrix
+\[
+R =
+\begin{bmatrix}
+r_1^\top \\
+r_2^\top \\
+\vdots \\
+r_n^\top
+\end{bmatrix}
+\in \mathbb{R}^{n \times p}.
+\]
+The row \(r_i \in \mathbb{R}^p\) is the population response to stimulus \(i\). In a brain dataset, the \(p\) dimensions might be voxels, recording sites, or neurons. In a network, they might be hidden units or feature channels.
+
+RSA then replaces the response matrix by an \(n \times n\) matrix of pairwise dissimilarities:
+\[
+D_{ij} = d(r_i,r_j).
+\]
+The function \(d\) defines what kind of representational difference is being measured. The most common choice in this lecture is correlation distance,
+\[
+d_{\mathrm{corr}}(r_i,r_j)
+= 1 -
+\frac{(r_i-\bar r_i \mathbf{1})^\top (r_j-\bar r_j \mathbf{1})}
+{\|r_i-\bar r_i \mathbf{1}\|_2 \, \|r_j-\bar r_j \mathbf{1}\|_2}.
+\]
+This quantity ignores the overall response scale and asks whether the two response \emph{patterns} have the same shape across units. A small value means that the two stimuli evoke similar population patterns; a large value means that they are represented far apart.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[>=Latex, thick, node distance=0.9cm]
+    \node[draw, rounded corners, minimum width=2.4cm, minimum height=0.85cm] (stim) {stimuli};
+    \node[draw, rounded corners, minimum width=2.8cm, minimum height=0.85cm, right=1.3cm of stim] (resp) {response matrix \(R\)};
+    \node[draw, rounded corners, minimum width=2.4cm, minimum height=0.85cm, right=1.3cm of resp] (rdm) {RDM \(D\)};
+    \node[draw, rounded corners, minimum width=2.9cm, minimum height=0.85cm, right=1.3cm of rdm] (compare) {compare RDMs};
+
+    \draw[->] (stim) -- node[above] {measure} (resp);
+    \draw[->] (resp) -- node[above] {pairwise \(d\)} (rdm);
+    \draw[->] (rdm) -- node[above] {correlate} (compare);
+
+    \begin{scope}[shift={(3.0,-1.8)}, scale=0.33]
+        \foreach \x in {0,1,2,3} {
+            \foreach \y in {0,1,2} {
+                \draw[fill=black!8] (\x,-\y) rectangle ++(0.8,-0.8);
+            }
+        }
+        \node at (1.6,-3.1) {\footnotesize responses};
+    \end{scope}
+
+    \begin{scope}[shift={(6.7,-1.95)}, scale=0.34]
+        \foreach \x in {0,1,2,3} {
+            \foreach \y in {0,1,2,3} {
+                \pgfmathsetmacro{\shade}{10+12*abs(\x-\y)}
+                \draw[fill=black!\shade] (\x,-\y) rectangle ++(0.8,-0.8);
+            }
+        }
+        \node at (1.6,-4.0) {\footnotesize dissimilarities};
+    \end{scope}
+\end{tikzpicture}
+\caption{Representational similarity analysis turns high-dimensional response patterns into a matrix of stimulus-by-stimulus distances. The comparison between brain and model happens at the level of these distance matrices.}
+\end{figure}
+
+Other distance choices answer slightly different questions:
+\begin{itemize}
+    \item Euclidean distance, \(d_{\mathrm{Euc}}(r_i,r_j)=\|r_i-r_j\|_2\), keeps absolute response magnitude and is therefore sensitive to scaling.
+    \item Mahalanobis distance, \(d_{\mathrm{Mah}}(r_i,r_j)=(r_i-r_j)^\top \Sigma^{-1}(r_i-r_j)\), downweights noisy or correlated response dimensions through the covariance matrix \(\Sigma\).
+    \item Rank-based distances ignore exact metric values and ask whether the ordering of near and far stimulus pairs is preserved.
+\end{itemize}
+
+So an RDM is not just a visualization. It is a precise mathematical summary of the geometry induced by a representation on a fixed stimulus set.
+
+\subsubsection{Comparing a brain RDM with a model RDM}
+
+The second step is to compare two RDMs. Let \(D^{\mathrm{brain}}\) be the RDM from a cortical area and \(D^{\mathrm{model}}\) be the RDM from a network layer. Because both matrices are symmetric and have zeros on the diagonal, one usually vectorizes only the upper triangle:
+\[
+v(D) = (D_{12},D_{13},\ldots,D_{1n},D_{23},\ldots,D_{n-1,n}).
+\]
+The RSA score can then be written as
+\[
+\rho_{\mathrm{RSA}}
+= \mathrm{corr}\!\left(v(D^{\mathrm{brain}}),v(D^{\mathrm{model}})\right).
+\]
+In practice this is often a Spearman rank correlation, because researchers may care more about whether the model preserves the ordering of representational distances than about matching every numerical distance exactly.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[>=Latex, thick]
+    \node at (0.0,0.4) {\small brain RDM};
+    \node at (5.2,0.4) {\small model RDM};
+    \node at (10.0,0.4) {\small upper-triangle correlation};
+
+    \begin{scope}[shift={(-1.0,-0.2)}, scale=0.55]
+        \foreach \x/\y/\c in {
+            0/0/5,1/0/25,2/0/45,3/0/55,
+            0/1/25,1/1/5,2/1/50,3/1/60,
+            0/2/45,1/2/50,2/2/5,3/2/20,
+            0/3/55,1/3/60,2/3/20,3/3/5
+        } {
+            \draw[fill=black!\c] (\x,-\y) rectangle ++(0.8,-0.8);
+        }
+        \node[left] at (0,-0.4) {\scriptsize face 1};
+        \node[left] at (0,-1.2) {\scriptsize face 2};
+        \node[left] at (0,-2.0) {\scriptsize car};
+        \node[left] at (0,-2.8) {\scriptsize chair};
+    \end{scope}
+
+    \begin{scope}[shift={(4.2,-0.2)}, scale=0.55]
+        \foreach \x/\y/\c in {
+            0/0/5,1/0/20,2/0/50,3/0/58,
+            0/1/20,1/1/5,2/1/48,3/1/62,
+            0/2/50,1/2/48,2/2/5,3/2/24,
+            0/3/58,1/3/62,2/3/24,3/3/5
+        } {
+            \draw[fill=black!\c] (\x,-\y) rectangle ++(0.8,-0.8);
+        }
+    \end{scope}
+
+    \draw[->] (1.7,-1.45) -- (3.2,-1.45);
+    \draw[->] (6.9,-1.45) -- (8.4,-1.45);
+
+    \node[draw, rounded corners, align=center, minimum width=2.3cm, minimum height=1.05cm] at (10.1,-1.45)
+    {\(\rho_{\mathrm{RSA}}\) high\\if pairwise\\distances match};
+\end{tikzpicture}
+\caption{RSA is a second-order comparison. It does not ask whether one model unit equals one neuron. It asks whether pairs of stimuli that are close or far apart in cortex are also close or far apart in the model.}
+\end{figure}
+
+This is the main conceptual advantage. The number of units in the two systems can be different, and their axes need not correspond. A cortical area might be measured with \(p=500\) voxels and a network layer might have \(q=4096\) features. RSA can still compare them because both are reduced to the same \(n \times n\) stimulus geometry.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=1.5cm and 1.0cm, >=Latex, thick]
+    \node[draw, rounded corners, minimum width=1.8cm, minimum height=0.9cm] (img) {images};
+    \node[draw, rounded corners, minimum width=1.8cm, minimum height=0.9cm, right=of img] (cnn1) {early CNN};
+    \node[draw, rounded corners, minimum width=1.8cm, minimum height=0.9cm, right=of cnn1] (cnn2) {mid CNN};
+    \node[draw, rounded corners, minimum width=1.8cm, minimum height=0.9cm, right=of cnn2] (cnn3) {late CNN};
+
+    \node[draw, rounded corners, minimum width=1.6cm, minimum height=0.9cm, below=1.6cm of cnn1] (v4) {V4};
+    \node[draw, rounded corners, minimum width=1.6cm, minimum height=0.9cm, right=of v4] (pit) {PIT};
+    \node[draw, rounded corners, minimum width=1.6cm, minimum height=0.9cm, right=of pit] (cit) {CIT};
+    \node[draw, rounded corners, minimum width=1.6cm, minimum height=0.9cm, right=of cit] (ait) {AIT / IT};
+
+    \draw[->] (img) -- (cnn1);
+    \draw[->] (cnn1) -- (cnn2);
+    \draw[->] (cnn2) -- (cnn3);
+    \draw[->] (v4) -- (pit);
+    \draw[->] (pit) -- (cit);
+    \draw[->] (cit) -- (ait);
+
+    \draw[dashed, ->] (cnn1) -- (v4);
+    \draw[dashed, ->] (cnn2) -- (pit);
+    \draw[dashed, ->] (cnn2) -- (cit);
+    \draw[dashed, ->] (cnn3) -- (ait);
+\end{tikzpicture}
+\caption{The comparison strategy highlighted in the lecture. Rather than matching units one by one, researchers compare which network layers best predict or resemble activity in successive ventral-stream areas.}
+\end{figure}
+
+\subsubsection{How to interpret an RSA result}
+
+An RSA match should be read as evidence about representational geometry, not as a claim that the mechanisms are identical. A high RSA score says that the two systems place the tested stimuli in a similar pattern of relative distances. It does not by itself say that the same features were learned, that the same learning rule was used, or that the same computations occur internally.
+
+There are two practical cautions:
+\begin{itemize}
+    \item The stimulus set matters. An RDM built from faces, animals, tools, and places tests a different geometry than an RDM built only from small pose changes of one object.
+    \item The noise ceiling matters. If repeated brain measurements are themselves only moderately correlated, then no model can be expected to reach a perfect RSA score.
+\end{itemize}
+
+This is why the lecture treats RSA as a powerful but limited bridge between deep learning and neuroscience. It gives a mathematically clean way to ask whether a model layer has the same \emph{shape of representation} as a cortical area, while still leaving open the mechanistic question of how that representation is produced.
+
+\subsubsection{What the comparisons show}
+
+The lecture highlights a consistent empirical pattern: supervised deep models tend to explain the geometry of IT responses better than unsupervised alternatives, and models that are better optimized for object recognition often provide better predictions of neural data. This does not mean that cortex literally implements AlexNet or ResNet. It means that solving the right task appears to push artificial systems toward internal representations that partially resemble those found in the brain.
+
+That is a strong scientific claim. It suggests that task demands and representational constraints are deeply connected: if a system must solve invariant object recognition well, some aspects of its internal geometry may be forced into a similar shape, whether the system is biological or artificial.
+
+\subsection{Deep networks as experimental tools}
+
+The lecture goes further than model comparison and treats deep networks as practical tools for neuroscience experiments. The Bashivan-style examples make this especially clear. The logic is:
+\begin{enumerate}
+    \item train a convolutional network on a large visual task,
+    \item learn a mapping from model features to recorded neural responses,
+    \item optimize the input image to maximize the predicted response of a chosen neuron or population,
+    \item and then test the synthesized image experimentally.
+\end{enumerate}
+
+This matters because a differentiable model can be used not only to \emph{explain} old data but also to \emph{design} new stimuli. If the model captures something important about a neuron's preferred feature geometry, then the optimized image should strongly drive that neuron. The lecture discusses V4 experiments in which CNN-optimized images indeed strongly activated recorded neural sites.
+
+So the deep model becomes more than a classifier. It becomes a hypothesis generator for what features a neural population is actually sensitive to.
+
+\subsection{What deep networks still miss}
+
+The lecture closes with several cautions. Modern deep networks are highly effective at image classification, but that does not make them complete theories of biological vision.
+
+\subsubsection{Adversarial fragility}
+
+Deep networks can be fooled by adversarial perturbations: small image changes that are nearly imperceptible to humans but cause a dramatic change in the predicted label. This shows that strong benchmark performance does not automatically imply human-like robustness or understanding.
+
+\subsubsection{Biological caveats}
+
+Several ingredients of standard deep learning remain biologically questionable:
+\begin{itemize}
+    \item exact backpropagation,
+    \item extensive supervised labels,
+    \item strict convolutional weight sharing,
+    \item and mostly feedforward inference in systems whose biological counterparts are strongly recurrent.
+\end{itemize}
+
+These caveats do not make deep networks unhelpful. They simply define the proper level of interpretation. Deep networks are useful computational models of visual recognition, and they may capture important aspects of cortical representation, but they are still abstractions.
+
+\subsection{Summary of concepts introduced in Lecture 1}
+
+The lecture introduced several ideas that should be kept distinct:
+
+\begin{center}
+\begin{tabular}{lp{0.62\textwidth}}
+\hline
+Concept & Role in the lecture \\
+\hline
+Invariant object recognition & keep identity stable across natural image changes \\
+Disentangling & transform tangled image manifolds into easier features \\
+ImageNet & large-scale benchmark that made modern comparison possible \\
+Convolution & local receptive fields plus weight sharing for images \\
+Backpropagation & practical credit-assignment method for deep networks \\
+RSA / RDMs & compare vectorized stimulus-distance matrices across brains and models \\
+CNN-optimized stimuli & use models to generate experimental probes \\
+Adversarial examples & reveal limits of current deep-network robustness \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Conceptual takeaways from Lecture 1}
+
+The opening vision lecture establishes the framework used later in the course.
+
+\begin{itemize}
+    \item The main difficulty of vision is not detecting light, but constructing a representation that supports stable object recognition.
+    \item Raw images are a bad format for recognition because nuisance variables strongly distort pixel values.
+    \item Deep networks matter because they provide a concrete way to learn hierarchical feature spaces that partially solve this representation problem.
+    \item The success of deep learning depends on a combination of architecture, data, optimization, and compute rather than on one isolated trick.
+    \item Model evaluation can proceed on several levels at once: recognition performance, similarity to cortical representations, and usefulness for generating new experiments.
+    \item High benchmark accuracy is not the same as biological plausibility or human-like robustness.
+\end{itemize}
+
+These points motivate the broader theme of the course: higher brain function can often be studied by asking what representation a system needs in order to solve a demanding cognitive task.
+
+\subsection*{Sources mentioned in Lecture 1}
+
+\begin{itemize}
+    \item J. J. DiCarlo and D. D. Cox (2007), ``Untangling invariant object recognition,'' \emph{Trends in Cognitive Sciences}.
+    \item A. Krizhevsky, I. Sutskever, and G. E. Hinton (2012), ``ImageNet classification with deep convolutional neural networks,'' \emph{NeurIPS}.
+    \item K. He, X. Zhang, S. Ren, and J. Sun (2016), ``Deep residual learning for image recognition,'' \emph{CVPR}.
+    \item N. Kriegeskorte, M. Mur, and P. Bandettini (2008), ``Representational similarity analysis,'' \emph{Frontiers in Systems Neuroscience}.
+    \item S.-M. Khaligh-Razavi and N. Kriegeskorte (2014), ``Deep supervised, but not unsupervised, models may explain IT cortical representation,'' \emph{PLoS Computational Biology}.
+    \item D. L. K. Yamins and J. J. DiCarlo (2016), ``Using goal-driven deep learning models to understand sensory cortex,'' \emph{Nature Neuroscience}.
+    \item P. Bashivan, K. Kar, and J. J. DiCarlo (2019), ``Neural population control via deep image synthesis,'' \emph{Science}.
+    \item I. J. Goodfellow, J. Shlens, and C. Szegedy (2015), ``Explaining and harnessing adversarial examples,'' \emph{ICLR}.
+\end{itemize}
