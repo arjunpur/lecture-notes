@@ -5,6 +5,7 @@
 \usepackage{lmodern}
 \usepackage{microtype}
 \usepackage{amsmath,amssymb,mathtools}
+\usepackage{graphicx}
 \usepackage{hyperref}
 \hypersetup{hidelinks}
 \usepackage{parskip}
@@ -56,12 +57,7 @@ Here the word ``stimulus'' should be interpreted broadly. In sensory systems it 
 
 \begin{figure}[h]
 \centering
-\begin{tikzpicture}[node distance=2.2cm, >=Latex, thick]
-    \node[draw, rounded corners, minimum width=2.8cm, minimum height=1cm] (stim) {Stimulus $s$};
-    \node[draw, rounded corners, minimum width=3.2cm, minimum height=1cm, right=of stim] (resp) {Neural response $r$};
-    \draw[->] (stim) -- node[above] {encoding} (resp);
-    \draw[<-] ($(stim.south)+(0,-0.25)$) -- node[below] {decoding} ($(resp.south)+(0,-0.25)$);
-\end{tikzpicture}
+\includegraphics[width=0.9\textwidth]{figures/aand-coding-loop.png}
 \caption{The two central directions of neural coding. Encoding models predict responses from stimuli; decoding models infer stimuli or behavioral variables from measured neural activity.}
 \end{figure}
 
@@ -79,6 +75,12 @@ When an electrode is placed outside the neuron, the measured voltage deflection 
 
 \paragraph{Population-level signals.}
 The lecture also alluded to larger-scale signals such as EEG, local field potentials (LFP), and multiunit activity (MUA). These are related to neural activity, but they are not equivalent to isolated single-neuron spike trains. Their relationship to spiking becomes especially important once one studies coordinated population activity. EEG in particular reflects the aggregate activity of many neurons recorded from the brain surface, so one should usually not expect to isolate a single neuron from it. Only in special circumstances---for example very long recordings with unusually favorable geometry and electrode placement---can one hope to infer more spatially specific structure from such signals.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/aand-recording-scale.png}
+\caption{Intuition for recording scale. Extracellular contacts resolve very local spike sources, while EEG reflects pooled activity from many distant neurons and therefore trades spatial specificity for broad population coverage.}
+\end{figure}
 
 \subsection{Spike trains as mathematical objects}
 
@@ -214,6 +216,12 @@ A useful rough lower bound for kernel width is the mean interspike interval,
 \frac{T}{n}.
 \]
 If one smooths on a much shorter timescale than the typical spacing between spikes, the resulting ``rate'' largely reflects the discreteness of single spikes rather than a stable underlying trend.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/aand-rate-estimation.png}
+\caption{Rate-estimation trade-off. Narrow kernels preserve fast changes but amplify variability, whereas broader kernels produce more stable firing-rate estimates at the cost of temporal precision.}
+\end{figure}
 
 \begin{figure}[h]
 \centering
@@ -566,6 +574,35 @@ because $\langle r \rangle = \langle n \rangle / T$.
 
 This identity is conceptually important. The STA is not just an ad hoc average; it is a \emph{reverse correlation}. The minus sign in the argument, $Q_{rs}(-\tau)$, reflects that one aligns the stimulus \emph{before} the spike rather than after it. That is why the method is often described as reverse-correlation analysis in sensory neuroscience.
 
+\subsubsection{Mathematical aside: how to read a correlation function}
+
+The lecture's correlation functions are \emph{raw} lagged overlaps rather than normalized Pearson correlations. That choice is deliberate. The factor $1/T$ keeps the physical units explicit and makes the STA derivation algebraically clean. If one wanted a centered covariance instead, one would replace $x(t)$ and $y(t)$ by $x(t)-\bar{x}$ and $y(t)-\bar{y}$, but the geometric interpretation would stay the same.
+
+For each lag $\tau$, the quantity
+\[
+Q_{xy}(\tau)=\frac{1}{T}\int_0^T x(t)\,y(t+\tau)\,dt
+\]
+compares one signal with a shifted copy of the other. Large positive values mean that peaks in $x$ tend to line up with peaks in the shifted $y$; negative values mean that peaks in one signal tend to line up with troughs in the other. The special case
+\[
+Q_{xx}(0)=\frac{1}{T}\int_0^T x(t)^2\,dt \ge 0
+\]
+is the average signal power, and for real-valued signals the autocorrelation is an even function:
+\[
+Q_{xx}(\tau)=Q_{xx}(-\tau).
+\]
+
+This overlap viewpoint is the easiest way to remember the STA sign convention. Positive $\tau$ in $C(\tau)$ means ``look earlier than the spike,'' whereas positive $\tau$ in $Q_{rs}(\tau)$ shifts the stimulus forward inside the integral. The relation
+\[
+C(\tau)=\frac{Q_{rs}(-\tau)}{\langle r \rangle}
+\]
+simply translates between these two bookkeeping conventions.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/aand-correlation-lagged-overlap.png}
+\caption{Lagged-overlap view of the cross-correlation $Q_{xy}(\tau)$. The value at each lag depends on how well one waveform matches a shifted version of the other. In the STA formula, the minus sign appears because one asks for the stimulus \emph{before} the spike rather than after it.}
+\end{figure}
+
 \subsubsection{Autocorrelation and why the stimulus ensemble matters}
 
 The lecture also reviewed the autocorrelation of a signal:
@@ -578,6 +615,34 @@ Q_{ss}(\tau) := \frac{1}{T}\int_0^T s(t)\,s(t+\tau)\,dt.
 \]
 
 This matters because the STA does \emph{not} depend only on the neuron. It also depends on the stimulus statistics. If the stimulus contains strong temporal correlations, then the STA can be broadened or distorted by those correlations. That is the deeper reason why one must choose the stimulus ensemble carefully when estimating receptive fields.
+
+To see the mechanism more concretely, consider the simplified linear-encoding picture
+\[
+\langle r(t) \rangle = \int_{-\infty}^{\infty} k(u)\,s(t-u)\,du,
+\]
+where $k$ is the temporal filter one would ideally like to recover. Substituting this into the definition of $Q_{rs}$ gives
+\[
+Q_{rs}(\tau)=\int_{-\infty}^{\infty} k(u)\,Q_{ss}(\tau+u)\,du.
+\]
+So the stimulus-response correlation is the neuronal filter blurred by the stimulus autocorrelation. If the stimulus were ideal white noise with
+\[
+Q_{ss}(\tau)=\sigma_s^2\delta(\tau),
+\]
+then the blur would collapse to
+\[
+Q_{rs}(\tau)=\sigma_s^2 k(-\tau),
+\]
+and therefore
+\[
+C(\tau)=\frac{\sigma_s^2}{\langle r \rangle}k(\tau).
+\]
+This is the cleanest mathematical reason white noise is so useful: under the lecture's approximations, the STA directly reproduces the temporal receptive filter up to a scale factor.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/aand-autocorrelation-white-noise.png}
+\caption{Autocorrelation controls how much the stimulus smears reverse-correlation estimates. White noise produces an almost delta-shaped $Q_{ss}(\tau)$, whereas a temporally correlated stimulus has a broad autocorrelation and therefore spreads structure across neighboring lags.}
+\end{figure}
 
 \subsection{Why white noise is so useful}
 
