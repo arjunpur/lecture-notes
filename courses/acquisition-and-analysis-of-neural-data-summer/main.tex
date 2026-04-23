@@ -910,4 +910,236 @@ Taken together, these ideas connect encoding and statistics. The STA asks which 
     \item Kuokkanen et al. (2025), spike-triggered EEG example discussed in the lecture slides.
 \end{itemize}
 
+\clearpage
+\appendix
+
+\section{Mathematical Appendix: Correlation, Autocorrelation, and Convolution}
+
+Lecture 2 used correlation functions in a finite observation window,
+\[
+Q_{xy}(\tau):=\frac{1}{T}\int_0^T x(t)\,y(t+\tau)\,dt,
+\]
+because this is the version that appears naturally in spike-triggered averaging. For mathematical intuition, it is often helpful to temporarily suppress the window factor and think in terms of the infinite-domain formulas. The lecture's definition is then just the windowed and rescaled version of the same idea.
+
+\subsection{Correlation as a lagged comparison}
+
+The cross-correlation asks a simple question: if one signal is shifted by $\tau$, how much does it overlap with the other? Large positive values indicate that peaks in $x$ tend to line up with peaks in the shifted $y$; negative values indicate that peaks in one signal line up with troughs in the other.
+
+For discrete data, the same idea becomes
+\[
+Q_{xy}[m] = \frac{1}{N}\sum_{k=0}^{N-1} x[k]\,y[k+m].
+\]
+So correlation is not a mysterious new operation. It is just a sliding inner product. Each lag $\tau$ or index shift $m$ produces one number, and the full correlation function records how that overlap changes with the shift.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/aand-appendix-correlation-convolution.png}
+\caption{Appendix view of the three related operations. Cross-correlation compares two signals at different lags, autocorrelation compares a signal with itself, and convolution uses a shifted kernel to build a new output rather than a similarity score.}
+\end{figure}
+
+\subsection{Autocorrelation}
+
+Setting $y=x$ gives the autocorrelation,
+\[
+Q_{xx}(\tau)=\frac{1}{T}\int_0^T x(t)\,x(t+\tau)\,dt.
+\]
+Three properties are worth remembering.
+
+\paragraph{Symmetry.}
+For real-valued signals,
+\[
+Q_{xx}(-\tau)=Q_{xx}(\tau).
+\]
+This follows by a change of variables:
+\[
+Q_{xx}(-\tau)=\frac{1}{T}\int_0^T x(t)\,x(t-\tau)\,dt
+=\frac{1}{T}\int_0^T x(u+\tau)\,x(u)\,du
+=Q_{xx}(\tau),
+\]
+up to the same boundary approximation already made in the lecture when $|\tau|\ll T$.
+
+\paragraph{Zero-lag value.}
+At $\tau=0$,
+\[
+Q_{xx}(0)=\frac{1}{T}\int_0^T x(t)^2\,dt \ge 0,
+\]
+which is the average signal power or mean squared amplitude. This is why autocorrelations typically peak at zero lag.
+
+\paragraph{Bounded size.}
+The Cauchy--Schwarz inequality gives
+\[
+|Q_{xy}(\tau)| \le \sqrt{Q_{xx}(0)\,Q_{yy}(0)}.
+\]
+So a correlation can never exceed the geometric mean of the two zero-lag powers. This is the continuous-time analog of the usual bound on an inner product.
+
+In Lecture 2, the most important autocorrelation was the stimulus autocorrelation,
+\[
+Q_{ss}(\tau)=\frac{1}{T}\int_0^T s(t)\,s(t+\tau)\,dt.
+\]
+When $Q_{ss}$ is sharply concentrated near $\tau=0$, the stimulus values at different times are nearly independent. When $Q_{ss}$ is broad, nearby time points are statistically coupled, and reverse-correlation estimates become blurred across neighboring lags.
+
+\subsection{Convolution}
+
+Convolution is defined by
+\[
+(h*s)(t)=\int_{-\infty}^{\infty} h(t-\tau)\,s(\tau)\,d\tau.
+\]
+This looks similar to correlation, but the interpretation is different. Correlation produces a \emph{similarity as a function of lag}; convolution produces a \emph{new signal as a function of time}. The kernel $h$ is flipped, shifted to the evaluation time $t$, weighted by the input values, and integrated.
+
+It helps to remember the sign difference:
+\begin{itemize}
+    \item correlation keeps the second signal in the form $y(t+\tau)$ and asks ``how similar are these two waveforms if I slide one of them?'';
+    \item convolution uses $h(t-\tau)$ and asks ``how much should each shifted copy of the kernel contribute to the output at time $t$?''
+\end{itemize}
+
+There is also a precise algebraic relation between the two operations. If $\tilde{y}(t):=y(-t)$ is the time-reversed signal, then
+\[
+Q_{xy}(\tau)=\frac{1}{T}(x * \tilde{y})(-\tau).
+\]
+So correlation is just convolution with one signal time-reversed, followed by a sign change in the lag argument.
+
+\subsection{Special cases worth memorizing}
+
+Several identities recur throughout systems neuroscience:
+\begin{align*}
+\delta * s &= s,\\
+\delta(\,\cdot - t_0\,) * s &= s(t-t_0),\\
+Q_{xx}(0) &= \frac{1}{T}\int_0^T x(t)^2\,dt.
+\end{align*}
+The first identity says the delta function acts as the identity element for convolution. The second says a shifted delta picks out a shifted copy of the signal. The third says the zero-lag autocorrelation is signal power.
+
+These small formulas already explain much of the lecture:
+\begin{itemize}
+    \item white noise is useful because its autocorrelation is approximately delta-shaped,
+    \item the STA is a reverse correlation because the lag enters with a minus sign,
+    \item and firing-rate estimates built from kernels are convolutions of a spike train with a smoothing filter.
+\end{itemize}
+
+\subsection{Frequency-domain viewpoint}
+
+If one introduces the Fourier transform
+\[
+X(\omega)=\int_{-\infty}^{\infty} x(t)e^{-i\omega t}\,dt,
+\]
+then convolution in time becomes multiplication in frequency:
+\[
+\mathcal{F}\{h*s\}(\omega)=H(\omega)S(\omega).
+\]
+This is why filters are often described by which frequencies they pass or suppress.
+
+Autocorrelation also has a spectral interpretation. Under the usual conventions, the Fourier transform of the autocorrelation is proportional to the power spectrum:
+\[
+\mathcal{F}\{Q_{xx}\}(\omega)\propto |X(\omega)|^2.
+\]
+So a narrow autocorrelation corresponds to a broad frequency spectrum, whereas a broad autocorrelation corresponds to concentration in low frequencies. This is another way to understand why temporally smooth stimuli do not probe all lags equally well.
+
+\section{Mathematical Appendix: Linear Time-Invariant Systems, Delta Functions, and Generating Responses}
+
+The filtering formulas in Lecture 1 and the reverse-correlation formulas in Lecture 2 both rely on the same systems idea: once one knows how a linear time-invariant system responds to a single impulse, one can generate its response to any input.
+
+\subsection{Linearity and time invariance}
+
+Let $\mathcal{L}$ denote a system that maps an input signal $x$ to an output signal $y=\mathcal{L}[x]$.
+
+\paragraph{Linearity.}
+For any constants $a,b$ and inputs $x_1,x_2$,
+\[
+\mathcal{L}[a x_1 + b x_2] = a\,\mathcal{L}[x_1] + b\,\mathcal{L}[x_2].
+\]
+This says weighted sums can be pushed through the system.
+
+\paragraph{Time invariance.}
+If $y(t)=\mathcal{L}[x](t)$, then shifting the input by $t_0$ shifts the output by the same amount:
+\[
+\mathcal{L}[x(\,\cdot - t_0\,)](t)=y(t-t_0).
+\]
+So the system's rule does not depend on absolute clock time. It reacts the same way today as it would tomorrow, provided the input shape is the same up to a shift.
+
+\subsection{The delta function as an idealized elementary input}
+
+The Dirac delta is not an ordinary function but a distribution characterized by the sifting identity
+\[
+\int_{-\infty}^{\infty} \delta(t-\tau)\,f(\tau)\,d\tau = f(t).
+\]
+This makes $\delta(t-\tau)$ the idealized ``elementary input at time $\tau$''.
+
+Any signal can be decomposed into such elementary inputs:
+\[
+x(t)=\int_{-\infty}^{\infty} x(\tau)\,\delta(t-\tau)\,d\tau.
+\]
+This equation is exact in the distributional sense. In discrete form it becomes the Riemann-sum intuition
+\[
+x(t)\approx \sum_k x(t_k)\,\Delta t\,\delta(t-t_k),
+\]
+which is the picture used in the appendix figure below.
+
+\subsection{Impulse response and the convolution formula}
+
+Define the \emph{impulse response} of the system by
+\[
+h(t):=\mathcal{L}[\delta](t).
+\]
+By time invariance, the response to a delta at time $\tau$ is a shifted impulse response:
+\[
+\mathcal{L}[\delta(\,\cdot-\tau\,)](t)=h(t-\tau).
+\]
+By linearity, a scaled delta $a\,\delta(\,\cdot-\tau\,)$ produces a scaled output $a\,h(t-\tau)$.
+
+Now insert the delta decomposition of the input:
+\begin{align*}
+y(t)
+&=\mathcal{L}[x](t)\\
+&=\mathcal{L}\!\left[\int_{-\infty}^{\infty} x(\tau)\,\delta(\,\cdot-\tau\,)\,d\tau\right](t)\\
+&=\int_{-\infty}^{\infty} x(\tau)\,\mathcal{L}[\delta(\,\cdot-\tau\,)](t)\,d\tau\\
+&=\int_{-\infty}^{\infty} x(\tau)\,h(t-\tau)\,d\tau.
+\end{align*}
+This is the convolution formula. The entire input-output behavior of an LTI system is encoded in a single function $h$.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/aand-appendix-lti-impulse-response.png}
+\caption{Generating the response of a linear time-invariant system. Decompose the input into weighted shifted deltas, replace each delta by the correspondingly shifted impulse response, and then add all elementary responses to obtain the convolution integral.}
+\end{figure}
+
+\subsection{Why this matters for spike trains}
+
+This abstract derivation reproduces one of the key lecture formulas immediately. If the input is a spike train,
+\[
+\rho(t)=\sum_i \delta(t-t_i),
+\]
+then convolution with a kernel $w$ gives
+\[
+(w*\rho)(t)=\int_{-\infty}^{\infty} w(t-\tau)\rho(\tau)\,d\tau
+=\sum_i w(t-t_i).
+\]
+So the rate-estimation formula from Lecture 1 is exactly the response of an LTI filter whose impulse response is $w$ to a spike-train input made of deltas.
+
+The same logic explains synaptic and membrane filtering. If each presynaptic spike evokes a stereotyped postsynaptic current shape $h(t)$, then a train of spikes produces a sum of shifted copies of that shape. In other words, the ``one kernel per spike'' picture is not merely a convenient smoothing trick; it is the natural output of an LTI system driven by point events.
+
+\subsection{Causality and admissible kernels}
+
+Many physical systems are \emph{causal}, meaning the output at time $t$ cannot depend on future input values. For an LTI system, causality is equivalent to
+\[
+h(t)=0 \qquad \text{for } t<0.
+\]
+This is why the alpha kernel from Lecture 1 is conceptually attractive: it can be interpreted as the impulse response of a causal filter. By contrast, a Gaussian smoothing kernel is not causal because it extends to negative times, so it uses future spikes to estimate the present rate.
+
+\subsection{Discrete-time version}
+
+Exactly the same logic holds for sampled data. If $x[n]$ is a discrete signal and $h[n]$ is the discrete impulse response, then
+\[
+y[n]=\sum_{k=-\infty}^{\infty} h[n-k]\,x[k].
+\]
+This is the formula implemented in most numerical filters. The continuous integral becomes a sum, but the interpretation is unchanged: shifted weighted copies of $h$ are added to build the output.
+
+\subsection{Conceptual summary}
+
+The delta function is useful because it isolates an elementary event at a precise time. LTI systems are useful because they reduce the full input-output map to one impulse response. Convolution is the bridge between them: it says that an arbitrary input can be assembled from deltas, and the corresponding output can be assembled from shifted impulse responses. This viewpoint links several parts of the course that might otherwise seem separate:
+\begin{itemize}
+    \item spike trains are sums of deltas,
+    \item firing-rate estimates are convolutions with smoothing kernels,
+    \item white-noise analysis relies on delta-like autocorrelations,
+    \item and linear receptive-field models are specified completely by their kernels.
+\end{itemize}
+
 \end{document}
