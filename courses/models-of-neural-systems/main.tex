@@ -1,12 +1,15 @@
-\documentclass{mns}
-\usepackage{mns-macros}
-\usepackage{mns-environments}
+\documentclass{coursenotes}
+\usepackage{coursenotes-macros}
+\usepackage{coursenotes-environments}
 
 \usepackage[backend=biber, style=alphabetic, maxbibnames=99]{biblatex}
 \addbibresource{backmatter/references.bib}
 
+% Legacy source files still contain index tags; the AAND format does not print an index.
+\providecommand{\index}[1]{}
+
 \title{Models of Neural Systems\\[0.5em]
-  \large Lecture Notes in Computational Neuroscience}
+  \large Lecture Notes}
 \author{Arjun Puri}
 \date{Spring 2026}
 
@@ -53,6 +56,5 @@
 \backmatter
 
 \printbibliography[heading=bibintoc]
-\printindex
 
 \end{document}

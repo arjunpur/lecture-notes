@@ -1,14 +1,14 @@
 \chapter*{Notation}
 \addcontentsline{toc}{chapter}{Notation}
 
-\section*{General Conventions}
+\section*{General conventions}
 
 \begin{tabular}{@{}ll@{}}
   \toprule
   \textbf{Symbol} & \textbf{Meaning} \\
   \midrule
-  $\vec{x}$, $\vec{w}$ & Column vectors (boldface lowercase) \\
-  $\mat{M}$, $\mat{W}$ & Matrices (boldface uppercase) \\
+  $\vec{x}$, $\vec{w}$ & Column vectors \\
+  $\mat{M}$, $\mat{W}$ & Matrices \\
   $\dot{x}$, $\dot{V}$ & Time derivative $\dd x / \dd t$ \\
   $\pd{f}{x}$ & Partial derivative \\
   $\dd x$ & Differential \\
@@ -17,7 +17,22 @@
   \bottomrule
 \end{tabular}
 
-\section*{Electrophysiology}
+\section*{Core neural state variables}
+
+\begin{tabular}{@{}ll@{}}
+  \toprule
+  \textbf{Symbol} & \textbf{Meaning} \\
+  \midrule
+  $V(t)$ & Membrane voltage \\
+  $\rho(t)$ & Spike train response function \\
+  $r(t)$ & Firing-rate or population-rate description \\
+  $m,h,n$ & Channel gating variables \\
+  $\theta$ & Phase variable on a limit cycle or circle \\
+  $\lambda_\mu$ & Eigenvalue of a linearized or recurrent system \\
+  \bottomrule
+\end{tabular}
+
+\section*{Membrane biophysics}
 
 \begin{tabular}{@{}lll@{}}
   \toprule
@@ -40,7 +55,7 @@
   \bottomrule
 \end{tabular}
 
-\section*{Cable Theory}
+\section*{Spatial and cable models}
 
 \begin{tabular}{@{}lll@{}}
   \toprule
@@ -54,7 +69,7 @@
   \bottomrule
 \end{tabular}
 
-\section*{Network Models}
+\section*{Networks and population models}
 
 \begin{tabular}{@{}lll@{}}
   \toprule
@@ -70,7 +85,7 @@
   \bottomrule
 \end{tabular}
 
-\section*{Physical Constants}
+\section*{Physical constants}
 
 \begin{tabular}{@{}lll@{}}
   \toprule

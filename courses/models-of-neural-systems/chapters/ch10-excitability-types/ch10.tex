@@ -1,16 +1,23 @@
 \chapter{Excitability Types: Integrators and Resonators}
 \label{ch:excitability}
 
-\textit{Not all neurons start firing the same way. Some can fire at arbitrarily low rates, while others jump abruptly to a minimum nonzero frequency. This distinction traces back to the type of bifurcation that creates the limit cycle: a saddle-node on an invariant circle produces Type~I (integrator) behavior, while a Hopf bifurcation produces Type~II (resonator) behavior. These two classes differ in everything from threshold geometry to coding strategy.}
+\textit{Excitability type is determined by the bifurcation that creates repetitive firing. SNIC onset yields Type~I neurons that can fire arbitrarily slowly, whereas Hopf onset yields Type~II neurons with a finite onset frequency and an intrinsic timescale.}
 
 % ============================================================
 \section{Two Roads to Repetitive Firing}
 \label{sec:two-roads}
 % ============================================================
 
-As the injected current increases, a neuron transitions from silence to repetitive firing. The transition occurs when the stable resting state loses stability and a limit cycle appears. But there are fundamentally different ways this can happen, and the mechanism determines the neuron's computational character.
+As injected current increases, a neuron eventually leaves rest and enters repetitive firing. The key question is not merely \emph{whether} a limit cycle appears, but \emph{how} it appears, because the onset geometry already determines latency, threshold structure, and coding strategy.
 
-The two main bifurcation types are the \emph{saddle-node on an invariant circle}\index{saddle-node on invariant circle} (SNIC) and the \emph{Hopf bifurcation}\index{Hopf bifurcation}. Each creates a limit cycle, but with profoundly different properties.
+The two dominant onset mechanisms are the \emph{saddle-node on an invariant circle}\index{saddle-node on invariant circle} (SNIC) and the \emph{Hopf bifurcation}\index{Hopf bifurcation}. \Cref{fig:excitability-types} summarizes the central qualitative difference.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/mns-excitability-types.png}
+\caption{Type~I and Type~II onset are distinguished by bifurcation geometry. SNIC onset creates arbitrarily slow firing through a bottleneck, whereas Hopf onset creates oscillation at a finite intrinsic frequency.}
+\label{fig:excitability-types}
+\end{figure}
 
 % ============================================================
 \section{Type I: Saddle-Node on Invariant Circle}

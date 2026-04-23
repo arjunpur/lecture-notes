@@ -1,0 +1,110 @@
+\chapter{Statistical Learning Theory and Support Vector Machines}
+
+Optimization alone does not explain why learning works. Statistical learning theory asks when empirical risk minimization is trustworthy and how model capacity should be controlled. Support vector machines are the clearest algorithmic realization of these ideas.
+
+\section{True risk and empirical risk}
+
+For predictor $f_{\wvec}$ and data distribution $p(\vec{x},y)$, the true risk is
+\[
+  R(\wvec)
+  =
+  \int \ell(\wvec;\vec{x},y)\, p(\vec{x},y)\,\dd \vec{x}\,\dd y.
+\]
+Because $p(\vec{x},y)$ is unknown, learning replaces this expectation by the sample average
+\[
+  R_{\mathrm{emp}}(\wvec)
+  =
+  \frac{1}{N}\sum_{i=1}^{N} \ell(\wvec;\vec{x}_i,y_i).
+\]
+
+\begin{aside}[The central question]
+When does minimizing $R_{\mathrm{emp}}$ also produce low $R$? The answer depends on how expressive the hypothesis class is relative to the amount of data available.
+\end{aside}
+
+\section{Capacity and VC dimension}
+
+Capacity measures how rich a model class is. A class with very high capacity can fit many labelings of the same points, which makes low training error less informative. For linear classifiers in general position, Cover's counting formula gives
+\[
+  C(p,N)
+  =
+  2\sum_{k=0}^{N-1} \binom{p-1}{k},
+\]
+the number of dichotomies of $p$ points in $\R^N$ that can be realized by a hyperplane.
+
+The VC dimension $d_{\mathrm{VC}}$ is the largest number of points that can be shattered. Finite VC dimension provides one route to uniform generalization guarantees \parencite{vapnik1998statistical,hastie2009elements}.
+
+\section{Structural risk minimization}
+
+The key idea is not to minimize training error in the largest possible model class. Instead, one balances fit against capacity across nested classes. This is structural risk minimization: the algorithm should prefer a predictor that fits well \emph{and} lives in a class that is not unnecessarily complex.
+
+\section{Maximum-margin classification}
+
+For linearly separable data, a support vector machine finds the separating hyperplane with maximum margin. If the classifier is
+\[
+  f(\vec{x}) = \wvec^\top \vec{x} + b,
+\]
+the hard-margin SVM solves
+\[
+  \min_{\wvec,b} \frac{1}{2}\lVert \wvec \rVert^2
+\]
+subject to
+\[
+  y_i(\wvec^\top \vec{x}_i + b) \ge 1
+  \qquad
+  \text{for all } i.
+\]
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[scale=0.95, >=Latex]
+  \draw[->] (0,0) -- (6.0,0) node[right] {$x_1$};
+  \draw[->] (0,0) -- (0,4.5) node[above] {$x_2$};
+  \draw[very thick] (1.1,4.0) -- (5.0,0.4);
+  \draw[dashed] (0.5,3.7) -- (4.4,0.1);
+  \draw[dashed] (1.7,4.3) -- (5.6,0.7);
+  \fill (1.3,1.0) circle (2pt);
+  \fill (1.8,1.4) circle (2pt);
+  \fill (2.4,0.8) circle (2pt);
+  \draw[fill=white] (4.0,2.8) circle (2.2pt);
+  \draw[fill=white] (4.6,2.2) circle (2.2pt);
+  \draw[fill=white] (3.6,3.2) circle (2.2pt);
+  \node at (4.6,3.9) {maximum-margin separator};
+\end{tikzpicture}
+\caption{The support vector machine selects the separating hyperplane with the widest margin.}
+\end{figure}
+
+\begin{keyequation}[SVM objective]
+\[
+\min_{\wvec,b} \frac{1}{2}\lVert \wvec \rVert^2
+\quad
+\text{subject to}
+\quad
+y_i(\wvec^\top \vec{x}_i+b)\ge 1
+\]
+\tcblower
+Minimizing $\lVert \wvec \rVert$ is equivalent to maximizing the geometric margin. The support vectors are precisely the points that make this constraint active.
+\end{keyequation}
+
+\section{Soft margins and kernels}
+
+Real data are rarely perfectly separable, so slack variables $\xi_i$ are introduced:
+\[
+  \min_{\wvec,b,\xi}
+  \frac{1}{2}\lVert \wvec \rVert^2 + C \sum_i \xi_i,
+  \qquad
+  y_i(\wvec^\top \vec{x}_i+b) \ge 1-\xi_i,
+  \qquad
+  \xi_i \ge 0.
+\]
+The parameter $C$ trades margin size against training violations.
+
+Kernel methods then replace inner products by $K(\vec{x},\vec{x}') = \phi(\vec{x})^\top \phi(\vec{x}')$, allowing a linear separator in feature space to become a nonlinear separator in input space.
+
+\section{Main lesson}
+
+Support vector machines matter not only as an algorithm but as a clean conceptual package:
+\begin{itemize}
+  \item generalization depends on capacity, not training error alone,
+  \item margins provide a practical notion of controlled complexity,
+  \item optimization can encode learning-theoretic principles directly.
+\end{itemize}

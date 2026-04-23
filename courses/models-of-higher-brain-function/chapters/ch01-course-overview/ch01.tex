@@ -13,6 +13,12 @@ A model of higher brain function should do more than fit observations. It should
   \item empirical testability.
 \end{itemize}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/mhbf-model-triangle.png}
+\caption{Why useful models live in tension. Strong higher-brain models stay interpretable, stay anchored to plausible mechanisms, and still make contact with measurable data.}
+\end{figure}
+
 \begin{aside}[Practical heuristic]
 If a model explains everything equally well, it usually explains nothing. Useful models make sharp commitments about mechanisms, variables, and expected failures.
 \end{aside}
@@ -23,6 +29,12 @@ Many courses on higher brain function move across a recurring abstraction ladder
 
 That ladder connects classical cognitive models to modern neural-network and dynamical-systems viewpoints. The literature on reinforcement learning, attractor dynamics, and recurrent computation makes clear that representation, dynamics, and objective functions must be studied together \parencite{dayan2001theoretical,oreilly2006biologically,wang2008decision}.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/mhbf-abstraction-stack.png}
+\caption{The abstraction ladder used throughout the course. Explanations move downward from observed behavior to hidden variables and mechanism, then upward again to ask whether the mechanism reproduces the behavior.}
+\end{figure}
+
 \begin{keyequation}[Generic state-space view]
 \[
 x_{t+1} = f(x_t, u_t; \theta)
@@ -30,6 +42,12 @@ x_{t+1} = f(x_t, u_t; \theta)
 \tcblower
 This form is broad enough to include recurrent neural networks, drift-diffusion style updates, working-memory attractors, and many cognitive-state models.
 \end{keyequation}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/mhbf-state-space.png}
+\caption{State-space intuition. The hidden state carries forward what the system currently ``knows,'' inputs perturb that state, and the update rule determines the next internal configuration.}
+\end{figure}
 
 \section{Code organization}
 

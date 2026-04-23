@@ -1,7 +1,7 @@
 \chapter{Phase-Space Analysis: Two Dimensions}
 \label{ch:phase-plane-2d}
 
-\textit{One-dimensional systems cannot oscillate. To understand repetitive firing, we need at least two dimensions---typically voltage and a recovery variable. This chapter develops the tools of two-dimensional phase-plane analysis: vector fields, nullclines, fixed point classification via the Jacobian, and limit cycles.}
+\textit{Oscillation requires at least two state variables. This chapter introduces the geometric toolkit for two-dimensional dynamics: vector fields, nullclines, Jacobians, and limit cycles.}
 
 % ============================================================
 \section{Two-Dimensional Systems}
@@ -105,6 +105,13 @@ The $V$-nullcline ($\dot{V} = 0$) is the curve $n = n_V(V)$ obtained by solving 
 Their intersection gives the fixed points. When the current $I_{\text{ext}}$ is small, the intersection is on the left branch---a stable resting state. As current increases, the $V$-nullcline shifts (current pushes the curve up), and the fixed point moves along the nullcline. Beyond a critical current, the fixed point can lose stability and a limit cycle appears---the neuron fires repetitively.
 
 The full action potential trajectory traces a large loop in the $(V, n)$ plane: rapid depolarization (fast $V$ increase with $n$ lagging behind), followed by repolarization (increasing $n$ opens potassium channels), afterhyperpolarization (high $n$, low $V$), and recovery ($n$ slowly decreases back to baseline). The nullclines organize this loop.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/mns-2d-phase-plane.png}
+\caption{Two-dimensional phase geometry. Nullcline intersections locate fixed points and the vector field gives local motion; repetitive spiking corresponds to an attracting limit cycle in the voltage--recovery plane.}
+\label{fig:phase-plane-2d}
+\end{figure}
 
 
 \begin{chaptersummary}

@@ -1,7 +1,7 @@
 \chapter{The Hodgkin--Huxley Model}
 \label{ch:hodgkin-huxley}
 
-\textit{The leaky integrate-and-fire neuron (\cref{ch:lif}) treats the spike as an abstract event. The Hodgkin--Huxley model explains \emph{how} the spike is generated: through the coordinated opening and closing of voltage-gated sodium and potassium channels. This chapter develops the gating variable formalism, assembles the full HH equations, and traces the ionic mechanism of the action potential step by step.}
+\textit{The Hodgkin--Huxley model replaces the abstract threshold by explicit voltage-dependent conductances. The goal of this chapter is to turn channel kinetics into a dynamical system that reproduces spike initiation, repolarization, and refractoriness.}
 
 % ============================================================
 \section{Voltage-Dependent Conductances}
@@ -96,6 +96,13 @@ The beauty of the HH model is that the action potential emerges from the interpl
 \emph{Undershoot and recovery.} The potassium conductance is still elevated as the voltage drops below rest, producing an afterhyperpolarization. As $n$ slowly returns to its resting value and $h$ slowly recovers from inactivation, the membrane returns to rest and is ready to fire again.
 
 The \emph{refractory period}\index{refractory period!HH} has a natural explanation: immediately after a spike, $h$ is low (sodium channels inactivated) and $n$ is high (potassium channels still open). A second stimulus during this period fails to trigger a spike because the sodium current is too weak to overcome the elevated potassium current. The absolute refractory period lasts until $h$ has recovered enough to allow any sodium current; the relative refractory period lasts until $n$ has returned to rest and the full sodium current is available.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/mns-hh-spike-refractory.png}
+\caption{Hodgkin--Huxley spike sequence. Fast sodium activation drives the upstroke, sodium inactivation and delayed potassium activation repolarize the membrane, and the post-spike state of $h$ and $n$ explains refractoriness.}
+\label{fig:hh-spike-refractory}
+\end{figure}
 
 % ============================================================
 \section{Extracting Gating Kinetics from Voltage Clamp Data}
