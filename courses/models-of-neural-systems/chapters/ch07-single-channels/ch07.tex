@@ -1,7 +1,7 @@
 \chapter{Single Channels and Stochastic Gating}
 \label{ch:single-channels}
 
-\textit{The Hodgkin--Huxley model treats gating variables as continuous fractions: $n$ is the probability that a gate is open, averaged over a large population of channels. But individual channels are discrete---they are either open or closed, and they switch randomly between states. This chapter develops the stochastic description of single-channel gating, shows how the deterministic HH equations emerge as an average over many channels, and introduces conductance-based models that extend HH with additional currents.}
+\textit{Individual channels are discrete and stochastic even when macroscopic conductances look smooth. This chapter connects random channel state switching to the deterministic Hodgkin--Huxley limit and uses extra conductances as a design language for firing patterns.}
 
 % ============================================================
 \section{From Deterministic to Stochastic}
@@ -97,6 +97,13 @@ Adding a transient calcium current ($I_{\text{CaT}}$) introduces a slow inward c
 The M-type potassium current ($I_M$) activates slowly during sustained firing. As it builds up, the increasing outward current reduces the membrane's excitability, progressively lengthening interspike intervals. This is spike-frequency adaptation\index{spike-frequency adaptation}---the firing rate decreases over time even when the input is constant.
 
 Each of these currents acts as a computational knob. The same basic membrane equation, with different channel inventories, can produce integrators, resonators, bursters, or adapting neurons. The dynamical systems analysis of these behaviors is the subject of \cref{ch:phase-plane-1d,ch:phase-plane-2d,ch:excitability}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/mns-single-channel-currents.png}
+\caption{From stochastic channels to firing patterns. Independent two-state channels converge to a smooth macroscopic conductance as channel count grows, while slow conductances such as $I_A$, $I_M$, and calcium currents reshape spike timing.}
+\label{fig:single-channel-currents}
+\end{figure}
 
 
 \begin{chaptersummary}

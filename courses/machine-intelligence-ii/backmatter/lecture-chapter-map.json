@@ -1,0 +1,22 @@
+{
+  "lectures": [
+    {
+      "lecture_slug": "principal-component-analysis",
+      "title": "Principal Component Analysis",
+      "slide_filename": "Lecture 11 - Principal Component Analysis.pdf",
+      "chapter_paths": [
+        "chapters/ch01-principal-component-analysis/ch01.tex"
+      ],
+      "aliases": [
+        "Lecture 11 - Principal Component Analysis",
+        "11_pca.pdf",
+        "Introduction",
+        "Principal Component Analysis",
+        "PCA",
+        "Karhunen-Loeve transform",
+        "Karhunen-Loève transform"
+      ],
+      "lecture_date": "2026-04-17"
+    }
+  ]
+}

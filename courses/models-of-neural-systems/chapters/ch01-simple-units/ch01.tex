@@ -1,22 +1,27 @@
 \chapter{Simple Units and Networks}
 \label{ch:simple-units}
 
-\textit{Before we can model neurons, we need to decide what a model is for. This chapter introduces the simplest mathematical neuron---the perceptron---and asks what computations a single unit or a small network can perform. The central ideas are classification, linear separability, and the dot product as a measure of similarity.}
+\textit{A neural model is defined by its state variables and by the question it is meant to answer. This chapter starts from that principle, then develops the perceptron as the simplest example of classification by weighted summation and thresholding.}
 
 % ============================================================
 \section{Why Model?}
 \label{sec:why-model}
 % ============================================================
 
-A model is a simplified mathematical description of a complex system. The point is not to reproduce every biological detail---that would just be a second copy of the brain, equally hard to understand. The point is to isolate the mechanisms that matter for a particular question and to make predictions that can be tested.
+A model is useful only relative to a question. It keeps the variables needed to explain or predict a phenomenon and discards the rest. More detail is not automatically better; irrelevant detail hides mechanism.
 
-What makes a model ``good'' depends entirely on the question. A model of how ion channels generate an action potential needs biophysical parameters: conductances, gating kinetics, reversal potentials. A model of how the brain classifies visual objects needs none of that---it needs a description of how inputs are weighted and combined. Both are valid. The art is choosing the right level of abstraction.
+If the question is spike initiation, the natural variables are conductances, reversal potentials, and gating kinetics. If the question is classification, those variables are the wrong ones; weighted inputs and a decision boundary are enough. The correct abstraction is therefore task-dependent.
 
-Computational neuroscience operates across many scales: from the stochastic opening of a single channel, to the electrical dynamics of a single neuron, to the collective activity of thousands of neurons in a network, to the behavior of an animal. At each scale, different state variables and different equations are appropriate. This course begins at the simplest level---a single unit that takes inputs and produces an output---and works upward.
+Across computational neuroscience, the same biological system can be described at several levels: channel states, membrane voltage, spike times, population activity, or latent behavioral variables. Each upward step coarse-grains the system and trades mechanistic detail for analytic simplicity.
 
-A useful way to organize these scales is by asking what is treated as a state variable and what is treated as hidden detail. At the molecular scale, state variables are channel states and ionic concentrations. At the single-cell scale, they are voltage and gating variables. At the population scale, they are firing rates or spike counts of groups of neurons. At the behavioral scale, they are latent decision variables and motor outputs. The same biological system can therefore admit multiple valid models, each with different observables, equations, and predictive targets.
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/mns-abstraction-levels.png}
+\caption{A modeling hierarchy from channel states to behavior. Each level retains only the state variables needed for the current question and treats the rest as hidden detail.}
+\label{fig:modeling-levels}
+\end{figure}
 
-Computationally, this layered view prevents a common mistake: using a model at the wrong level for the question at hand. We will repeatedly move between levels in later chapters (from channels to spikes to networks), but always with explicit assumptions about what has been coarse-grained away.
+This hierarchy prevents a common mistake: asking a model to explain phenomena outside its state description. A point neuron cannot answer a dendritic propagation question, and a rate model cannot explain spike-timing precision without additional structure.
 
 % ============================================================
 \section{Classification as a Computational Task}
@@ -57,6 +62,13 @@ What does the perceptron actually compute? Writing the activation in vector nota
 The threshold condition $\vec{w} \cdot \vec{x} = \theta$ defines a \emph{hyperplane}\index{hyperplane} in input space. On one side the perceptron outputs $1$; on the other side it outputs $0$. The weight vector $\vec{w}$ is perpendicular to this hyperplane, and the threshold $\theta$ determines how far the hyperplane sits from the origin.
 
 For a two-class problem, the perceptron divides input space into two half-spaces. Any input falling on the $\vec{w}$ side of the hyperplane is classified as ``yes''; anything on the other side is classified as ``no.'' This geometric picture makes the perceptron's power and limitations immediately clear.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/mns-perceptron-geometry.png}
+\caption{Perceptron geometry. The equation $\vec{w}\cdot\vec{x}=\theta$ defines the decision boundary; $\vec{w}$ is normal to that boundary, and the margin measures signed distance from the separating hyperplane.}
+\label{fig:perceptron-geometry}
+\end{figure}
 
 % ============================================================
 \section{Linear Separability}

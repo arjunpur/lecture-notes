@@ -1,7 +1,7 @@
 \chapter{Phase-Space Analysis: One Dimension}
 \label{ch:phase-plane-1d}
 
-\textit{The Hodgkin--Huxley model has four state variables, making it hard to visualize. Phase-space methods let us understand the qualitative behavior of dynamical systems---stability, threshold, oscillations---from geometry rather than exact solutions. We begin with one-dimensional systems, where the analysis is particularly clean: fixed points, their stability, and how they appear and disappear as parameters change.}
+\textit{Phase-space analysis reads dynamics from geometry rather than from closed-form solutions. In one dimension, that geometry is especially clean: fixed points, stability, and bifurcations already explain threshold-like behavior and slowing near marginal states.}
 
 % ============================================================
 \section{One-Dimensional Flows}
@@ -84,6 +84,13 @@ The first two conditions say the fixed point is non-hyperbolic (the linearizatio
 \subsection{The ghost of the fixed point}
 
 Just above the bifurcation, the fixed points no longer exist, but the function $F(x)$ is still close to zero in the region where they used to be. Trajectories pass through this region very slowly---they linger near the ``ghost'' of the annihilated fixed point. This produces a long latency before the first spike: the neuron sits near the former resting state for hundreds of milliseconds before finally escaping. The closer the current is to the bifurcation value, the longer the latency. This ghost effect is a distinctive signature of saddle-node bifurcations in neurons.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/mns-1d-phase-bifurcation.png}
+\caption{One-dimensional phase geometry. The sign of $F(x)$ gives flow direction, the slope at a zero crossing gives stability, and a saddle-node bifurcation occurs when stable rest and unstable threshold collide.}
+\label{fig:phase-line-bifurcation}
+\end{figure}
 
 
 \begin{chaptersummary}

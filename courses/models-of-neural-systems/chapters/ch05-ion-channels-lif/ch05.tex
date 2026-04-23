@@ -1,7 +1,7 @@
 \chapter{Ion Channels, Synapses, and the Integrate-and-Fire Neuron}
 \label{ch:lif}
 
-\textit{The membrane equation from \cref{ch:membrane} describes how voltage evolves, but it says nothing about what makes conductances change or what happens when voltage reaches threshold. This chapter introduces ion channels as the molecular basis of conductance, develops the leaky integrate-and-fire model as the simplest spiking neuron, and describes how synaptic inputs drive the membrane.}
+\textit{Voltage dynamics become spiking dynamics only after conductances are allowed to change and thresholds are imposed. This chapter moves from ion channels to the leaky integrate-and-fire model and its basic synaptic extensions.}
 
 % ============================================================
 \section{Ion Channels}
@@ -96,6 +96,13 @@ Adding the refractory period and inverting gives \cref{eq:lif-rate}. The argumen
 \end{derivation}
 
 \noindent The $f$--$I$ curve (firing rate versus current) starts at zero for subthreshold currents, rises steeply at threshold, and saturates at $1/\tauref$ for large currents. The LIF model produces a continuous onset of firing---the rate can be made arbitrarily small by bringing the current just above threshold. This is a hallmark of Type~I excitability, which we will formalize in terms of bifurcations in \cref{ch:excitability}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/mns-lif-fi.png}
+\caption{Leaky integrate-and-fire dynamics. Subthreshold voltage relaxes exponentially toward a current-dependent fixed point, while threshold and reset convert that relaxation into spikes; the firing-rate curve is the inverse interspike interval.}
+\label{fig:lif-fi}
+\end{figure}
 
 % ============================================================
 \section{Synaptic Input}

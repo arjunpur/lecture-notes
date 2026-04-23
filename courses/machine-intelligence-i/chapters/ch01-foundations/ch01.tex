@@ -1,0 +1,106 @@
+\chapter{Foundations: From Learning Problems to Multilayer Perceptrons}
+
+Machine intelligence starts from a simple observation: the system designer usually does not know the correct input--output rule in advance. The task is therefore to specify a model family, define a criterion of success, and learn parameters from data rather than write the full rule by hand.
+
+\section{Learning as model selection}
+
+At a high level, a learning problem has three ingredients:
+\begin{enumerate}
+  \item a hypothesis class,
+  \item a loss function,
+  \item and an optimization procedure.
+\end{enumerate}
+
+\begin{keyequation}[Learning pipeline]
+\[
+\text{data} \;\longrightarrow\; \text{model class} \;\longrightarrow\; \text{loss} \;\longrightarrow\; \text{optimization}
+\]
+\tcblower
+Learning is not ``fit a curve'' in the abstract. It is the joint choice of representation, objective, and search procedure.
+\end{keyequation}
+
+This viewpoint already separates the main paradigms of the course:
+\begin{itemize}
+  \item \textbf{supervised learning}: learn from labeled pairs $(\vec{x}^{(\alpha)}, y^{(\alpha)})$,
+  \item \textbf{unsupervised learning}: discover structure in $\vec{x}^{(\alpha)}$ alone,
+  \item \textbf{reinforcement learning}: learn from trajectories with delayed reward.
+\end{itemize}
+
+\begin{aside}[Core intuition]
+The paradigms differ mainly by what feedback is available. Labels give direct error signals, unsupervised objectives invent structure from the inputs themselves, and reinforcement learning must assign credit across time.
+\end{aside}
+
+\section{Connectionist neurons}
+
+The elementary computational unit of early machine learning is the connectionist neuron,
+\[
+  y_i = f\!\left(\sum_j w_{ij} x_j - \theta_i\right).
+\]
+Here $\vec{x}$ is the input, $\wvec_i$ is a learned weight vector, $\theta_i$ is a threshold or bias term, and $f$ is a transfer function such as a threshold, sigmoid, $\tanh$, or ReLU.
+
+Two interpretations matter:
+\begin{enumerate}
+  \item \textbf{feature detector}: $\wvec_i$ selects a preferred direction in input space,
+  \item \textbf{decision unit}: the sign of $\wvec_i^\top \vec{x} - \theta_i$ tells us on which side of a hyperplane the input lies.
+\end{enumerate}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[scale=0.95, >=Latex]
+  \draw[->] (0,0) -- (5.8,0) node[right] {$x_1$};
+  \draw[->] (0,0) -- (0,4.5) node[above] {$x_2$};
+  \draw[very thick] (0.8,4.0) -- (4.8,0.35);
+  \draw[->, ultra thick] (2.3,1.9) -- (4.1,3.0) node[right] {$\wvec$};
+  \node at (4.2,3.6) {decision boundary};
+  \fill (1.0,0.9) circle (2pt);
+  \fill (1.6,1.3) circle (2pt);
+  \fill (2.2,0.7) circle (2pt);
+  \draw[fill=white] (4.0,2.8) circle (2.2pt);
+  \draw[fill=white] (4.5,2.2) circle (2.2pt);
+  \draw[fill=white] (3.5,3.1) circle (2.2pt);
+\end{tikzpicture}
+\caption{A single neuron implements a linear decision boundary. The weight vector is normal to the separating hyperplane.}
+\end{figure}
+
+The geometric takeaway is immediate: changing $\theta_i$ shifts the hyperplane, while changing $\wvec_i$ rotates it. A single neuron can therefore separate only linearly separable classes.
+
+\section{Why multilayer perceptrons are needed}
+
+One layer is not enough for problems such as XOR. A multilayer perceptron (MLP) composes affine maps and nonlinearities,
+\[
+  \hvec^{(\ell)} = \sigma\!\bigl(\Wmat^{(\ell)} \hvec^{(\ell-1)} + \vec{b}^{(\ell)}\bigr),
+\]
+so each layer transforms the representation before the next layer acts on it.
+
+\begin{aside}[Representation view]
+Depth is useful because later layers are not solving the original problem directly. They are solving a problem in a learned feature space created by earlier layers.
+\end{aside}
+
+Feedforward networks propagate information from input to output. Recurrent networks reuse internal state across time and are treated later in the course.
+
+\section{Backpropagation}
+
+The practical difficulty with MLPs is not representation but optimization. If a network produces loss $L$, training needs the derivative of $L$ with respect to every weight. Backpropagation solves this with repeated use of the chain rule.
+
+\begin{keyequation}[Backpropagation recursion]
+\[
+\delta_j^{(\ell)}
+=
+\sigma'\!\bigl(a_j^{(\ell)}\bigr)
+\sum_k w_{kj}^{(\ell+1)} \delta_k^{(\ell+1)},
+\qquad
+\pd{L}{w_{ji}^{(\ell)}} = \delta_j^{(\ell)} h_i^{(\ell-1)}.
+\]
+\tcblower
+The error signal at one layer is a weighted sum of downstream error signals, rescaled by the local slope of the nonlinearity.
+\end{keyequation}
+
+The standard training loop is therefore:
+\begin{enumerate}
+  \item compute activations in a forward pass,
+  \item evaluate the loss,
+  \item propagate error signals backward,
+  \item update weights using a gradient step.
+\end{enumerate}
+
+The most important intuition is local: every weight update asks, ``if this parameter changed slightly, how would the final loss change?'' Backpropagation makes that question tractable in large layered systems.

@@ -1,0 +1,102 @@
+\chapter{Bayesian Inference, Graphical Models, and Learning under Uncertainty}
+
+Deterministic predictions are often not enough. In many problems the main question is not only ``what is the most likely answer?'' but also ``how certain is the model, and how should that certainty change when new evidence arrives?'' Bayesian inference provides the formal language for that update.
+
+\section{Bayes' rule}
+
+For hypothesis $h$ and data $D$,
+\[
+  p(h \mid D)
+  =
+  \frac{p(D \mid h)\,p(h)}{p(D)}.
+\]
+The prior $p(h)$ encodes knowledge before the observation. The likelihood $p(D \mid h)$ scores how compatible the data are with that hypothesis. The posterior combines both.
+
+\begin{keyequation}[Posterior update]
+\[
+p(h \mid D) \propto p(D \mid h)\, p(h)
+\]
+\tcblower
+Bayesian inference is a competition between prior plausibility and data fit. The posterior reweights beliefs rather than replacing them from scratch.
+\end{keyequation}
+
+\section{Conditional independence}
+
+Probabilistic models become useful only when they factorize. The simplest nontrivial notion is conditional independence:
+\[
+  X \perp Y \mid Z
+  \quad \Longleftrightarrow \quad
+  p(x,y \mid z) = p(x \mid z)\,p(y \mid z).
+\]
+This reduces both storage and inference cost. It is the reason graphical models scale at all.
+
+\begin{aside}[Why independence matters]
+Without independence assumptions, the joint distribution over many variables grows exponentially. Conditional independence is the mathematical device that turns an impossible joint table into a manageable model.
+\end{aside}
+
+\section{Bayesian networks}
+
+A Bayesian network is a directed acyclic graph whose factorization is
+\[
+  p(x_1,\dots,x_n)
+  =
+  \prod_{i=1}^{n} p(x_i \mid \mathrm{pa}(x_i)),
+\]
+where $\mathrm{pa}(x_i)$ denotes the parents of node $x_i$.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[node distance=2.2cm, >=Latex]
+  \node[draw, rounded corners] (b) {Burglary};
+  \node[draw, rounded corners, right=of b] (e) {Earthquake};
+  \node[draw, rounded corners, below right=1.5cm and 1.1cm of b] (a) {Alarm};
+  \node[draw, rounded corners, below left=1.7cm and 0.8cm of a] (j) {John calls};
+  \node[draw, rounded corners, below right=1.7cm and 0.8cm of a] (m) {Mary calls};
+  \draw[->] (b) -- (a);
+  \draw[->] (e) -- (a);
+  \draw[->] (a) -- (j);
+  \draw[->] (a) -- (m);
+\end{tikzpicture}
+\caption{A canonical Bayesian-network example. The graph represents factorization structure, not merely visual correlation.}
+\end{figure}
+
+The graph encodes more than a drawing. It says exactly how the joint distribution factorizes and which variables become irrelevant once certain others are known. The \emph{Markov blanket} of a node consists of its parents, children, and co-parents of its children; conditioned on that set, the node is independent of the rest of the graph.
+
+\section{Bayesian prediction and model selection}
+
+In Bayesian learning, model parameters are themselves uncertain. If $D$ is the dataset and $\wvec$ are parameters, then
+\[
+  p(\wvec \mid D)
+  \propto
+  p(D \mid \wvec)\, p(\wvec).
+\]
+Predictions average over that posterior:
+\[
+  p(y^\ast \mid \vec{x}^\ast, D)
+  =
+  \int p(y^\ast \mid \vec{x}^\ast, \wvec)\, p(\wvec \mid D)\,\dd \wvec.
+\]
+
+This formula is one of the cleanest statements in the course. It says prediction should average over plausible models, not commit too early to a single one.
+
+\section{MAP estimation and regularization}
+
+If the full posterior integral is too costly, one may approximate it by a single parameter choice,
+\[
+  \wvec_{\mathrm{MAP}}
+  =
+  \argmin_{\wvec}
+  \left[
+    -\log p(D \mid \wvec) - \log p(\wvec)
+  \right].
+\]
+This reveals the familiar bridge between Bayesian and frequentist viewpoints: a log-prior acts like a regularizer. For example, a Gaussian prior on $\wvec$ yields an $\ell_2$ penalty.
+
+\section{What Bayesian methods add}
+
+The probabilistic block of the course contributes three durable ideas:
+\begin{itemize}
+  \item uncertainty should be represented explicitly rather than hidden,
+  \item graphical structure is a computational tool,
+  \item regularization can be interpreted as prior information.
+\end{itemize}

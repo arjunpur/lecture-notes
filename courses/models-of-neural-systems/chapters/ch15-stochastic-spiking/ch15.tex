@@ -1,7 +1,7 @@
 \chapter{Stochastic Spiking and Neural Noise}
 \label{ch:stochastic-spiking}
 
-\textit{Deterministic membrane equations predict a unique trajectory for each input, but real neurons fire variably even under repeated stimulation. This chapter introduces the statistical language needed to analyze stochastic spike trains: interspike-interval distributions, count variability, spectral measures, and signal-transmission metrics such as coherence and information rate. The goal is to connect single-neuron noise statistics to computational function.}
+\textit{Variability is part of the spike-generation model, not merely measurement noise. This chapter introduces the point-process statistics needed to quantify stochastic firing, count variability, spectra, coherence, and signal transmission.}
 
 % ============================================================
 \section{Why a Stochastic Description?}
@@ -131,6 +131,13 @@ A practical workflow is:
 (4) compare observed coding limits to predictions from the baseline noise model.
 
 This workflow links what looks like ``noise'' to what is actually an important determinant of neural computation. Noise sets detection thresholds, response latency distributions, and the precision with which time-varying stimuli can be represented.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/mns-stochastic-spiking.png}
+\caption{Point-process views of neural variability. Raster plots, PSTHs, ISI distributions, and Fano factors summarize the same spike train at different levels, while conditional intensity makes spike-history effects explicit.}
+\label{fig:stochastic-spiking}
+\end{figure}
 
 
 \begin{chaptersummary}

@@ -5,7 +5,7 @@
       "title": "Course Organization",
       "slide_filename": "00-Course Organization.pdf",
       "chapter_paths": [
-        "main.tex"
+        "chapters/ch01-foundations/ch01.tex"
       ]
     },
     {
@@ -13,7 +13,7 @@
       "title": "Introduction",
       "slide_filename": "11-Introduction.pdf",
       "chapter_paths": [
-        "main.tex"
+        "chapters/ch01-foundations/ch01.tex"
       ]
     },
     {
@@ -21,7 +21,7 @@
       "title": "Connectionist Neurons",
       "slide_filename": "12-Connectionist Neurons.pdf",
       "chapter_paths": [
-        "main.tex"
+        "chapters/ch01-foundations/ch01.tex"
       ]
     },
     {
@@ -29,7 +29,7 @@
       "title": "Multilayer Perceptrons",
       "slide_filename": "13-Multilayer Perceptrons.pdf",
       "chapter_paths": [
-        "main.tex"
+        "chapters/ch01-foundations/ch01.tex"
       ]
     },
     {
@@ -37,7 +37,7 @@
       "title": "Additional Topics",
       "slide_filename": "14-Additional Topics.pdf",
       "chapter_paths": [
-        "main.tex"
+        "chapters/ch02-optimization-and-classification/ch02.tex"
       ]
     },
     {
@@ -45,7 +45,7 @@
       "title": "Deep Learning",
       "slide_filename": "15-Deep Learning.pdf",
       "chapter_paths": [
-        "main.tex"
+        "chapters/ch03-deep-learning/ch03.tex"
       ]
     },
     {
@@ -53,7 +53,7 @@
       "title": "Recurrent Neural Networks",
       "slide_filename": "16-Recurrent Neural Networks.pdf",
       "chapter_paths": [
-        "main.tex"
+        "chapters/ch04-sequence-and-local-models/ch04.tex"
       ]
     },
     {
@@ -61,7 +61,7 @@
       "title": "Radial Basis Function Networks",
       "slide_filename": "17-Radial Basis Function Networks.pdf",
       "chapter_paths": [
-        "main.tex"
+        "chapters/ch04-sequence-and-local-models/ch04.tex"
       ]
     },
     {
@@ -69,7 +69,7 @@
       "title": "Elements of Statistical Learning Theory",
       "slide_filename": "21-Elements of Statistical Learning Theory.pdf",
       "chapter_paths": [
-        "main.tex"
+        "chapters/ch05-learning-theory-and-svms/ch05.tex"
       ]
     },
     {
@@ -77,7 +77,7 @@
       "title": "Support Vector Machines",
       "slide_filename": "22-Support Vector Machines.pdf",
       "chapter_paths": [
-        "main.tex"
+        "chapters/ch05-learning-theory-and-svms/ch05.tex"
       ]
     },
     {
@@ -85,7 +85,7 @@
       "title": "Uncertainty and Inference",
       "slide_filename": "31-Uncertainty and Inference.pdf",
       "chapter_paths": [
-        "main.tex"
+        "chapters/ch06-bayesian-inference/ch06.tex"
       ]
     },
     {
@@ -93,7 +93,7 @@
       "title": "Bayesian Networks",
       "slide_filename": "32-Bayesian Networks.pdf",
       "chapter_paths": [
-        "main.tex"
+        "chapters/ch06-bayesian-inference/ch06.tex"
       ]
     },
     {
@@ -101,23 +101,23 @@
       "title": "Bayesian Inference and Neural Networks",
       "slide_filename": "33-Bayesian Inference and Neural Networks.pdf",
       "chapter_paths": [
-        "main.tex"
+        "chapters/ch06-bayesian-inference/ch06.tex"
       ]
     },
     {
       "lecture_slug": "41-reinforcement-learning-valuation",
-      "title": "Reinforcement Learning \u2013 Valuation",
+      "title": "Reinforcement Learning -- Valuation",
       "slide_filename": "41-Reinforcement Learning - Valuation.pdf",
       "chapter_paths": [
-        "main.tex"
+        "chapters/ch07-reinforcement-learning/ch07.tex"
       ]
     },
     {
       "lecture_slug": "42-reinforcement-learning-policy-learning",
-      "title": "Reinforcement Learning \u2013 Policy Learning",
+      "title": "Reinforcement Learning -- Policy Learning",
       "slide_filename": "42-Reinforcement Learning - Policy Learning.pdf",
       "chapter_paths": [
-        "main.tex"
+        "chapters/ch07-reinforcement-learning/ch07.tex"
       ]
     }
   ]

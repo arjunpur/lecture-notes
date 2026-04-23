@@ -1,7 +1,7 @@
 \chapter{Compartment Models, Propagation, and Myelination}
 \label{ch:compartments}
 
-\textit{The analytical solutions of cable theory apply only to passive, uniform cables. Real neurons have complex morphologies and nonlinear channels. This chapter introduces the compartmental method for numerical simulation, analyzes action potential propagation along axons, and shows how myelination dramatically increases conduction velocity.}
+\textit{Real neurons are neither passive nor geometrically uniform. This chapter replaces analytic cables by compartment models and uses them to study propagation speed, myelination, and saltatory conduction.}
 
 % ============================================================
 \section{Multi-Compartment Models}
@@ -129,6 +129,13 @@ How thick should the myelin be? Thicker myelin increases $r_m^*$ and $\lambda^*$
 \end{equation}
 %
 This means the axon should occupy about $60\%$ of the total fiber diameter, with $40\%$ being myelin. Remarkably, measurements of real myelinated axons consistently find ratios of $0.6$--$0.7$, close to the theoretical optimum. Biology has found the solution predicted by the mathematics.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/mns-compartment-myelination.png}
+\caption{Compartmental and myelinated models. Spatial discretization turns the cable PDE into coupled ODEs, while myelin increases effective spread between active nodes so spikes regenerate saltatorily.}
+\label{fig:compartment-myelination}
+\end{figure}
 
 
 \begin{chaptersummary}

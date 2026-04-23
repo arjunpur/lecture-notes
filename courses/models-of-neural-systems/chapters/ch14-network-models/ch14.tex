@@ -1,7 +1,7 @@
 \chapter{Recurrent Network Models}
 \label{ch:networks}
 
-\textit{Single neurons compute, but brains are networks. This chapter develops the firing-rate model of neural populations, analyzes linear recurrent networks using eigenmode decomposition, and shows how recurrent connectivity can amplify, select, and sustain patterns of activity. The ring network for head-direction coding illustrates these principles in a concrete biological setting.}
+\textit{Network models ask how connectivity transforms single-neuron responses into collective dynamics. This chapter develops rate equations, eigenmode analysis, and structured recurrence as mechanisms for amplification, selection, and persistent activity.}
 
 % ============================================================
 \section{From Spikes to Firing Rates}
@@ -142,6 +142,13 @@ Rectification turns amplification into \emph{selection}\index{winner-take-all}. 
 In the ring network, rectification sharpens the activity bump and creates a robust attractor. The bump can sit at any angle on the ring---the set of all possible bump positions forms a \emph{ring attractor}\index{ring attractor}. Unlike the fine-tuned linear integrator, the nonlinear ring attractor sustains activity without requiring $\lambda = 1$ exactly. Nonlinearity provides the robustness that linear models lack.
 
 The feedforward weights $W$ determine the initial response to a sensory input (its ``shape''), while the recurrent weights $M$ govern what happens afterward: amplification, selection, and sustained memory through feedback.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/mns-network-modes-attractors.png}
+\caption{Recurrent network computations. Eigenmodes decompose linear amplification, ring attractors store a continuous bump state, and rectification turns graded amplification into winner-take-all selection.}
+\label{fig:network-modes-attractors}
+\end{figure}
 
 \subsection{Beyond winner-take-all: gain modulation, associative memory, and oscillations}
 

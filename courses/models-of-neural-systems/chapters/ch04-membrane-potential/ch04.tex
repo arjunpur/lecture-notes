@@ -1,7 +1,7 @@
 \chapter{The Membrane Potential}
 \label{ch:membrane}
 
-\textit{Every neuron maintains a voltage difference across its membrane---roughly $-70\;\text{mV}$ at rest. This chapter explains why this voltage exists, how we can predict it from first principles, and what happens when we inject current into a cell. The key ideas are diffusion, drift, the Nernst equation, and the membrane as an RC circuit.}
+\textit{The resting membrane potential is a balance of diffusion, electrical drift, and membrane permeability. This chapter derives that balance mathematically and then reduces the membrane to an RC circuit with a precise time constant.}
 
 % ============================================================
 \section{The Point Neuron Approximation}
@@ -149,6 +149,13 @@ As a concrete example, using $RT/F \approx 26.7\;\text{mV}$ at body temperature:
 \end{align}
 %
 The sign tells us the direction of the equilibrium force: $\K$ wants to pull the cell negative; $\Na$ wants to push it positive. At rest, the membrane is much more permeable to $\K$, so the resting potential ($\approx -70\;\text{mV}$) is close to $\Erev{K}$.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/mns-nernst-balance.png}
+\caption{Nernst balance. At the reversal potential, diffusive flux down the concentration gradient and electrical drift in the opposite direction cancel, so the net flux of that ion is zero.}
+\label{fig:nernst-balance}
+\end{figure}
 
 Note that the Nernst equation gives the equilibrium potential for a \emph{single} ionic species, assuming no other ions are permeant. A real membrane is permeable to multiple ions simultaneously, which is why the resting potential is not exactly equal to any single Nernst potential.
 

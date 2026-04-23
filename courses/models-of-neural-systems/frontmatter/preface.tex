@@ -1,20 +1,18 @@
 \chapter*{Preface}
 \addcontentsline{toc}{chapter}{Preface}
 
-These notes grew out of the Models of Neural Systems course at the Bernstein Center for Computational Neuroscience in Berlin. The course bridges neurobiology and mathematics, building from the simplest models of neural computation up through the biophysics of ion channels, the dynamical systems theory of excitability, and the spatial and network models that connect single neurons to circuits.
+These notes accompany \emph{Models of Neural Systems}. The course moves from linear classifiers and learning rules to membrane biophysics, excitability, cable theory, network dynamics, and stochastic spiking. The unifying question is always the same: which state variables are sufficient for the phenomenon we want to explain?
 
-The goal of these notes is not exhaustive coverage but \emph{deep understanding}. Each chapter is built around a small number of core ideas, developed from physical intuition through to mathematical formalism. Derivations are shown in full not because the algebra is the point, but because following the logic from assumptions to conclusions is how real understanding forms.
+The emphasis is mathematical, but not formal for its own sake. Derivations are included when they expose mechanism: why diffusion and drift set a reversal potential, why voltage-dependent conductances create spikes, why bifurcations change coding, and why morphology reshapes propagation. At each stage, the model is only as detailed as the question demands.
 
-The presentation draws on classic references in theoretical and computational neuroscience \parencite{dayan2001theoretical,gerstner2014neuronal,koch1999biophysics,izhikevich2007dynamical,hodgkin1952quantitative}.
-
-Throughout, we emphasize three recurring themes:
+Throughout, we return to three habits of thought:
 \begin{itemize}
-  \item \textbf{What is the modeling goal?} Every equation exists to answer a question about the nervous system.
-  \item \textbf{What are the key variables and parameters?} Identifying state variables and understanding what each parameter controls is the foundation of model intuition.
-  \item \textbf{What qualitative behavior does the model explain?} Thresholds, tuning curves, oscillations, propagation, memory---the real payoff of mathematical modeling is explaining \emph{why} these phenomena occur.
+  \item \textbf{Choose the right variables.} Channel states, membrane voltage, spike times, firing rates, and latent population coordinates are different coarse-grainings of the same system.
+  \item \textbf{Track the parameters that control behavior.} Time constants, gain terms, eigenvalues, and length constants are more informative than isolated formulas.
+  \item \textbf{Read equations qualitatively.} Before solving, ask what each term pushes, damps, couples, or conserves.
 \end{itemize}
 
-These notes are meant to be read actively. Work through the derivations with pen and paper. Attempt the conceptual questions at the end of each chapter before discussing them. When you encounter a key equation, ask yourself: what does each term do? What happens if I change a parameter? What breaks if I remove a term?
+The notes draw on classic references in theoretical and computational neuroscience \parencite{dayan2001theoretical,gerstner2014neuronal,koch1999biophysics,izhikevich2007dynamical,hodgkin1952quantitative}. Read them actively: identify the state variables, limiting cases, and qualitative predictions before memorizing the algebra.
 
 \bigskip
 \noindent\textit{Berlin, February 2026}

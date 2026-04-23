@@ -1,16 +1,16 @@
 \chapter{Cable Theory: Derivation}
 \label{ch:cable}
 
-\textit{So far we have treated neurons as single electrical compartments---point neurons with a uniform voltage. Real neurons are spatially extended: a synaptic input at a distal dendrite must travel hundreds of micrometers to reach the soma, losing amplitude and gaining delay along the way. Cable theory provides the mathematical framework for understanding how voltage varies in both space and time along a neurite.}
+\textit{Voltage is not spatially uniform once neurons are treated as extended objects. Cable theory turns a dendrite or axon into a distributed RC system and makes attenuation, delay, and propagation into quantitative questions.}
 
 % ============================================================
 \section{Why Cable Theory?}
 \label{sec:why-cable}
 % ============================================================
 
-The point-neuron model assumes that every part of the cell is at the same voltage. For a compact soma, this is reasonable. But dendrites can extend over a millimeter, and their thin geometry means significant axial resistance. A synaptic potential generated at a distal dendritic spine is attenuated and delayed by the time it reaches the soma. The same physics governs action potential propagation along axons.
+The point-neuron approximation assumes a single voltage everywhere in the cell. That is acceptable for a compact soma, but not for long dendrites or axons, where axial resistance and membrane leakage reshape the signal as it travels.
 
-Cable theory answers two fundamental questions. First, how does a synaptic potential spread passively from its origin to the soma? Second, how does an action potential propagate along an axon? Both are problems of voltage varying in space and time, and both require treating the neurite as a distributed electrical structure.
+Cable theory therefore asks two linked questions: how does voltage spread in space, and how quickly does it decay in time? Both require treating the neurite as a distributed electrical medium rather than a lumped compartment.
 
 % ============================================================
 \section{The Cable as a Distributed Circuit}
@@ -65,6 +65,13 @@ $\displaystyle\lambda = \sqrt{\frac{r_m\, a}{2\,r_L}}$: length constant (space c
 \end{keyequation}
 
 \noindent Two constants govern the behavior. The \emph{membrane time constant}\index{membrane time constant} $\taum = r_m c_m$ sets the temporal scale---how quickly voltage changes at any point. The \emph{length constant}\index{length constant} $\lambda$ sets the spatial scale---how far voltage spreads before decaying significantly.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/mns-cable-theory.png}
+\caption{Cable theory separates axial spread from membrane leakage. The spatial view gives exponential attenuation with length constant $\lambda$, while the distributed circuit view shows how axial resistance, membrane resistance, and capacitance generate that behavior.}
+\label{fig:cable-theory}
+\end{figure}
 
 The length constant has a clear physical interpretation: it is the distance at which steady-state voltage decays to $1/e \approx 37\%$ of its value at the injection site. Typical values are $\lambda \sim 0.1$--$1\;\text{mm}$. The length constant increases with fiber radius (larger cross-section means lower axial resistance) and with membrane resistance (less leakage means voltage spreads further). This is why thick axons conduct better than thin ones.
 

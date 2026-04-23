@@ -1,0 +1,74 @@
+\chapter{Sequence Models and Local Basis Methods}
+
+Two important departures from standard feedforward learning appear in this part of the course. Recurrent neural networks handle temporal dependence by carrying forward a latent state. Radial basis function networks handle nonlinear regression and classification by stitching together local basis functions.
+
+\section{Recurrent neural networks}
+
+A basic recurrent network updates its hidden state according to
+\[
+  \hvec_t = \sigma(\Wmat_x \vec{x}_t + \Wmat_h \hvec_{t-1} + \vec{b}),
+  \qquad
+  \vec{y}_t = g(\Wmat_o \hvec_t + \vec{c}).
+\]
+The hidden state is a learned summary of the past. Unlike a fixed sliding window, it does not require the horizon of relevant history to be chosen in advance.
+
+\begin{aside}[State as compressed memory]
+The network does not store the whole past explicitly. It learns which aspects of the past are worth preserving in $\hvec_t$ for future predictions.
+\end{aside}
+
+\section{Backpropagation through time}
+
+Training an RNN unfolds the recurrence across time and applies backpropagation to the resulting deep computational graph. If the sequence loss is
+\[
+  L = \sum_{t=1}^{T} \ell_t,
+\]
+then gradients at time $t$ depend on all later losses whose computation involved $\hvec_t$.
+
+This is conceptually straightforward and numerically delicate. Repeated multiplication by the recurrent Jacobian can cause vanishing or exploding gradients, which makes long-range dependencies difficult to learn.
+
+\section{Gating and stable memory}
+
+Architectures such as LSTMs address this by introducing controlled memory paths. In a simplified form,
+\[
+  \vec{c}_t = \vec{f}_t \odot \vec{c}_{t-1} + \vec{i}_t \odot \tilde{\vec{c}}_t,
+  \qquad
+  \hvec_t = \vec{o}_t \odot \tanh(\vec{c}_t).
+\]
+The forget, input, and output gates regulate what is retained, written, and exposed. The mathematical role of gating is to create a route through time along which information can persist without being repeatedly distorted.
+
+\section{Radial basis function networks}
+
+An RBF network uses localized hidden units
+\[
+  \phi_i(\vec{x})
+  =
+  \exp\!\left(
+    -\frac{\lVert \vec{x}-\vec{t}_i \rVert^2}{2\sigma_i^2}
+  \right),
+  \qquad
+  y(\vec{x}) = \sum_{i=1}^{M} w_i \phi_i(\vec{x}).
+\]
+Each hidden unit is centered at a prototype $\vec{t}_i$ and responds only near that location.
+
+\begin{keyequation}[Local approximation]
+\[
+y(\vec{x}) = \sum_{i=1}^{M} w_i \phi_i(\vec{x})
+\]
+\tcblower
+RBF networks do not build a deep hierarchy. They tile the input space with local basis functions and then perform linear readout in that nonlinear feature space.
+\end{keyequation}
+
+The standard training strategy is two-stage:
+\begin{enumerate}
+  \item choose centers $\vec{t}_i$ by unsupervised clustering or prototypes,
+  \item solve the output weights by linear regression once the basis functions are fixed.
+\end{enumerate}
+
+With design matrix $\Phi_{\alpha i} = \phi_i(\vec{x}^{(\alpha)})$, the least-squares solution satisfies
+\[
+  \Phi^\top \Phi \, \vec{w} = \Phi^\top \vec{y}.
+\]
+
+\section{What these models teach}
+
+RNNs and RBF networks solve different problems, but they teach the same structural lesson: architecture is a form of prior knowledge. Recurrent connections encode temporal dependence. Radial basis functions encode locality. In both cases, performance depends on how well that prior matches the data geometry.

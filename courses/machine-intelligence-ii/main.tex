@@ -1,0 +1,30 @@
+\documentclass{coursenotes}
+\usepackage{coursenotes-macros}
+\usepackage{coursenotes-environments}
+
+\usepackage[backend=biber, style=alphabetic, maxbibnames=99]{biblatex}
+\addbibresource{backmatter/references.bib}
+
+\title{Machine Intelligence II\\[0.5em]
+  \large Lecture Notes}
+\author{Arjun Puri}
+\date{Summer 2026}
+
+\begin{document}
+
+\frontmatter
+\input{frontmatter/titlepage}
+\tableofcontents
+\input{frontmatter/preface}
+\input{frontmatter/notation}
+
+\mainmatter
+
+\part{Unsupervised Learning Foundations}
+\include{chapters/ch01-principal-component-analysis/ch01}
+
+\backmatter
+
+\printbibliography[heading=bibintoc]
+
+\end{document}

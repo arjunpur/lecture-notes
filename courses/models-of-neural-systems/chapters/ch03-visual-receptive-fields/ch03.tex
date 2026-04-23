@@ -1,7 +1,7 @@
 \chapter{Visual Receptive Fields}
 \label{ch:receptive-fields}
 
-\textit{How does the visual cortex represent the world? This chapter develops the linear filter model of simple cells, shows why a Gabor function captures their spatial tuning, and explains how complex cells achieve phase invariance through the energy model. The key distinction is between separable and non-separable space-time receptive fields, which determines whether a neuron can detect motion direction.}
+\textit{A receptive field is a linear map from stimulus space to response. This chapter develops that map for simple cells, then shows how Gabor structure, space-time separability, and the energy model explain selectivity, direction tuning, and phase invariance.}
 
 % ============================================================
 \section{Receptive Fields and the Linear Model}
@@ -151,6 +151,13 @@ $L_1, L_2$: responses of two simple cells in quadrature (phase offset $\pi/2$).
 Frequency doubling also falls out naturally. For a counterphase grating with temporal modulation $\cos(\omega t)$, each simple cell's response contains $\cos(\omega t)$. Squaring produces $\cos^2(\omega t) = \frac{1}{2}(1 + \cos 2\omega t)$---a DC component plus a term at twice the stimulus frequency.
 
 Hubel and Wiesel proposed a mechanistic interpretation: a complex cell pools the outputs of multiple simple cells that share the same orientation and frequency preferences but span different positions and phases within the receptive field. The energy model makes this hierarchical pooling precise.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/mns-receptive-field-models.png}
+\caption{Receptive-field computations. The LN model maps a stimulus to a scalar projection and then to a nonnegative rate; the energy model squares and sums a quadrature pair so orientation and frequency remain while phase is discarded.}
+\label{fig:receptive-field-models}
+\end{figure}
 
 % ============================================================
 \section{The Visual Hierarchy}

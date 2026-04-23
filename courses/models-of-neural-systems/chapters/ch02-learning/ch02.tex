@@ -1,7 +1,7 @@
 \chapter{Learning and Memory}
 \label{ch:learning}
 
-\textit{A neural network is useless without a rule for setting its weights. This chapter introduces the Hebbian learning rule, analyzes the capacity of a single perceptron as an associative memory, and then asks how sparse coding can dramatically increase storage in a network with binary synapses.}
+\textit{Learning is the problem of changing weights from experience. This chapter asks how Hebbian updates store associations, how interference limits memory, and why sparsity can improve capacity in binary-synapse systems.}
 
 % ============================================================
 \section{Plasticity and Learning Rules}
@@ -150,6 +150,13 @@ Substituting the optimal $M$ back into the capacity formula gives a maximum stor
 This is a remarkable result. The capacity grows as $N^2$ (up to logarithmic corrections), far faster than the $O(N)$ scaling of the dense Hebbian perceptron. The price is that each pattern carries very little information (only $M \ll N$ active bits), so the total information stored per synapse is more modest. But the number of distinct \emph{patterns} is enormous.
 
 The tradeoff is fundamental: if $M$ is too small, each pattern is so sparse that it barely uses the network's resources, but the error rate is low. If $M$ is too large, patterns overlap heavily and retrieval fails. The optimum sits between these extremes.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/mns-learning-memory.png}
+\caption{Two capacity mechanisms. Dense Hebbian recall separates the desired signal from random crosstalk noise, while sparse Willshaw-style storage uses low activity and binary coactivation to reduce false positives.}
+\label{fig:learning-memory}
+\end{figure}
 
 
 \begin{chaptersummary}

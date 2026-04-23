@@ -1,7 +1,7 @@
 \chapter{Cable Theory: Solutions and Branching}
 \label{ch:cable-branching}
 
-\textit{The passive cable equation has analytical solutions that reveal how signals are shaped by dendritic geometry. This chapter develops the time-dependent solution, analyzes branching structures, and introduces Rall's equivalent cylinder---a remarkable simplification that collapses an entire dendritic tree into a single cable.}
+\textit{Once the cable equation is available, geometry becomes the next control variable. This chapter studies time dependence, branch points, and Rall's equivalent cylinder as a compact summary of dendritic trees.}
 
 % ============================================================
 \section{Time-Dependent Solution}
@@ -140,6 +140,13 @@ $d$: diameter of each branch. When this holds at every branch point, impedance i
 The equivalent cylinder has the same total membrane area as the dendritic tree, and its electrotonic length $L/\lambda$ is the sum of the electrotonic lengths of the segments from trunk to tip. The ends of the cylinder correspond to the sealed tips of the dendrites.
 
 Real dendritic trees do not perfectly satisfy the $3/2$ law, but many come close enough that the equivalent cylinder provides a useful approximation. Deviations from the law cause partial reflections at branch points, which can be analyzed as perturbations around the Rall solution.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/mns-rall-branching-attenuation.png}
+\caption{Branching cable geometry. Rall's $3/2$ law impedance-matches a branched tree to an equivalent cylinder, while impedance mismatch explains why distal-to-soma and soma-to-distal signals attenuate differently.}
+\label{fig:rall-branching-attenuation}
+\end{figure}
 
 
 \begin{chaptersummary}
