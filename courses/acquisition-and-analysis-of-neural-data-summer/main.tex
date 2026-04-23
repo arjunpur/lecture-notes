@@ -602,7 +602,6 @@ simply translates between these two bookkeeping conventions.
 \includegraphics[width=\textwidth]{figures/aand-correlation-lagged-overlap.png}
 \caption{Lagged-overlap view of the cross-correlation $Q_{xy}(\tau)$. The value at each lag depends on how well one waveform matches a shifted version of the other. In the STA formula, the minus sign appears because one asks for the stimulus \emph{before} the spike rather than after it.}
 \end{figure}
-
 \subsubsection{Autocorrelation and why the stimulus ensemble matters}
 
 The lecture also reviewed the autocorrelation of a signal:
@@ -615,7 +614,6 @@ Q_{ss}(\tau) := \frac{1}{T}\int_0^T s(t)\,s(t+\tau)\,dt.
 \]
 
 This matters because the STA does \emph{not} depend only on the neuron. It also depends on the stimulus statistics. If the stimulus contains strong temporal correlations, then the STA can be broadened or distorted by those correlations. That is the deeper reason why one must choose the stimulus ensemble carefully when estimating receptive fields.
-
 To see the mechanism more concretely, consider the simplified linear-encoding picture
 \[
 \langle r(t) \rangle = \int_{-\infty}^{\infty} k(u)\,s(t-u)\,du,
@@ -643,7 +641,6 @@ This is the cleanest mathematical reason white noise is so useful: under the lec
 \includegraphics[width=\textwidth]{figures/aand-autocorrelation-white-noise.png}
 \caption{Autocorrelation controls how much the stimulus smears reverse-correlation estimates. White noise produces an almost delta-shaped $Q_{ss}(\tau)$, whereas a temporally correlated stimulus has a broad autocorrelation and therefore spreads structure across neighboring lags.}
 \end{figure}
-
 \subsection{Why white noise is so useful}
 
 \subsubsection{Desiderata for stimulus design}
