@@ -119,23 +119,123 @@ In components,
 \]
 The first term, \(\varepsilon yx\), is the Hebbian attraction term. The second term, \(-\varepsilon y^2w\), is a stabilizing decay term that grows when the output is large. It subtracts from the current weight direction, so it prevents the vector from increasing without bound.
 
-One way to understand Oja's rule is explicit normalization. Start with a Hebbian step,
+The derivation below shows where the second term comes from. The key idea is simple: take an ordinary Hebbian step, then explicitly normalize the weight vector back to unit length. Oja's rule is the first-order approximation to that normalized update.
+
+\subsection{Deriving Oja's Rule From Explicit Normalization}
+
+Consider one learning step at time \(t\), using one centered input pattern \(x^{(\alpha)}\). To keep the notation readable, write
 \[
-  \tilde{w}=w+\varepsilon yx,
+  w=w(t),
+  \qquad
+  x=x^{(\alpha)},
+  \qquad
+  y=y^{(\alpha)}=w^{\mathsf{T}}x.
 \]
-then normalize,
+Assume the current weight vector has already been normalized:
 \[
-  w_{\mathrm{new}}
+  \|w\|=1.
+\]
+This is the invariant that explicit normalization is trying to maintain.
+
+\paragraph{Step 1. Take the Hebbian step.}
+The unnormalized Hebbian update is
+\[
+  \tilde{w}
+  =
+  w+\varepsilon yx.
+\]
+This step points the weight vector toward the current input \(x\), with strength proportional to the current output \(y\).
+
+\paragraph{Step 2. Normalize the result.}
+Instead of keeping \(\tilde{w}\), divide it by its Euclidean length:
+\[
+  w(t+1)
   =
   \frac{\tilde{w}}{\|\tilde{w}\|}.
 \]
-For small \(\varepsilon\), a Taylor expansion gives the Oja update to first order:
+This guarantees \(\|w(t+1)\|=1\) exactly. The question is what local update this corresponds to when the learning rate \(\varepsilon\) is small.
+
+\paragraph{Step 3. Expand the squared norm.}
+Compute the denominator:
 \[
-  w_{\mathrm{new}}-w
+\begin{aligned}
+  \|\tilde{w}\|^2
+  &=
+  (w+\varepsilon yx)^{\mathsf{T}}
+  (w+\varepsilon yx)\\
+  &=
+  w^{\mathsf{T}}w
+  +2\varepsilon y w^{\mathsf{T}}x
+  +\varepsilon^2 y^2 x^{\mathsf{T}}x.
+\end{aligned}
+\]
+Since \(\|w\|=1\) and \(y=w^{\mathsf{T}}x\), this becomes
+\[
+  \|\tilde{w}\|^2
+  =
+  1+2\varepsilon y^2+\varepsilon^2y^2\|x\|^2.
+\]
+The last term is order \(\varepsilon^2\). For a small learning rate, it is much smaller than the order-\(\varepsilon\) term, so
+\[
+  \|\tilde{w}\|^2
+  =
+  1+2\varepsilon y^2+\mathcal{O}(\varepsilon^2).
+\]
+
+\paragraph{Step 4. Expand the reciprocal norm.}
+The normalized update needs \(1/\|\tilde{w}\|\), not \(\|\tilde{w}\|^2\). Use the Taylor expansion
+\[
+  (1+z)^{-1/2}
+  =
+  1-\frac{1}{2}z+\mathcal{O}(z^2)
+  \qquad
+  \text{for small }z.
+\]
+Here \(z=2\varepsilon y^2+\mathcal{O}(\varepsilon^2)\), so
+\[
+  \frac{1}{\|\tilde{w}\|}
+  =
+  1-\varepsilon y^2+\mathcal{O}(\varepsilon^2).
+\]
+This is the whole normalization correction. Dividing by the length is approximately the same as multiplying by \(1-\varepsilon y^2\).
+
+\paragraph{Step 5. Multiply out the normalized update.}
+Substitute the approximation into the normalized weight:
+\[
+\begin{aligned}
+  w(t+1)
+  &=
+  \frac{w+\varepsilon yx}{\|\tilde{w}\|}\\
+  &=
+  (w+\varepsilon yx)
+  \left(1-\varepsilon y^2+\mathcal{O}(\varepsilon^2)\right).
+\end{aligned}
+\]
+Multiplying and dropping terms of order \(\varepsilon^2\) gives
+\[
+  w(t+1)
+  =
+  w+\varepsilon yx-\varepsilon y^2w+\mathcal{O}(\varepsilon^2).
+\]
+Therefore
+\[
+  w(t+1)-w(t)
   \approx
+  \varepsilon yx-\varepsilon y^2w
+  =
   \varepsilon y(x-yw).
 \]
-Here ``to first order'' means that terms of size \(\varepsilon^2\) and smaller are ignored. When the learning rate is small, those terms are much smaller than the leading term. So Oja's rule is a local, online approximation to Hebbian learning plus Euclidean normalization.
+
+\paragraph{Step 6. Read off the componentwise rule.}
+For coordinate \(j\), the update is
+\[
+  \Delta w_j
+  =
+  \varepsilon y(x_j-yw_j).
+\]
+This is Oja's rule. The Hebbian term \(+\varepsilon yx_j\) pulls the weight toward the current input. The normalization term \(-\varepsilon y^2w_j\) subtracts a small amount in the current weight direction, exactly the direction that would otherwise make the norm grow.
+
+The derivation also explains why Oja's rule is local and online. It does not require computing the full covariance matrix. It only needs the current input coordinate \(x_j\), the current output \(y\), the current weight \(w_j\), and a small learning rate.
 
 \begin{figure}[h]
 \centering
