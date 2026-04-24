@@ -1,41 +1,115 @@
-\documentclass{coursenotes}
-\usepackage{coursenotes-macros}
-\usepackage{coursenotes-environments}
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+\usepackage{parskip}
+\usepackage{tabularx}
+\usepackage{xparse}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{
+  arrows.meta,
+  positioning,
+  calc,
+  decorations.pathmorphing,
+  decorations.markings,
+  shapes.geometric,
+  patterns,
+  backgrounds
+}
+\pgfplotsset{compat=1.18}
+\setcounter{tocdepth}{3}
 
+\usepackage{coursenotes-macros}
 \usepackage[backend=biber, style=alphabetic, maxbibnames=99]{biblatex}
 \addbibresource{backmatter/references.bib}
 
-\title{Machine Intelligence I\\[0.5em]
-  \large Lecture Notes}
-\author{Arjun Puri}
-\date{Winter 2025--26}
+\title{Machine Intelligence I\\Lecture Notes}
+\author{}
+\date{}
+
+\newcounter{chapter}
+\let\ArticleSection\section
+\let\ArticleSubsection\subsection
+\let\ArticleSubsubsection\subsubsection
+\NewDocumentCommand{\chapter}{s m}{%
+  \IfBooleanTF{#1}{%
+    \ArticleSection*{#2}%
+  }{%
+    \refstepcounter{chapter}%
+    \ArticleSection{#2}%
+  }%
+}
+\RenewDocumentCommand{\section}{s m}{%
+  \IfBooleanTF{#1}{\ArticleSubsection*{#2}}{\ArticleSubsection{#2}}%
+}
+\RenewDocumentCommand{\subsection}{s m}{%
+  \IfBooleanTF{#1}{\ArticleSubsubsection*{#2}}{\ArticleSubsubsection{#2}}%
+}
+\newcommand{\tcblower}{\par\smallskip}
+\newenvironment{keyequation}[1][]{%
+  \par\medskip
+  \noindent\textbf{#1}\par\smallskip
+}{%
+  \par\medskip
+}
+\newenvironment{aside}[1][]{%
+  \par\medskip
+  \noindent\textit{#1.}\enspace\ignorespaces
+}{%
+  \par\medskip
+}
+\newenvironment{derivation}[1][Derivation]{%
+  \par\medskip
+  \noindent\textit{#1.}\enspace\small\ignorespaces
+}{%
+  \par\medskip\normalsize
+}
+\newenvironment{chaptersummary}{%
+  \subsection*{Chapter Summary}
+  \addcontentsline{toc}{subsection}{Chapter Summary}
+}{%
+  \bigskip
+}
+\newenvironment{exercises}{%
+  \subsection*{Exercises}
+  \addcontentsline{toc}{subsection}{Exercises}
+  \begin{enumerate}[leftmargin=*]
+}{%
+  \end{enumerate}
+}
+\newenvironment{conceptquestions}{%
+  \subsection*{Conceptual Questions}
+  \addcontentsline{toc}{subsection}{Conceptual Questions}
+  \begin{enumerate}[label=\textbf{Q\arabic*.}, leftmargin=*]
+}{%
+  \end{enumerate}
+}
+\newlist{parts}{enumerate}{1}
+\setlist[parts]{label=\textbf{(\alph*)}, leftmargin=*, itemsep=0.4em, topsep=0.2em, parsep=0pt}
 
 \begin{document}
 
-\frontmatter
-\input{frontmatter/titlepage}
+\maketitle
 \tableofcontents
 \input{frontmatter/preface}
 \input{frontmatter/notation}
 
-\mainmatter
-
-\part{Learning from Data}
-\include{chapters/ch01-foundations/ch01}
-\include{chapters/ch02-optimization-and-classification/ch02}
-
-\part{Representation Learning}
-\include{chapters/ch03-deep-learning/ch03}
-\include{chapters/ch04-sequence-and-local-models/ch04}
-
-\part{Generalization and Uncertainty}
-\include{chapters/ch05-learning-theory-and-svms/ch05}
-\include{chapters/ch06-bayesian-inference/ch06}
-
-\part{Sequential Decision Making}
-\include{chapters/ch07-reinforcement-learning/ch07}
-
-\backmatter
+\input{chapters/ch01-foundations/ch01}
+\input{chapters/ch02-optimization-and-classification/ch02}
+\input{chapters/ch03-deep-learning/ch03}
+\input{chapters/ch04-sequence-and-local-models/ch04}
+\input{chapters/ch05-learning-theory-and-svms/ch05}
+\input{chapters/ch06-bayesian-inference/ch06}
+\input{chapters/ch07-reinforcement-learning/ch07}
 
 \input{backmatter/mathematical-synthesis}
 
