@@ -2,7 +2,13 @@
 
 The second lecture starts from the PCA eigenproblem and asks a more biological and algorithmic question: can the leading principal directions be learned incrementally, without first forming and diagonalizing the full covariance matrix?
 
-The answer is yes. A linear neuron with a simple Hebbian update performs a stochastic version of the power method. With normalization, the update becomes Oja's rule and converges to the first principal component. With multiple neurons and orthogonalization, Sanger's generalized Hebbian algorithm extracts several principal components. With the sign reversed, anti-Hebbian learning can instead find small-variance directions, which act as novelty filters.
+The answer is yes, but each part of that statement matters.
+
+A \emph{linear neuron} is just a weighted sum \(y=w^{\mathsf{T}}x\). It turns a high-dimensional input \(x\) into one number \(y\), the projection of the input onto the current weight direction \(w\). If \(w\) points along a high-variance direction of the data, then the output \(y\) varies a lot across examples.
+
+A \emph{Hebbian update} strengthens the weights in the direction of inputs that already produce a large output. Averaged over many samples, this update multiplies the weight vector by the covariance matrix. That is why Hebbian learning resembles the \emph{power method}: the power method repeatedly multiplies a vector by a matrix, and repeated multiplication by a covariance matrix amplifies the eigenvector with the largest eigenvalue.
+
+The plain Hebbian rule has one missing ingredient: it controls direction but not length. The weight vector keeps growing. Oja's rule adds a normalization term, so the direction can rotate toward the first principal component while the length stays bounded. Sanger's rule repeats the same idea with several neurons and subtracts off directions already learned, so later neurons learn later principal components. Reversing the sign gives anti-Hebbian learning: directions with large variance are suppressed, leaving small-variance directions that can be used as novelty filters.
 
 \subsection{PCA As A Learning Problem}
 
@@ -14,6 +20,8 @@ For centered observations \(x^{(\alpha)}\in\mathbb{R}^N\), the covariance matrix
   \sum_{\alpha=1}^{p}
   x^{(\alpha)}x^{(\alpha)\mathsf{T}}.
 \]
+Centered means that the sample mean has already been subtracted, so the origin represents the average input. Each term \(x^{(\alpha)}x^{(\alpha)\mathsf{T}}\) is an outer product. It records which coordinates of the input tend to be large together. The covariance matrix is therefore a summary of the shape of the data cloud.
+
 PCA asks for the unit vector \(e\) that maximizes projected variance:
 \[
   e_1
@@ -21,13 +29,15 @@ PCA asks for the unit vector \(e\) that maximizes projected variance:
   \operatorname*{arg\,max}_{\|e\|=1}
   e^{\mathsf{T}}Ce.
 \]
+The phrase \emph{projected variance} means: choose a direction \(e\), drop every data point onto that line, and measure how spread out the resulting one-dimensional numbers are. PCA chooses the line where that spread is largest.
+
 The stationary condition is the eigenvalue equation
 \[
   Ce=\lambda e.
 \]
-So the first principal component is the eigenvector with the largest eigenvalue.
+An eigenvector is a direction that the matrix \(C\) stretches but does not rotate. The eigenvalue \(\lambda\) is the amount of stretch. For a covariance matrix, that stretch is variance along the corresponding direction. So the first principal component is the eigenvector with the largest eigenvalue.
 
-The offline solution computes \(C\) and diagonalizes it. Online PCA instead sees one pattern at a time and updates a weight vector. The data stream is turned into a dynamical system whose stable direction is the first principal component.
+The offline solution computes \(C\) and diagonalizes it. Online PCA instead sees one pattern at a time and updates a weight vector. The data stream is turned into a dynamical system: as examples arrive, the vector \(w\) moves. The goal is to design the movement so that the stable direction of \(w\) is the first principal component.
 
 \subsection{A Linear Neuron}
 
@@ -35,7 +45,7 @@ The model neuron in the lecture is deliberately simple:
 \[
   y=w^{\mathsf{T}}x.
 \]
-The input \(x\) is a centered observation, \(w\) is the synaptic weight vector, and \(y\) is the scalar output. The output is large when the input aligns with the current weight vector.
+This is not meant to be a detailed biophysical neuron. It is the minimal algebraic model needed for PCA. The input \(x\) is a centered observation, \(w\) is the synaptic weight vector, and \(y\) is the scalar output. The output is large when the input points in a similar direction to the current weight vector.
 
 This model is useful because the same expression appears in PCA. The projection of \(x\) onto a candidate direction \(w\) is exactly \(w^{\mathsf{T}}x\). Learning \(w\) is therefore learning a projection direction.
 
@@ -55,6 +65,8 @@ or componentwise,
 \]
 The learning rate \(\varepsilon>0\) is small. Each sample nudges the weights in the direction of the current input, scaled by the output. Inputs that already align with \(w\) produce larger outputs and therefore larger changes.
 
+This rule is local in the neural sense: the change in weight \(w_j\) depends only on the presynaptic activity \(x_j\), the postsynaptic activity \(y\), and the learning rate. No global covariance matrix has to be stored in the neuron.
+
 To see why this is PCA, average the update over many centered samples:
 \[
   \mathbb{E}[\Delta w]
@@ -65,7 +77,13 @@ To see why this is PCA, average the update over many centered samples:
   =
   \varepsilon Cw.
 \]
-The mean update is multiplication by the covariance matrix. This is the same operation used by the power method.
+The mean update is multiplication by the covariance matrix. This is the key bridge to PCA.
+
+The power method is a simple eigenvector algorithm. Start with almost any vector \(w\), repeatedly apply the matrix \(C\), and renormalize:
+\[
+  w\leftarrow \frac{Cw}{\|Cw\|}.
+\]
+The component of \(w\) along the largest-eigenvalue direction is stretched the most, so after many steps the vector points toward the first eigenvector. Hebbian learning is a noisy, sample-by-sample version of the same idea: it does not apply \(C\) exactly, but its average update is \(Cw\).
 
 Let \(e_1,\dots,e_N\) be the eigenvectors of \(C\), with eigenvalues
 \[
@@ -81,13 +99,13 @@ Since \(Ce_j=\lambda_j e_j\), the averaged update gives
   =
   \varepsilon \lambda_j a_j.
 \]
-The coefficient along \(e_1\) grows fastest because \(\lambda_1\) is largest. If the initial weight vector has any nonzero component in the \(e_1\) direction, the direction of \(w\) approaches \(e_1\).
+The coefficient \(a_j\) says how much of \(w\) points along eigenvector \(e_j\). The coefficient along \(e_1\) grows fastest because \(\lambda_1\) is largest. If the initial weight vector has any nonzero component in the \(e_1\) direction, the direction of \(w\) approaches \(e_1\).
 
-The problem is the norm. Pure Hebbian learning does not keep \(\|w\|\) fixed. The direction becomes useful, but the weight length diverges.
+The problem is the norm. Pure Hebbian learning does not keep \(\|w\|\) fixed. The direction becomes useful, but the weight length diverges. PCA cares about directions, not arbitrary vector length, so a useful online rule must include some form of normalization.
 
 \subsection{Oja's Rule Adds The Missing Constraint}
 
-PCA is a constrained optimization problem: the direction \(e\) must have unit norm. Oja's rule builds that constraint into the learning rule:
+PCA is a constrained optimization problem: the direction \(e\) must have unit norm. Without the unit-norm constraint, the objective \(e^{\mathsf{T}}Ce\) could be made arbitrarily large just by scaling \(e\). Oja's rule builds that constraint into the learning rule:
 \[
   \Delta w
   =
@@ -99,7 +117,7 @@ In components,
   =
   \varepsilon y(x_j-yw_j).
 \]
-The first term, \(\varepsilon yx\), is the Hebbian attraction term. The second term, \(-\varepsilon y^2w\), is a stabilizing decay term that grows when the output is large. It prevents the weight vector from increasing without bound.
+The first term, \(\varepsilon yx\), is the Hebbian attraction term. The second term, \(-\varepsilon y^2w\), is a stabilizing decay term that grows when the output is large. It subtracts from the current weight direction, so it prevents the vector from increasing without bound.
 
 One way to understand Oja's rule is explicit normalization. Start with a Hebbian step,
 \[
@@ -117,7 +135,7 @@ For small \(\varepsilon\), a Taylor expansion gives the Oja update to first orde
   \approx
   \varepsilon y(x-yw).
 \]
-So Oja's rule is a local, online approximation to Hebbian learning plus Euclidean normalization.
+Here ``to first order'' means that terms of size \(\varepsilon^2\) and smaller are ignored. When the learning rate is small, those terms are much smaller than the leading term. So Oja's rule is a local, online approximation to Hebbian learning plus Euclidean normalization.
 
 \begin{figure}[h]
 \centering
@@ -127,7 +145,7 @@ So Oja's rule is a local, online approximation to Hebbian learning plus Euclidea
 
 \subsection{The Fixed Point Intuition}
 
-At convergence under Oja's rule, \(w\) is a unit vector aligned with the leading eigenvector. The averaged update is zero when the Hebbian growth is exactly balanced by the normalization term. If \(w=e_1\), then
+At convergence under Oja's rule, \(w\) is a unit vector aligned with the leading eigenvector. A convergence point is a direction where the average update is zero: on average, learning no longer moves the vector. This happens when Hebbian growth is exactly balanced by the normalization term. If \(w=e_1\), then
 \[
   \mathbb{E}[yx]
   =
@@ -151,11 +169,11 @@ Thus the mean update becomes
   =
   0.
 \]
-The leading eigenvector is stable because any small component along a lower-variance direction grows more slowly than the leading component.
+The leading eigenvector is stable because any small component along a lower-variance direction grows more slowly than the leading component. If the vector is nudged slightly away from \(e_1\), the dynamics amplify the \(e_1\) part more strongly and pull the direction back.
 
 \subsection{From One Component To Many: Sanger's Rule}
 
-One neuron learns one principal direction. To learn several directions, the system needs multiple neurons and a mechanism that prevents them all from converging to the same first component.
+One neuron learns one principal direction. If several neurons all use the same Oja rule on the same input, they all have the same favorite solution: the first principal component. To learn several directions, the system needs multiple neurons and a mechanism that prevents them all from converging to the same first component.
 
 Let
 \[
@@ -181,7 +199,9 @@ Componentwise this is
 \]
 For \(i=1\), this is Oja's rule. For \(i=2\), the input is first stripped of the component already explained by \(w_1\). For \(i=3\), the input is stripped of the components explained by \(w_1\) and \(w_2\), and so on.
 
-The rule is therefore an online Gram-Schmidt procedure. Each neuron performs Oja-like learning on the residual left after earlier neurons have taken their directions. Under the usual assumptions, the weights converge to the ordered principal components:
+This is what orthogonalization means here. A later neuron does not learn from the full input; it learns from the residual, the part of the input that cannot already be reconstructed from earlier neurons. Gram-Schmidt is the classical procedure that turns a list of vectors into perpendicular directions by subtracting projections onto directions already chosen. Sanger's rule performs the same subtraction online, while data are arriving.
+
+Each neuron performs Oja-like learning on the residual left after earlier neurons have taken their directions. Under the usual assumptions, the weights converge to the ordered principal components:
 \[
   w_1\to e_1,\qquad
   w_2\to e_2,\qquad
@@ -201,13 +221,13 @@ After learning, the neuron outputs are the PCA scores:
 
 \subsection{Novelty Filters And Anti-Hebbian Learning}
 
-Large-variance directions describe what is common. Small-variance directions can reveal what is surprising. If the data normally lie near a low-dimensional manifold, then a point with a large projection onto a small-variance direction is unusual.
+Large-variance directions describe what is common. Small-variance directions can reveal what is surprising. For example, suppose normal data mostly lie near a line or a plane. Motion along that line or plane is ordinary, but motion away from it is unusual. The low-variance direction points away from the normal data shape.
 
 The lecture expresses this with the last principal component. After PCA learning,
 \[
   y=e_N^{\mathsf{T}}x
 \]
-is the projection onto the direction with the smallest eigenvalue. A large absolute value of \(y\) signals that the input has energy in a direction where normal data vary little. This is the novelty-filter idea.
+is the projection onto the direction with the smallest eigenvalue. A large absolute value of \(y\) signals that the input has energy in a direction where normal data vary little. This is the novelty-filter idea: the output is small for typical inputs and large when the input violates the learned regularity.
 
 The online rule is anti-Hebbian:
 \[
@@ -215,6 +235,8 @@ The online rule is anti-Hebbian:
   =
   -\varepsilon yx.
 \]
+Anti-Hebbian means that co-activation weakens rather than strengthens a connection. If an input direction repeatedly produces a large output, the weight vector is pushed away from that direction.
+
 Averaging gives
 \[
   \mathbb{E}[\Delta w]
@@ -227,11 +249,11 @@ In the eigenbasis,
   =
   -\varepsilon \lambda_j a_j.
 \]
-Large-eigenvalue components decay fastest. With normalization, the remaining direction is the eigenvector with the smallest eigenvalue. A normalized anti-Hebbian version of Oja's rule therefore converges to \(e_N\).
+Large-eigenvalue components decay fastest because their \(\lambda_j\) values are largest. With normalization, the remaining direction is the eigenvector with the smallest eigenvalue. A normalized anti-Hebbian version of Oja's rule therefore converges to \(e_N\).
 
 \subsection{Connection To Total Least Squares}
 
-The novelty-filter direction also appears in linear regression geometry. Ordinary least squares minimizes vertical residuals and is correct when noise is only in the dependent variable. If both coordinates are noisy, a more symmetric objective is total least squares: minimize orthogonal distances to a line.
+The novelty-filter direction also appears in linear regression geometry. A residual is the error left after a model tries to explain a point. Ordinary least squares minimizes vertical residuals and is appropriate when the \(x\)-coordinate is treated as exact and the noise is only in the dependent variable. If both coordinates are noisy, a more symmetric objective is total least squares: minimize orthogonal distances to a line.
 
 For centered two-dimensional data, the normal vector \(w\) to the best-fit line solves
 \[
