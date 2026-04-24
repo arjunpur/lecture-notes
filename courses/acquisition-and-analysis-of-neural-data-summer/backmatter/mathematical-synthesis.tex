@@ -1,0 +1,57 @@
+\section{Mathematical Synthesis: From Spikes To Inference}
+
+The course begins with a practical problem: neural data are noisy, high-dimensional, and only indirectly related to the variables an experimenter cares about. A clean analysis therefore needs a chain of representations. Raw voltage is turned into spikes, spikes are turned into mathematical response variables, response variables are linked to stimuli or behavior by a model, and the model is checked against held-out structure in the data.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.96\textwidth]{figures/codex-aand-spikes-to-inference.png}
+\caption{A course-level analysis loop. Spike detection creates point events, rate estimation smooths those events when a continuous response is useful, encoding models map stimuli to predicted responses, likelihoods connect predictions to observed data, and validation checks whether the model has captured real structure rather than noise.}
+\end{figure}
+
+\subsection{Point Processes Are The Clean Starting Point}
+
+If spikes occur at times \(t_1,\dots,t_n\), the response can be written as
+\[
+  \rho(t)=\sum_{i=1}^{n}\delta(t-t_i).
+\]
+This notation is compact because integration counts spikes:
+\[
+  \int_a^b \rho(t)\,d t
+  =
+  \#\{i:a\le t_i\le b\}.
+\]
+The delta representation is not claiming that spikes are infinitely narrow physical events. It is a mathematical encoding of the fact that, for many analyses, timing matters more than waveform shape.
+
+\subsection{Smoothing Is A Modeling Choice}
+
+A firing-rate estimate is usually a convolution:
+\[
+  r(t)
+  =
+  (w\ast \rho)(t)
+  =
+  \int w(t-\tau)\rho(\tau)\,d \tau
+  =
+  \sum_{i=1}^{n}w(t-t_i).
+\]
+The kernel \(w\) determines the timescale of the analysis. Narrow kernels preserve timing but have high variance. Wide kernels stabilize the estimate but blur real temporal structure. There is no uniquely correct rate in a finite dataset; there are only rate estimates matched or mismatched to the scientific question.
+
+\subsection{Encoding Models Need A Likelihood}
+
+An encoding model predicts a response statistic from a stimulus:
+\[
+  \lambda_\theta(t)=f_\theta[s](t).
+\]
+For spike trains, a common probabilistic link is the inhomogeneous Poisson likelihood
+\[
+  \log p(\{t_i\}_{i=1}^n\mid \lambda_\theta)
+  =
+  \sum_{i=1}^{n}\log \lambda_\theta(t_i)
+  -
+  \int_0^T \lambda_\theta(t)\,d t.
+\]
+The first term rewards the model for assigning high rate where spikes occurred. The second term penalizes predicting too many spikes overall. This balance is the core intuition behind likelihood-based point-process fitting.
+
+\subsection{Validation Closes The Loop}
+
+Good neural-data analysis ends by asking what the model failed to explain. Residual structure, calibration error, poor cross-validated likelihood, and unstable parameter estimates are all signals that the representation or model class is missing something. The purpose of the pipeline is therefore not to turn data into a single curve, but to build an interpretable chain whose weak links can be found.

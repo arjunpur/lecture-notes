@@ -1,0 +1,63 @@
+\chapter*{Mathematical Synthesis}
+\addcontentsline{toc}{chapter}{Mathematical Synthesis}
+
+Higher brain function is difficult because the variables of interest are latent. We observe images, actions, response times, choices, spike trains, and population activity; we infer beliefs, memories, task states, goals, and decisions. A good model makes that inference problem explicit.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.96\textwidth]{figures/codex-mhbf-hierarchical-inference.png}
+\caption{A compact view of hierarchical inference. Bottom-up evidence constrains higher latent states, top-down predictions explain expected sensory structure, lateral recurrence enforces consistency within a level, and prediction errors update the representation.}
+\end{figure}
+
+\section*{Latent States}
+
+The basic abstraction is a state-space model:
+\[
+  z_{t+1} \sim p(z_{t+1}\mid z_t,a_t),
+  \qquad
+  x_t \sim p(x_t\mid z_t),
+  \qquad
+  a_t \sim \pi(a_t\mid z_t).
+\]
+Here \(x_t\) is observed sensory or behavioral data, \(z_t\) is the latent cognitive state, and \(a_t\) is an action or report. The model says that cognition is not a direct label attached to the stimulus; it is an inferred state that evolves over time and helps predict both future observations and behavior.
+
+\begin{aside}[Modeling intuition]
+The latent state should be just rich enough to make the future conditionally simpler. If knowing \(z_t\) makes past details irrelevant for predicting the next observation or action, then \(z_t\) has captured the right memory for the task.
+\end{aside}
+
+\section*{Prediction And Error}
+
+In a hierarchical model, higher levels send predictions downward and lower levels send mismatches upward. A minimal predictive-coding objective can be written as
+\[
+  E(z)
+  =
+  \frac{1}{2}\|x-g(z)\|_{\Sigma_x^{-1}}^2
+  +
+  \frac{1}{2}\|z-\mu\|_{\Sigma_z^{-1}}^2.
+\]
+The first term penalizes sensory prediction error. The second term penalizes deviation from prior expectations. Inference changes \(z\) to reduce the total error:
+\[
+  \dot{z} \propto -\nabla_z E(z).
+\]
+This equation is not just an optimization rule. It gives a mechanistic story for recurrent cortical dynamics: activity settles toward a state that jointly respects sensory evidence and top-down expectations.
+
+\section*{Representations As Coordinates}
+
+Perception becomes useful when the representation separates task-relevant variation from nuisance variation. If \(x\) is an image and \(z=f_\theta(x)\) is a representation, then a downstream decision should be simpler in \(z\)-space than in pixel space:
+\[
+  y \approx h(z),
+  \qquad
+  z=f_\theta(x).
+\]
+Deep networks make this idea concrete. Early layers preserve local structure, intermediate layers combine features, and later layers tend to align more strongly with object or task variables. The scientific question is not only whether the model classifies correctly, but whether its internal geometry matches the invariances and error patterns of biological perception.
+
+\section*{Decisions Couple Belief To Action}
+
+Higher-brain models often end with a decision rule. A common normative form is
+\[
+  a^\ast
+  \in
+  \operatorname*{arg\,max}_a
+  \E\!\left[U(a,Z)\mid x_{1:t}\right].
+\]
+The action is chosen under a posterior belief about the latent state \(Z\). This is the bridge from perception to behavior: the system does not act on the raw stimulus, but on an uncertainty-weighted internal estimate of what the stimulus means for the task.

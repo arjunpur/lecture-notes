@@ -7,6 +7,7 @@ This repository holds Bodhi-managed LaTeX lecture notes for multiple courses.
 - `courses/acquisition-and-analysis-of-neural-data/`
 - `courses/models-of-neural-systems/`
 - `courses/machine-intelligence-i/`
+- `courses/machine-intelligence-ii/`
 - `courses/acquisition-and-analysis-of-neural-data-summer/`
 - `courses/models-of-higher-brain-function/`
 
@@ -39,12 +40,45 @@ cd courses/machine-intelligence-i
 make all
 ```
 
+### Machine Intelligence II
+
+```bash
+cd courses/machine-intelligence-ii
+make all
+```
+
+### Models of Higher Brain Function
+
+```bash
+cd courses/models-of-higher-brain-function
+make all
+```
+
+### Acquisition and Analysis of Neural Data -- Summer
+
+```bash
+cd courses/acquisition-and-analysis-of-neural-data-summer
+make all
+```
+
+## Note Quality Bar
+
+The target style is minimal on the page and rich in explanation. Good additions should:
+
+- keep prose short, direct, and mathematically precise
+- explain each important equation by naming the role of every term
+- connect topics through reusable structures such as state variables, spectra, risks, likelihoods, and residuals
+- use Codex-generated raster diagrams for high-level intuition plates, then let captions and LaTeX carry the exact mathematics
+- avoid decorative figures, long in-image text, and slide-by-slide transcription
+
 ## Generated PDFs
 
 Each course keeps its current canonical export in the course directory:
 
 - `courses/models-of-neural-systems/models-of-neural-systems-lecture-notes.pdf`
 - `courses/machine-intelligence-i/machine-intelligence-i-lecture-notes.pdf`
+- `courses/machine-intelligence-ii/machine-intelligence-ii-lecture-notes.pdf`
+- `courses/models-of-higher-brain-function/models-of-higher-brain-function-lecture-notes.pdf`
 - `courses/acquisition-and-analysis-of-neural-data-summer/acquisition-and-analysis-of-neural-data-summer-lecture-notes.pdf`
 
 The repo-backed preview site is generated under `site/` and is intentionally not committed.
