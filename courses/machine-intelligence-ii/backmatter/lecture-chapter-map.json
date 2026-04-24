@@ -17,6 +17,26 @@
         "Karhunen-Loève transform"
       ],
       "lecture_date": "2026-04-17"
+    },
+    {
+      "lecture_slug": "hebbian-learning",
+      "title": "Online PCA / Hebbian Learning",
+      "slide_filename": "Lecture 12 - Hebbian Learning.pdf",
+      "chapter_paths": [
+        "chapters/ch02-hebbian-learning/ch02.tex"
+      ],
+      "aliases": [
+        "Lecture 12 - Hebbian Learning",
+        "Online-PCA",
+        "Online PCA",
+        "Hebbian Learning",
+        "Oja's rule",
+        "Sanger's rule",
+        "Generalized Hebbian Algorithm",
+        "Novelty Filter",
+        "Anti-Hebbian"
+      ],
+      "lecture_date": "2026-04-24"
     }
   ]
 }

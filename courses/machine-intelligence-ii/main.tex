@@ -1,32 +1,32 @@
-\documentclass{coursenotes}
-\usepackage{coursenotes-macros}
-\usepackage{coursenotes-environments}
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+\usepackage{parskip}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\pgfplotsset{compat=1.18}
+\setcounter{tocdepth}{3}
 
-\usepackage[backend=biber, style=alphabetic, maxbibnames=99]{biblatex}
-\addbibresource{backmatter/references.bib}
-
-\title{Machine Intelligence II\\[0.5em]
-  \large Lecture Notes}
-\author{Arjun Puri}
-\date{Summer 2026}
+\title{Machine Intelligence II\\Lecture Notes}
+\author{}
+\date{}
 
 \begin{document}
-
-\frontmatter
-\input{frontmatter/titlepage}
+\maketitle
 \tableofcontents
-\input{frontmatter/preface}
-\input{frontmatter/notation}
-
-\mainmatter
-
-\part{Unsupervised Learning Foundations}
-\include{chapters/ch01-principal-component-analysis/ch01}
-
-\backmatter
 
 \input{backmatter/mathematical-synthesis}
 
-\printbibliography[heading=bibintoc]
+\input{chapters/ch01-principal-component-analysis/ch01}
+
+\input{chapters/ch02-hebbian-learning/ch02}
 
 \end{document}

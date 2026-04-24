@@ -1,23 +1,22 @@
-\chapter{Principal Component Analysis}
+\section{Lecture 11: Principal Component Analysis}
 
-Principal Component Analysis (PCA), also known as the Karhunen--Loeve transform, is the first projection method in Machine Intelligence II \parencite{jolliffe2002principal,bishop2006pattern}. The problem starts with observations
+Principal Component Analysis (PCA), also known as the Karhunen--Loeve transform, is the first projection method in Machine Intelligence II. The problem starts with observations
 \[
   x^{(\alpha)} \in \mathbb{R}^N,
   \qquad \alpha = 1,\dots,p,
 \]
 and asks which directions in feature space expose the relevant structure of the data. PCA answers this question with a variance criterion: directions are interesting when the data vary strongly along them.
 
-\section{Projection Methods and Data Structure}
+\subsection{Projection Methods and Data Structure}
 
 The lecture contrasts two families of unsupervised methods. Projection methods search for informative directions in feature space, while clustering methods search for groups, categories, or prototypes. PCA belongs to the projection family. It does not first ask which class an observation belongs to; it asks which coordinate system makes the data cloud easiest to understand.
 
-\begin{aside}[From raw variables to directions]
+\paragraph{From raw variables to directions.}
 An elementary feature is one coordinate axis of the original measurement space. A complex feature is a direction $e_a$ in that same space. Its value on an observation is the scalar projection
 \[
   u_a(x) = e_a^{\mathsf{T}}x.
 \]
 PCA is a principled way to choose such directions from the data.
-\end{aside}
 
 \begin{figure}[htbp]
   \centering
@@ -27,7 +26,7 @@ PCA is a principled way to choose such directions from the data.
 
 The iris example in the slides is a useful starting intuition. A flower is measured by several numerical attributes, and scatter plots of pairs of attributes already show some structure. PCA generalizes this search beyond pairwise plots: it finds linear combinations of the original attributes that can reveal separation, compression, or nuisance variation.
 
-\section{Moments of the Data Cloud}
+\subsection{Moments of the Data Cloud}
 
 PCA is built from the first two empirical moments of the observations. The sample mean is the center of mass,
 \[
@@ -51,7 +50,7 @@ For centered data, where $m=0$, this simplifies to
 
 The diagonal entries $C_{ii}$ are variances of individual variables. The off-diagonal entries $C_{ij}$ are covariances between variables. The matrix is symmetric, so $C_{ij}=C_{ji}$. A zero covariance means two variables are uncorrelated, but it does not prove statistical independence; nonlinear dependence can remain invisible to a second-order method.
 
-\section{Variance Along a Complex Feature}
+\subsection{Variance Along a Complex Feature}
 
 Let $e_a$ be a unit vector in feature space. The induced feature value is
 \[
@@ -76,13 +75,13 @@ Its variance is
 \]
 This identity is the hinge of the lecture: the covariance matrix determines the variance of the data along every possible direction. Once $C$ is known, PCA can compare all candidate directions without returning to the raw data points.
 
-\section{The Principle of Maximal Variance}
+\subsection{The Principle of Maximal Variance}
 
 The first principal component is the unit direction with maximal projected variance:
 \[
   e_1
   =
-  \arg\max_{\|e\|=1} e^{\mathsf{T}}Ce.
+  \operatorname*{arg\,max}_{\|e\|=1} e^{\mathsf{T}}Ce.
 \]
 The unit-length constraint is essential. Without it, the variance could be made arbitrarily large by scaling $e$. Introducing a Lagrange multiplier gives
 \[
@@ -101,17 +100,16 @@ Thus the principal components are the normalized eigenvectors of the covariance 
   \sigma_a^2 = e_a^{\mathsf{T}}Ce_a = \lambda_a.
 \]
 
-\begin{keyequation}[PCA eigenproblem]
+\paragraph{PCA eigenproblem.}
 \[
   Ce_a = \lambda_a e_a,
   \qquad
   \lambda_1 \ge \lambda_2 \ge \dots \ge \lambda_N.
 \]
-\tcblower
-The eigenvectors give the principal directions. The eigenvalues rank those directions by explained variance.
-\end{keyequation}
 
-\section{Properties of Principal Components}
+The eigenvectors give the principal directions. The eigenvalues rank those directions by explained variance.
+
+\subsection{Properties of Principal Components}
 
 Because the covariance matrix is real and symmetric, its eigenvectors form an orthonormal basis:
 \[
@@ -119,7 +117,7 @@ Because the covariance matrix is real and symmetric, its eigenvectors form an or
 \]
 Ordering the eigenvalues from largest to smallest orders the corresponding eigenvectors from most variable to least variable. The first principal component points along the largest variance in the full space. The second points along the largest remaining variance in the subspace orthogonal to the first, and so on.
 
-\subsection{Optimal Linear Dimensionality Reduction}
+\subsubsection{Optimal Linear Dimensionality Reduction}
 
 Any observation can be represented in the principal-component basis:
 \[
@@ -150,7 +148,7 @@ In words, the error is the variance left behind in the discarded principal compo
   \caption{Dimensionality reduction by projection. PCA keeps the principal subspace that preserves the largest variance and leaves only the orthogonal residual as reconstruction error.}
 \end{figure}
 
-\subsection{Decorrelation}
+\subsubsection{Decorrelation}
 
 Let
 \[
@@ -166,7 +164,7 @@ be the matrix whose columns are the principal components. In this basis, the cov
 \]
 The transformed features are therefore uncorrelated. This is why PCA is often used before regression, classification, clustering, or visualization: it rotates the coordinate system into axes that separate second-order variation cleanly.
 
-\subsection{Whitening}
+\subsubsection{Whitening}
 
 Variance is scale sensitive. If one input dimension is measured in much larger units than another, a variance criterion may prioritize scale rather than structure. PCA therefore only makes direct sense when feature scales are comparable, or after suitable normalization.
 
@@ -184,28 +182,27 @@ The result has covariance equal to the identity matrix. Whitening removes both l
   \caption{PCA first rotates an elongated data cloud into its eigenbasis, where the covariance is diagonal. Whitening then rescales the axes so the transformed cloud has unit variance in every retained direction.}
 \end{figure}
 
-\section{Applications and Interpretations}
+\subsection{Applications and Interpretations}
 
-\subsection{Iris Data}
+\subsubsection{Iris Data}
 
 The iris slides use a familiar biological dataset to motivate projection methods. Pairwise scatter plots can show partial separation between setosa, versicolor, and virginica, but PCA asks for the strongest directions in the full feature space rather than inspecting every pair of raw features. This makes it a compact exploratory tool when there are more variables than can be inspected directly.
 
-\subsection{Leptograpsus Crab Measurements}
+\subsubsection{Leptograpsus Crab Measurements}
 
 The Leptograpsus example is more explicitly about complex features. Each crab is described by five measurements: frontal lobe size, rear width, carapace length, carapace width, and body depth. PCA forms linear combinations of these elementary features. The leading component can capture overall size, while later components may align with sex- or species-related variation if those factors explain substantial covariance structure.
 
 This example also warns against overinterpreting components. A principal component is a direction chosen by variance, not by semantics. A component may become interpretable as ``size'' or ``sex'' only after examining its loadings and how observations project onto it.
 
-\subsection{Outlier Detection}
+\subsubsection{Outlier Detection}
 
 The lecture also points out a less obvious use of PCA: components with the smallest eigenvalues can help detect outliers or novel features. A normal data point should not vary much along a low-variance direction. A large projection onto such a direction can therefore indicate an unusual observation, a measurement artifact, or a rare structure not captured by the dominant modes.
 
-\section{Computational Notes and Extensions}
+\subsection{Computational Notes and Extensions}
 
 PCA is linear, second-order, and variance-based. This is both its strength and its limitation. It is efficient, interpretable, and useful for preprocessing, dimensionality reduction, and compression. But very large covariance matrices can be numerically unstable or expensive, and second-order structure cannot capture every kind of dependence.
 
-The slide summary points to two algorithmic routes for extracting leading principal components: Hebbian learning and the power method. Both are useful when the largest eigenvectors matter more than the full eigenspectrum. It also points forward to extensions. Kernel PCA replaces the raw feature space with nonlinear features, while probabilistic PCA and factor analysis add an explicit generative model. The next major course topic, ICA, changes the objective from decorrelation to statistical independence \parencite{hyvarinen2001independent}.
+The slide summary points to two algorithmic routes for extracting leading principal components: Hebbian learning and the power method. Both are useful when the largest eigenvectors matter more than the full eigenspectrum. It also points forward to extensions. Kernel PCA replaces the raw feature space with nonlinear features, while probabilistic PCA and factor analysis add an explicit generative model. Later methods such as ICA change the objective from decorrelation to statistical independence.
 
-\begin{chaptersummary}
+\paragraph{Summary.}
 PCA begins with the covariance matrix and asks which unit directions maximize projected variance. The solution is the eigenbasis of $C$: eigenvectors are principal components, and eigenvalues measure explained variance. Keeping the leading components gives the optimal linear low-dimensional reconstruction, rotating into the eigenbasis decorrelates the features, and whitening additionally rescales them to unit variance. The method is simple and powerful, but it remains linear and variance-based, so later MI2 methods relax or extend these assumptions.
-\end{chaptersummary}

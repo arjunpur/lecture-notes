@@ -1,30 +1,8 @@
 DOC := main
-COURSE_SLUG := machine-intelligence-ii
-LATEXMK := latexmk
-LATEXMKRC := $(CURDIR)/latexmkrc
-LATEX_CACHE := $(CURDIR)/.tex-cache
-LATEXMK_FLAGS := -norc -r $(LATEXMKRC) -lualatex
-ENV := TEXMFCACHE="$(LATEX_CACHE)" TEXMFVAR="$(LATEX_CACHE)" \
-       TEXMFCONFIG="$(LATEX_CACHE)" LUAOTFLOAD_CACHE="$(LATEX_CACHE)" \
-       LUAOTFLOADCACHE="$(LATEX_CACHE)"
-
-.PHONY: all pdf watch clean distclean
-
-all: pdf
-
-pdf:
-	@mkdir -p $(LATEX_CACHE) build build/chapters/ch01-principal-component-analysis
-	$(ENV) $(LATEXMK) $(LATEXMK_FLAGS) $(DOC).tex
-	cp build/$(DOC).pdf $(DOC).pdf
-	cp build/$(DOC).pdf $(COURSE_SLUG)-lecture-notes.pdf
-
-watch:
-	@mkdir -p $(LATEX_CACHE) build build/chapters/ch01-principal-component-analysis
-	$(ENV) $(LATEXMK) $(LATEXMK_FLAGS) -pvc $(DOC).tex
 
 clean:
-	@mkdir -p $(LATEX_CACHE)
-	$(ENV) $(LATEXMK) $(LATEXMK_FLAGS) -c $(DOC).tex
+	latexmk -norc -c $(DOC).tex
 
-distclean:
-	rm -rf build .tex-cache main.pdf $(COURSE_SLUG)-lecture-notes.pdf
+all:
+	latexmk -norc -pdf -interaction=nonstopmode -halt-on-error $(DOC).tex
+	cp $(DOC).pdf machine-intelligence-ii-lecture-notes.pdf

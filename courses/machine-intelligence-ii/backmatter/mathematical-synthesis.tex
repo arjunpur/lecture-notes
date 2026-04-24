@@ -1,7 +1,6 @@
-\chapter*{Mathematical Synthesis}
-\addcontentsline{toc}{chapter}{Mathematical Synthesis}
+\section{Mathematical Synthesis: Spectral Structure and Online Learning}
 
-Machine Intelligence II begins from unsupervised structure: what can be learned when the data arrive without labels? Principal component analysis is the clean prototype because every step is visible. Center the data, measure covariance, diagonalize the covariance, project onto the strongest directions, and track exactly what variance was kept or discarded.
+Machine Intelligence II begins from unsupervised structure: what can be learned when the data arrive without labels? Principal component analysis is the clean prototype because every step is visible. Center the data, measure covariance, diagonalize the covariance, project onto the strongest directions, and track exactly what variance was kept or discarded. Hebbian learning then asks how the same directions can be found online, one sample at a time.
 
 \begin{figure}[h]
 \centering
@@ -9,9 +8,9 @@ Machine Intelligence II begins from unsupervised structure: what can be learned 
 \caption{PCA as spectral compression. Centering removes the mean, the covariance ellipse reveals directions of variation, eigenvectors provide orthogonal coordinates, projection keeps high-variance coordinates, and residuals are the discarded orthogonal variation.}
 \end{figure}
 
-\section*{The Covariance Matrix Is A Geometry}
+\subsection{The Covariance Matrix Is A Geometry}
 
-Let centered data vectors be rows of \(X\in\R^{n\times d}\). The empirical covariance is
+Let centered data vectors be rows of \(X\in\mathbb{R}^{n\times d}\). The empirical covariance is
 \[
   \Sigma
   =
@@ -31,7 +30,7 @@ So PCA asks for the direction with maximal quadratic form:
 \]
 The solution is the leading eigenvector of \(\Sigma\). The corresponding eigenvalue is the variance captured along that direction.
 
-\section*{Projection And Reconstruction}
+\subsection{Projection And Reconstruction}
 
 If \(U_k=[u_1,\dots,u_k]\) contains the top \(k\) orthonormal eigenvectors, then the low-dimensional score vector for a data point \(x\) is
 \[
@@ -47,7 +46,7 @@ The residual is
 \]
 It is orthogonal to the retained subspace, so the reconstruction separates data into an explained component and a discarded component.
 
-\begin{keyequation}[Variance captured]
+\paragraph{Variance captured.}
 \[
   \text{captured variance}(k)
   =
@@ -57,11 +56,34 @@ It is orthogonal to the retained subspace, so the reconstruction separates data 
   =
   \frac{\sum_{j=1}^{k}\lambda_j}{\sum_{j=1}^{d}\lambda_j}.
 \]
-\tcblower
-The spectrum \(\lambda_1\ge \lambda_2\ge \cdots\ge \lambda_d\) is a diagnostic for intrinsic dimension. A fast spectral decay means the data are close to a low-dimensional subspace.
-\end{keyequation}
 
-\section*{Why PCA Is The Right Baseline}
+The spectrum \(\lambda_1\ge \lambda_2\ge \cdots\ge \lambda_d\) is a diagnostic for intrinsic dimension. A fast spectral decay means the data are close to a low-dimensional subspace.
+
+\subsection{Online Learning Turns Spectra Into Dynamics}
+
+For a linear neuron \(y=w^\top x\), the basic Hebbian update is
+\[
+  \Delta w = \varepsilon yx.
+\]
+Averaged over centered samples, this becomes
+\[
+  \mathbb{E}[\Delta w]
+  =
+  \varepsilon \mathbb{E}[xx^\top]w
+  =
+  \varepsilon Cw.
+\]
+So Hebbian learning is a stochastic power method. Components of \(w\) along high-eigenvalue directions grow faster than components along low-eigenvalue directions. The direction of \(w\) therefore approaches the first principal component, but the norm grows without bound unless the learning rule includes a constraint.
+
+Oja's rule adds that constraint:
+\[
+  \Delta w
+  =
+  \varepsilon y(x-yw).
+\]
+The first term is Hebbian attraction toward directions that explain variance. The second term is a local normalization pressure. Together they make the unit vector \(w/\|w\|\) converge to the leading principal direction.
+
+\subsection{Why PCA Is The Right Baseline}
 
 PCA is linear, unsupervised, and global. Those limitations are also why it is such a useful baseline. If a nonlinear representation method improves on PCA, it should be clear which PCA assumption it breaks: linearity, globality, Euclidean reconstruction error, or Gaussian-like covariance structure.
 
