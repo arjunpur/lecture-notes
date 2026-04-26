@@ -8,6 +8,9 @@
         "chapters/ch01-principal-component-analysis/ch01.tex"
       ],
       "aliases": [
+        "Lecture 1 - Principal Component Analysis",
+        "Lecture 01 - Principal Component Analysis",
+        "01_pca.pdf",
         "Lecture 11 - Principal Component Analysis",
         "11_pca.pdf",
         "Introduction",
@@ -26,6 +29,9 @@
         "chapters/ch02-hebbian-learning/ch02.tex"
       ],
       "aliases": [
+        "Lecture 2 - Hebbian Learning",
+        "Lecture 02 - Hebbian Learning",
+        "02_hebbian-learning.pdf",
         "Lecture 12 - Hebbian Learning",
         "Online-PCA",
         "Online PCA",

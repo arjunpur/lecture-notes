@@ -15,6 +15,21 @@
         "Visual Perception",
         "Visual Perception and Deep Learning"
       ]
+    },
+    {
+      "lecture_slug": "models-of-attention",
+      "title": "Lecture 2: Models of Attention",
+      "slide_filename": "Lecture 2 - Models of Attention.pdf",
+      "chapter_paths": [
+        "chapters/ch03-models-of-attention/ch03.tex"
+      ],
+      "aliases": [
+        "Lecture 2",
+        "Lecture 02",
+        "Models of Attention",
+        "Visual Attention",
+        "Attention"
+      ]
     }
   ]
 }
