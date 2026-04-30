@@ -63,7 +63,7 @@ Here the word ``stimulus'' should be interpreted broadly. In sensory systems it 
 \caption{The two central directions of neural coding. Encoding models predict responses from stimuli; decoding models infer stimuli or behavioral variables from measured neural activity.}
 \end{figure}
 
-This distinction is foundational for the rest of the course. Lectures 1--2 focus mainly on encoding, Lecture 3 turns to decoding, and later lectures add information-theoretic viewpoints.
+This distinction is foundational for the rest of the course. Lectures 1--2 focus mainly on spike-train representations, rate estimation, and encoding. Lecture 3 turns those tools toward spike-train variability and correlations, which are the first practical route to classifying neurons and inferring functional relationships between recorded cells.
 
 \subsubsection{Recording neural signals}
 
@@ -910,6 +910,346 @@ Taken together, these ideas connect encoding and statistics. The STA asks which 
     \item P. Dayan and L. F. Abbott (2001), \emph{Theoretical Neuroscience: Computational and Mathematical Modeling of Neural Systems}. MIT Press. Lecture 2 draws especially on Chapter 1.3 and Chapter 1.4.
     \item R. Krahe, electrosensory examples discussed in the lecture slides.
     \item Kuokkanen et al. (2025), spike-triggered EEG example discussed in the lecture slides.
+\end{itemize}
+
+\clearpage
+\section{Lecture 3: Spike-train variability, Poisson models, and correlations}
+
+Lecture 3 continues the spike-train statistics developed at the end of Lecture 2. The practical motivation is experimental: modern probes such as Neuropixels can record from hundreds of channels at once, so one wants statistics that help identify neurons, classify cell types, and detect possible functional connections from spike trains recorded \emph{in vivo}. The lecture treats the homogeneous and inhomogeneous Poisson processes as baseline models, then asks which empirical summaries reveal departures from that baseline.
+
+The main conceptual move is from first-order firing rates to second-order temporal structure. A firing rate tells us how likely spikes are as a function of time. It does not tell us whether spikes are regular, bursty, oscillatory, refractory, or coordinated across neurons. Count statistics, interspike-interval statistics, autocorrelations, and cross-correlations are the workhorse tools that start to answer those questions.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/aand-lecture3-spike-statistics-overview.png}
+\caption{Four complementary summaries of a spike raster. Spike counts measure trial-to-trial variability, ISI statistics measure successive waiting times, autocorrelograms compare all pairs of spikes within one train, and cross-correlograms compare lagged spike pairs across two trains.}
+\end{figure}
+
+\subsection{Spike-count variability}
+
+Suppose the spike count in a fixed observation window of duration $T$ is the random variable $n$. Its distribution is denoted
+\[
+p_n(k)=\Pr[n=k], \qquad k=0,1,2,\dots .
+\]
+The mean count and variance are
+\[
+\langle n\rangle=\sum_{k=0}^{\infty} k\,p_n(k),
+\qquad
+\sigma_n^2=\langle n^2\rangle-\langle n\rangle^2.
+\]
+The dimensionless comparison emphasized in the lecture is the \emph{Fano factor}
+\[
+F:=\frac{\sigma_n^2}{\langle n\rangle}.
+\]
+The point of $F$ is not that every neuron should be Poisson. The point is that the homogeneous Poisson process supplies a simple reference scale:
+\[
+P_T[n=k]=\frac{(rT)^k}{k!}e^{-rT},
+\qquad
+\langle n\rangle=rT,
+\qquad
+\sigma_n^2=rT,
+\qquad
+F=1.
+\]
+Thus $F>1$ indicates count variability larger than the Poisson prediction, often described as overdispersion or burstiness. Conversely, $F<1$ indicates counts that are more regular than independent Poisson spiking would predict. The MT-neuron example in the slides showed that, for $T=256\,\mathrm{ms}$ windows, many neurons lie close enough to the Poisson line that Poisson statistics are a useful first approximation, even though individual neurons may deviate substantially.
+
+\subsection{Interspike intervals and the coefficient of variation}
+
+Count statistics ignore where the spikes occur inside the window. A complementary statistic looks at successive spike times. If
+\[
+0\le t_1<t_2<\cdots<t_n\le T,
+\]
+then the interspike intervals are
+\[
+\tau_i=t_{i+1}-t_i.
+\]
+The ISI density is defined by the small-bin limit
+\[
+p_{\mathrm{ISI}}(\tau)
+=
+\lim_{\Delta t\to 0}
+\frac{\Pr[\tau\le t_{i+1}-t_i<\tau+\Delta t]}{\Delta t}.
+\]
+From this density one computes
+\[
+\langle \tau\rangle=\int_0^\infty \tau\,p_{\mathrm{ISI}}(\tau)\,d\tau,
+\]
+\[
+\sigma_\tau^2
+=
+\int_0^\infty \tau^2p_{\mathrm{ISI}}(\tau)\,d\tau
+-\langle \tau\rangle^2,
+\qquad
+\mathrm{CV}:=\frac{\sigma_\tau}{\langle \tau\rangle}.
+\]
+
+\subsubsection{ISI law for the homogeneous Poisson process}
+
+For a homogeneous Poisson process with rate $r$, the probability of no spike in an interval of length $\tau$ is
+\[
+\Pr[\text{no spike in }[0,\tau]]=P_\tau[0]=e^{-r\tau}.
+\]
+The probability of one spike in the next infinitesimal interval $[\tau,\tau+\Delta t]$ is approximately $r\Delta t$. Therefore
+\[
+\Pr[\tau\le \tau_i<\tau+\Delta t]
+\approx e^{-r\tau}\,r\Delta t,
+\]
+and hence
+\[
+p_{\mathrm{ISI}}(\tau)=r e^{-r\tau}, \qquad \tau\ge 0.
+\]
+This exponential distribution has
+\[
+\langle \tau\rangle=\frac{1}{r},
+\qquad
+\sigma_\tau^2=\frac{1}{r^2},
+\qquad
+\mathrm{CV}=1.
+\]
+The equality $\mathrm{CV}=1$ is the interval-statistics analog of the Fano-factor equality $F=1$. It is a diagnostic baseline, not a law of biology.
+
+\subsubsection{What refractory periods change}
+
+Real neurons cannot fire arbitrarily soon after a spike. If there is an absolute refractory period of length $\tau_{\mathrm{ref}}$, then
+\[
+p_{\mathrm{ISI}}(\tau)=0
+\qquad\text{for}\qquad
+0<\tau<\tau_{\mathrm{ref}}.
+\]
+One simple model is a shifted exponential waiting time,
+\[
+\tau=\tau_{\mathrm{ref}}+X,
+\qquad
+X\sim \mathrm{Exponential}(r).
+\]
+Then
+\[
+\langle \tau\rangle=\tau_{\mathrm{ref}}+\frac{1}{r},
+\qquad
+\sigma_\tau^2=\frac{1}{r^2},
+\qquad
+\mathrm{CV}=\frac{1/r}{\tau_{\mathrm{ref}}+1/r}<1.
+\]
+This explains why adding a refractory period tends to make the spike train more regular. The MT and V1 examples in the slides show precisely this pattern: the ISI histogram has a near-zero gap at short intervals, followed by an approximately exponential tail.
+
+\subsection{Inhomogeneous Poisson spike trains}
+
+The homogeneous Poisson process fixes a constant rate $r$. For many experiments this is too restrictive because stimuli and internal states vary over time. The corresponding time-dependent baseline is the \emph{inhomogeneous Poisson process}, with intensity
+\[
+\lambda(t)=\langle r(t)\rangle.
+\]
+For a small bin,
+\[
+\Pr[\text{one spike in }[t,t+\Delta t]]
+=\lambda(t)\Delta t + o(\Delta t),
+\]
+and disjoint bins remain independent in the Poisson approximation.
+
+For spike times $t_1,\dots,t_n$ in $[0,T]$, the spike-train density is
+\[
+p(t_1,\dots,t_n)
+=
+\exp\!\left(-\int_0^T \lambda(t)\,dt\right)
+\prod_{i=1}^{n}\lambda(t_i).
+\]
+The product term rewards the model for placing high intensity at observed spike times. The exponential term normalizes the distribution by penalizing the total predicted spike mass,
+\[
+\Lambda(T):=\int_0^T \lambda(t)\,dt.
+\]
+Indeed, the expected spike count is
+\[
+\mathbb{E}[n]=\Lambda(T),
+\]
+and the count distribution remains Poisson with mean $\Lambda(T)$ when one ignores the precise spike times. What changes relative to the homogeneous case is that spike times are no longer uniformly distributed across the interval; conditioned on $n$, they are distributed with density proportional to $\lambda(t)$.
+
+This model is useful because it separates two questions:
+\begin{itemize}
+    \item does the time-varying rate explain the main stimulus-locked structure?
+    \item after conditioning on that rate, is there still refractory, bursting, oscillatory, or pairwise structure left in the residual spike train?
+\end{itemize}
+The second question is where correlation functions enter.
+
+\subsection{Spike-train correlation functions}
+
+Let
+\[
+\rho(t)=\sum_i \delta(t-t_i),
+\qquad
+\rho'(t)=\sum_j \delta(t-t'_j)
+\]
+be two spike trains. For stationary responses with mean rates $\langle r\rangle$ and $\langle r'\rangle$, Lecture 3 defined the centered spike-train cross-correlation, more precisely a cross-covariance density, as
+\[
+Q_{\rho\rho'}(\tau)
+:=
+\frac{1}{T}\int_0^T
+\left\langle
+\bigl(\rho(t)-\langle r\rangle\bigr)
+\bigl(\rho'(t+\tau)-\langle r'\rangle\bigr)
+\right\rangle dt.
+\]
+When the rates are constant this can be written as
+\[
+Q_{\rho\rho'}(\tau)
+=
+\frac{1}{T}\int_0^T
+\left\langle
+\rho(t)\rho'(t+\tau)
+\right\rangle dt
+-\langle r\rangle\langle r'\rangle.
+\]
+The centering term subtracts the coincidence rate expected merely from the two mean firing rates. The units are rate squared, because each spike train has units of inverse time.
+
+The autocorrelation is the special case $\rho'=\rho$:
+\[
+Q_{\rho\rho}(\tau)
+=
+\frac{1}{T}\int_0^T
+\left\langle
+\bigl(\rho(t)-\langle r\rangle\bigr)
+\bigl(\rho(t+\tau)-\langle r\rangle\bigr)
+\right\rangle dt.
+\]
+Autocorrelation generalizes the ISI distribution. The ISI density only looks at \emph{successive} spikes. The autocorrelation counts \emph{all} spike pairs at each lag $\tau$, so it can reveal oscillations, bursts, and refractory gaps that are not captured by successive intervals alone.
+
+\subsubsection{Symmetry of the autocorrelation}
+
+For a single stationary spike train, the autocorrelation is even:
+\[
+Q_{\rho\rho}(\tau)=Q_{\rho\rho}(-\tau).
+\]
+The reason is the same as for ordinary signal autocorrelation. Ignoring boundary effects when $|\tau|\ll T$, the change of variables $u=t+\tau$ gives
+\[
+\int \rho(t)\rho(t+\tau)\,dt
+=
+\int \rho(u-\tau)\rho(u)\,du,
+\]
+which is the same pair-counting operation with the order of the two spikes reversed.
+
+\subsection{Numerical correlograms from discretized spike trains}
+
+In data analysis one usually computes a binned approximation. Divide $[0,T]$ into $M=T/\Delta t$ bins and let
+\[
+x_i=
+\begin{cases}
+1, & \text{if the spike train has a spike in bin }i,\\
+0, & \text{otherwise.}
+\end{cases}
+\]
+For small enough $\Delta t$, the discretized response is approximately $\rho_i=x_i/\Delta t$. The raw autocorrelation pair count at lag $m$ is
+\[
+N_m:=\sum_{i=1}^{M} x_i x_{i+m}.
+\]
+The corresponding centered continuous correlation is approximated by
+\[
+Q_{\rho\rho}(m\Delta t)
+\approx
+\frac{N_m}{T\Delta t}
+-\left(\frac{n}{T}\right)^2,
+\qquad m\ne 0.
+\]
+The slide convention often starts with the raw histogram $N_m$ because it is easy to visualize. The normalization and baseline subtraction are then added when one wants a quantity comparable across neurons and recording durations.
+
+The zero-lag autocorrelation bin is special:
+\[
+N_0=\sum_i x_i^2=\sum_i x_i=n.
+\]
+It counts each spike with itself and therefore produces a large central peak. This peak is mathematically meaningful, but for visualization it is often omitted so that nonzero-lag structure is visible.
+
+\subsubsection{Expected autocorrelogram under the homogeneous Poisson model}
+
+For a homogeneous Poisson process, the nonzero-lag raw pair count has expectation approximately
+\[
+\mathbb{E}[N_m]\approx n\,\frac{n-1}{T}\Delta t,
+\qquad 0<|m|\ll M.
+\]
+The factor $(n-1)\Delta t/T$ is the conditional probability that, given one spike, another spike falls in the bin at lag $m$. Thus the normalized histogram
+\[
+H_m:=
+\frac{1}{T}
+\left(
+N_m-\frac{n(n-1)}{T}\Delta t
+\right)
+\]
+has expectation near zero for nonzero lags under the homogeneous Poisson baseline.
+
+In the continuous limit the centered Poisson autocorrelation is concentrated entirely at zero lag:
+\[
+Q_{\rho\rho}(\tau)=\langle r\rangle\delta(\tau).
+\]
+This equation compresses two facts. For $\tau\ne 0$, independent Poisson spikes have no excess correlation after subtracting the mean-rate product. At $\tau=0$, the same spike is perfectly coincident with itself, producing the delta peak.
+
+\subsection{Interpreting autocorrelograms}
+
+The lecture examples emphasize three recurring motifs.
+
+\paragraph{Refractory trough.}
+A deficit of pairs near $\tau=0$ reflects the fact that a neuron cannot fire again immediately after a spike. This is the autocorrelation version of the short-ISI gap.
+
+\paragraph{Bursting peak.}
+An excess of pairs at short positive and negative lags indicates that spikes tend to come in clusters. If the dominant within-burst interval is about $5\,\mathrm{ms}$, the autocorrelogram often has side structure at that scale.
+
+\paragraph{Oscillatory structure.}
+Repeated peaks at regular lag intervals indicate rhythmic modulation. A $40\,\mathrm{Hz}$ rhythm has period
+\[
+\frac{1}{40\,\mathrm{Hz}}=25\,\mathrm{ms},
+\]
+so correlogram peaks separated by about $25\,\mathrm{ms}$ suggest gamma-frequency coordination.
+
+These motifs are useful for cell classification. For example, principal cells and interneurons can differ in firing rate, burst structure, refractory signatures, and autocorrelogram shape. The important lesson is that such distinctions are not contained in the mean rate alone.
+
+\subsection{Cross-correlograms and functional connectivity}
+
+For two distinct spike trains, define binary binned responses $x_i$ and $y_i$. The raw cross-correlation pair count is
+\[
+N_m^{xy}:=\sum_{i=1}^{M} x_i y_{i+m}.
+\]
+Unlike autocorrelation, there is no self-pair contribution, so $m=0$ is not automatically special. Under independent homogeneous Poisson spiking, the expected baseline is approximately
+\[
+\mathbb{E}[N_m^{xy}]
+\approx
+\frac{nn'}{T}\Delta t,
+\]
+where $n$ and $n'$ are the two spike counts.
+
+The lag sign matters. With the convention above, a peak at positive $m$ means that spikes in $y$ tend to occur after spikes in $x$ by $m\Delta t$. If the peak is narrow and short-latency, it is consistent with a fast excitatory influence from the neuron represented by $x$ to the neuron represented by $y$. A narrow trough shortly after zero is consistent with inhibition. These interpretations are hypotheses, not proofs: common input, oscillatory phase-locking, firing-rate co-modulation, finite sample effects, and spike-sorting errors can produce correlogram structure without a direct synapse.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/aand-lecture3-correlogram-connectivity.png}
+\caption{Cross-correlogram intuition. A short-latency peak to the right of zero suggests that spikes in cell A are followed by excess spikes in cell B; a short-latency trough suggests suppressed probability. Such motifs are evidence for functional relationships, but anatomical connectivity requires additional controls and interpretation.}
+\end{figure}
+
+\subsection{Why correlograms matter for microcircuits}
+
+The broader motivation is functional connectivity in local circuits. In structures such as entorhinal cortex, hippocampus, and sensory cortex, computation depends not only on which neurons fire but also on how their spikes are coordinated. Spike-train correlations therefore serve as a bridge between raw extracellular recordings and circuit-level hypotheses:
+\begin{itemize}
+    \item autocorrelograms characterize the temporal organization of individual neurons,
+    \item cross-correlograms characterize lagged relationships between pairs of neurons,
+    \item and deviations from Poisson baselines identify structure that a rate-only model has failed to explain.
+\end{itemize}
+
+The lecture's examples from visual cortex and entorhinal microcircuits should be read in this spirit. Correlograms do not replace mechanistic experiments. They provide a statistically disciplined screen for temporal structure, candidate cell classes, and candidate interactions that deserve closer analysis.
+
+\subsection{Conceptual takeaways from Lecture 3}
+
+\begin{itemize}
+    \item The Poisson process is a baseline model: it predicts $F=1$, $\mathrm{CV}=1$, exponential ISIs, and no centered nonzero-lag correlations.
+    \item Refractory periods, bursting, oscillations, and shared network states are visible as structured deviations from that baseline.
+    \item The inhomogeneous Poisson model keeps the independent-spiking assumption but allows the rate $\lambda(t)$ to vary over time.
+    \item Autocorrelograms compare all spike pairs within one train and therefore generalize ISI statistics.
+    \item Cross-correlograms compare spike pairs across neurons and are central tools for detecting possible functional connectivity.
+    \item Normalization and baseline subtraction matter: raw pair histograms are intuitive, but centered rate-density correlations are the mathematically interpretable objects.
+\end{itemize}
+
+\subsection*{Sources mentioned in Lecture 3}
+
+\begin{itemize}
+    \item P. Dayan and L. F. Abbott (2001), \emph{Theoretical Neuroscience: Computational and Mathematical Modeling of Neural Systems}. MIT Press. Lecture 3 draws especially on Chapter 1.4.
+    \item G. Buzs\'aki (2004), in-vivo identification of neurons and connections discussed in the lecture slides.
+    \item J. J. Jun et al. (2017), Neuropixels high-density silicon probes discussed in the lecture slides.
+    \item K. D. Harris et al. (2000), autocorrelogram examples for refractory periods and bursting.
+    \item Quilichini, Sirota, and Buzs\'aki (2010), correlogram examples for cell classification and functional connectivity.
+    \item J. J. Tukker et al. (2022), entorhinal-cortex microcircuit context discussed in the lecture slides.
 \end{itemize}
 
 \clearpage
