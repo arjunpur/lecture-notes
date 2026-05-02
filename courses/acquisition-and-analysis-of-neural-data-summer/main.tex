@@ -1127,7 +1127,11 @@ which is the same pair-counting operation with the order of the two spikes rever
 
 \subsection{Numerical correlograms from discretized spike trains}
 
-In data analysis one usually computes a binned approximation. Divide $[0,T]$ into $M=T/\Delta t$ bins and let
+In data analysis one usually computes a binned approximation. The key
+conceptual step is that a spike train is not first a smooth function: it is a
+sum of point masses. Binning replaces each point mass by a count in a small
+time interval, so products of spike trains become products of nearby bin
+counts. Divide $[0,T]$ into $M=T/\Delta t$ bins and let
 \[
 x_i=
 \begin{cases}
@@ -1135,10 +1139,52 @@ x_i=
 0, & \text{otherwise.}
 \end{cases}
 \]
-For small enough $\Delta t$, the discretized response is approximately $\rho_i=x_i/\Delta t$. The raw autocorrelation pair count at lag $m$ is
+If the bin is short enough that multiple spikes in one bin are rare, $x_i$ is a
+binary variable. More generally, $x_i$ can be an integer spike count. The
+discretized response is approximately
 \[
-N_m:=\sum_{i=1}^{M} x_i x_{i+m}.
+\rho_i \approx \frac{x_i}{\Delta t},
 \]
+because $x_i/\Delta t$ has units of spikes per second. The total spike count is
+$n=\sum_i x_i$, and the empirical mean rate is
+\[
+\hat r=\frac{n}{T}
+\approx
+\frac{1}{M}\sum_{i=1}^M \frac{x_i}{\Delta t}.
+\]
+
+For a lag $\tau=m\Delta t$, the raw autocorrelation pair count at lag $m$ is
+\[
+N_m:=
+\sum_{i\in I_m} x_i x_{i+m},
+\qquad
+I_m:=\{i:1\le i\le M,\;1\le i+m\le M\}.
+\]
+Thus $N_m$ is literally a histogram of ordered spike pairs: choose a spike in
+bin $i$, look $m$ bins later, and count whether there is another spike there.
+For $m<0$ the same formula counts pairs in the opposite temporal direction.
+For an autocorrelogram, $N_{-m}=N_m$ after reversing the order of the same spike
+pairs, up to finite-boundary effects.
+
+The normalization follows directly from the continuous formula. Starting from
+the uncentered term,
+\[
+\frac{1}{T}\int_0^T \rho(t)\rho(t+\tau)\,dt,
+\]
+replace the integral by a Riemann sum and set $\tau=m\Delta t$:
+\[
+\frac{1}{T}\int_0^T \rho(t)\rho(t+m\Delta t)\,dt
+\approx
+\frac{1}{T}\sum_{i\in I_m}
+\left(\frac{x_i}{\Delta t}\right)
+\left(\frac{x_{i+m}}{\Delta t}\right)\Delta t
+=
+\frac{N_m}{T\Delta t}.
+\]
+This is why the denominator contains one factor of $\Delta t$, not two. Each
+product contributes $(\Delta t)^{-2}$, but the integral contributes a bin width
+$\Delta t$.
+
 The corresponding centered continuous correlation is approximated by
 \[
 Q_{\rho\rho}(m\Delta t)
@@ -1147,22 +1193,102 @@ Q_{\rho\rho}(m\Delta t)
 -\left(\frac{n}{T}\right)^2,
 \qquad m\ne 0.
 \]
+This expression uses the recording duration $T$ in the denominator. A common
+edge-corrected version divides by the amount of overlapping time,
+$T-|m|\Delta t$, instead:
+\[
+\widehat Q_{\rho\rho}^{\,\mathrm{edge}}(m\Delta t)
+=
+\frac{N_m}{(T-|m|\Delta t)\Delta t}
+-\hat r^2.
+\]
+The edge correction matters when $|m|$ is not negligible relative to $M$,
+because fewer bin pairs are available near the ends of the recording. For small
+lags in a long recording, the two normalizations are nearly identical.
+
 The slide convention often starts with the raw histogram $N_m$ because it is easy to visualize. The normalization and baseline subtraction are then added when one wants a quantity comparable across neurons and recording durations.
 
 The zero-lag autocorrelation bin is special:
 \[
 N_0=\sum_i x_i^2=\sum_i x_i=n.
 \]
-It counts each spike with itself and therefore produces a large central peak. This peak is mathematically meaningful, but for visualization it is often omitted so that nonzero-lag structure is visible.
+It counts each spike with itself and therefore produces a large central peak. In
+the binned estimate this peak has height approximately $\hat r/\Delta t$ before
+baseline subtraction, so it grows as the bin width becomes smaller. This is the
+discrete trace of the Dirac delta at zero lag. The peak is mathematically
+meaningful, but for visualization it is often omitted so that nonzero-lag
+structure is visible.
+
+\subsubsection{Cross-correlograms in the same notation}
+
+For two neurons, with binned spike counts $x_i$ and $y_i$, the raw
+cross-correlogram is
+\[
+N^{xy}_m:=
+\sum_{i\in I_m}x_i y_{i+m}.
+\]
+The centered estimate is
+\[
+\widehat Q_{\rho\rho'}(m\Delta t)
+\approx
+\frac{N^{xy}_m}{T\Delta t}
+-\hat r_x\hat r_y,
+\qquad
+\hat r_x=\frac{1}{T}\sum_i x_i,\quad
+\hat r_y=\frac{1}{T}\sum_i y_i.
+\]
+With this convention, a positive-lag peak means that spikes in $y$ occur more
+often than baseline after spikes in $x$. A negative-lag peak means that $y$
+tends to precede $x$. Unlike an autocorrelogram, a cross-correlogram need not be
+even: generally $N^{xy}_m=N^{yx}_{-m}$, not $N^{xy}_m=N^{xy}_{-m}$.
 
 \subsubsection{Expected autocorrelogram under the homogeneous Poisson model}
 
-For a homogeneous Poisson process, the nonzero-lag raw pair count has expectation approximately
+For a homogeneous Poisson process with rate $r$, disjoint bins are independent
+and
+\[
+\mathbb{E}[x_i]\approx r\Delta t,
+\qquad
+\mathbb{E}[x_i x_{i+m}]
+\approx
+(r\Delta t)^2
+\quad (m\ne 0).
+\]
+Therefore
+\[
+\mathbb{E}[N_m]
+\approx
+|I_m|(r\Delta t)^2
+=
+(M-|m|)r^2\Delta t^2
+=
+r^2(T-|m|\Delta t)\Delta t.
+\]
+Substituting this into the edge-corrected estimate gives
+\[
+\mathbb{E}\!\left[
+\frac{N_m}{(T-|m|\Delta t)\Delta t}
+-r^2
+\right]
+\approx 0,
+\qquad m\ne 0.
+\]
+So, after baseline subtraction, a homogeneous Poisson spike train should have
+no systematic nonzero-lag autocorrelation.
+
+Conditioning on the observed spike count $n$ gives a closely related empirical
+baseline. Given $n$ spikes uniformly scattered through the recording, the
+conditional probability that a second spike falls in a particular lag bin is
+approximately $(n-1)\Delta t/T$. Thus the nonzero-lag raw pair count has
+expectation approximately
 \[
 \mathbb{E}[N_m]\approx n\,\frac{n-1}{T}\Delta t,
 \qquad 0<|m|\ll M.
 \]
-The factor $(n-1)\Delta t/T$ is the conditional probability that, given one spike, another spike falls in the bin at lag $m$. Thus the normalized histogram
+The factor $(n-1)\Delta t/T$ is the conditional probability that, given one
+spike, another spike falls in the bin at lag $m$. This form is useful because
+it uses the observed count $n$ rather than the unknown rate $r$. Thus the
+normalized histogram
 \[
 H_m:=
 \frac{1}{T}
@@ -1176,7 +1302,11 @@ In the continuous limit the centered Poisson autocorrelation is concentrated ent
 \[
 Q_{\rho\rho}(\tau)=\langle r\rangle\delta(\tau).
 \]
-This equation compresses two facts. For $\tau\ne 0$, independent Poisson spikes have no excess correlation after subtracting the mean-rate product. At $\tau=0$, the same spike is perfectly coincident with itself, producing the delta peak.
+This statement is the limit of the binned calculation. For nonzero lag,
+independence gives $\mathbb{E}[\rho(t)\rho(t+\tau)]=r^2$, and centering removes
+that baseline. At zero lag, however, every spike is perfectly coincident with
+itself. As $\Delta t\to 0$, the zero-lag bin becomes narrower and taller while
+its area remains $r$, producing the delta function.
 
 \subsection{Interpreting autocorrelograms}
 
